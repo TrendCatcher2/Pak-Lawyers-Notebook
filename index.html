@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
 :root{
   --ink:#1A241D; --ink-soft:#46544C; --ink-faint:#7C887F;
@@ -609,6 +612,7 @@ details.help a{color:var(--brass)}
     <div class="field"><label>Link to my / client cases <span class="hint" style="display:inline;font-weight:400">(tap to link — you can pick several)</span></label>
       <div class="link-pick" id="jLinks"></div></div>
     <div class="field"><label>Source URL</label><input id="jUrl" placeholder="https://…"></div>
+<div class="field"><label>Full judgment text <span class="hint" style="display:inline;font-weight:400">(paste the whole text — kept &amp; searchable even if the link or PDF is lost)</span></label><textarea id="jFull" style="min-height:120px" placeholder="Paste the complete judgment text here…"></textarea></div>
     <div class="field"><label>Attach PDF / image</label><input id="jFiles" type="file" accept="application/pdf,image/*" multiple>
       <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
       <div class="uploads" id="jUploads"></div></div>
@@ -919,7 +923,7 @@ $("judgeSearch").addEventListener("input",renderJudge);
 let judgeUploads=[];
 function openJudge(j){
   $("jId").value=j?.id||"";$("judgeModalTitle").textContent=j?"Edit judgment":"New judgment";
-  $("jSource").value="";$("jCite").value=j?.cite||"";$("jName").value=j?.name||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";$("jHold").value=j?.hold||"";$("jSummary").value=j?.summary||"";$("jNotes").value=j?.notes||"";$("jUrl").value=j?.url||"";
+  $("jSource").value="";$("jCite").value=j?.cite||"";$("jName").value=j?.name||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";$("jHold").value=j?.hold||"";$("jSummary").value=j?.summary||"";$("jNotes").value=j?.notes||"";$("jUrl").value=j?.url||"";$("jFull").value=j?.full||"";
   $("jTags").value=(j?.tags||[]).join(", ");
   $("jKey").value=state.aikey||"";
   judgeLinks=(j?.links||[]).slice();renderLinkPick();
@@ -943,7 +947,7 @@ $("judgeCancel").onclick=()=>$("judgeOverlay").classList.remove("on");
 $("judgeOverlay").addEventListener("click",e=>{if(e.target===$("judgeOverlay"))$("judgeOverlay").classList.remove("on");});
 $("judgeSave").onclick=()=>{
   if(!canSave()){$("judgeOverlay").classList.remove("on");openSub();return;}
-  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:judgeLinks.slice(),url:$("jUrl").value.trim(),files:judgeUploads};
+  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:judgeLinks.slice(),url:$("jUrl").value.trim(),full:$("jFull").value.trim(),files:judgeUploads};
   if(!obj.name&&!obj.cite){toast("Add at least a citation or case name");return;}
   const i=state.judge.findIndex(x=>x.id===obj.id);if(i>=0)state.judge[i]=obj;else state.judge.unshift(obj);
   if(DB.set("judge",state.judge)){$("judgeOverlay").classList.remove("on");renderJudge();renderAlerts();toast("Judgment saved");}
