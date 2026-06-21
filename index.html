@@ -3,97 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meri Adalat — Pakistan's Digital Legal Chambers</title>
+<title>Wakalat — Pakistan's Digital Legal Chambers</title>
 <meta name="theme-color" content="#0B5D3B">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#16201B;--ink-soft:#46544C;--ink-faint:#7C887F;
-  --green:#0B5D3B;--green-deep:#073D27;--green-tint:#E9F0EA;
-  --brass:#B4862F;--brass-soft:#C99F4F;--red:#9B2D24;
-  --paper:#F6F2E9;--card:#FFFDF8;--sand:#EFE9DB;--line:#DED6C4;--line-soft:#E9E2D3;
+  --ink:#1A241D; --ink-soft:#46544C; --ink-faint:#7C887F;
+  --green:#0B5D3B; --green-deep:#063A26; --green-tint:#E7EFE9;
+  --brass:#A9781F; --brass-soft:#C49A45;
+  --red:#9B2D24;
+  --paper:#F5F1E7; --card:#FFFDF8; --sand:#EDE7D8; --line:#DCD3C0; --line-soft:#E8E1D2;
   --shadow:0 1px 2px rgba(20,32,24,.05),0 8px 24px rgba(20,32,24,.06);
-  --r:14px;--r-sm:9px;--r-lg:22px;--maxw:1180px;
+  --r:14px; --r-sm:9px; --r-lg:22px; --maxw:1180px;
 }
 [data-theme="dark"]{
-  --ink:#ECE6D8;--ink-soft:#B6BDAF;--ink-faint:#828B7E;
-  --green:#3FA776;--green-deep:#2C8C60;--green-tint:#142A20;
-  --brass:#D2A55B;--brass-soft:#C99F4F;
-  --paper:#0E1611;--card:#15201A;--sand:#1A271F;--line:#283A30;--line-soft:#22332A;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  --ink:#ECE6D8; --ink-soft:#B6BDAF; --ink-faint:#828B7E;
+  --green:#43AE7C; --green-deep:#2C8C60; --green-tint:#15271E;
+  --brass:#D7AC5E; --brass-soft:#C99F4F; --red:#E27065;
+  --paper:#0E1611; --card:#15201A; --sand:#1B271F; --line:#2A3A31; --line-soft:#22332A;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:'Inter',sans-serif;color:var(--ink);
-  background:radial-gradient(900px 500px at 85% -10%,rgba(180,134,47,.07),transparent 60%),radial-gradient(800px 500px at -10% 110%,rgba(11,93,59,.07),transparent 55%),var(--paper);
-  -webkit-font-smoothing:antialiased;line-height:1.5;}
+body{font-family:'Inter',sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(900px 500px at 85% -10%,rgba(169,120,31,.06),transparent 60%),
+             radial-gradient(800px 500px at -10% 110%,rgba(11,93,59,.07),transparent 55%),var(--paper);}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:14px}
 .hidden{display:none !important}
-.urdu{font-family:'Noto Nastaliq Urdu',serif;line-height:2.1}
+.urdu{font-family:'Noto Nastaliq Urdu',serif}
 
 .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 18px;border-radius:var(--r-sm);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:.15s}
 .btn:hover{border-color:var(--brass);color:var(--green-deep)}
+[data-theme="dark"] .btn:hover{color:var(--green)}
 .btn.primary{background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F6F2E9;border-color:var(--green-deep);box-shadow:0 2px 0 var(--green-deep)}
-.btn.primary:hover{filter:brightness(1.06);color:#fff}
-.btn.brass{background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;border-color:var(--brass);box-shadow:0 2px 0 #8d6a24}
-.btn.wide{width:100%}.btn.sm{padding:7px 12px;font-size:12.5px}
+.btn.primary:hover{filter:brightness(1.07);color:#fff}
+.btn.brass{background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;border-color:var(--brass);box-shadow:0 2px 0 #8a6014}
+.btn.wide{width:100%}
+.btn.sm{padding:7px 12px;font-size:12.5px}
 .link{background:none;border:none;color:var(--green);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:13.5px}
+[data-theme="dark"] .link{color:var(--brass)}
 .link.danger{color:var(--red)}
 
-.seal .ring{fill:none;stroke:var(--brass);stroke-width:1.4}
-.seal .ring2{fill:none;stroke:var(--brass);stroke-width:.7;opacity:.7}
-.seal .scale{fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.seal .post{stroke:var(--green-deep)}.seal .dot{fill:var(--brass)}
-.seal .sealtext{fill:var(--green-deep);font-family:'Marcellus',serif;font-size:5.4px;letter-spacing:1.5px}
-[data-theme="dark"] .seal .scale{stroke:var(--green)}
+/* seal — high contrast on paper */
+.seal .disc{fill:var(--card)}
+.seal .ring{fill:none;stroke:var(--brass);stroke-width:2}
+.seal .ring2{fill:none;stroke:var(--brass);stroke-width:.8;opacity:.65}
+.seal .scale{fill:none;stroke:var(--green);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.seal .dot{fill:var(--green)}
+.seal .sealtext{fill:var(--green-deep);font-family:'Marcellus',serif;font-size:5.3px;letter-spacing:1.4px}
+[data-theme="dark"] .seal .scale,[data-theme="dark"] .seal .dot{stroke:var(--green);fill:var(--green)}
 [data-theme="dark"] .seal .sealtext{fill:var(--brass)}
+[data-theme="dark"] .seal .disc{fill:#101A14}
 
+/* gate */
 .gate{min-height:100dvh;display:grid;place-items:center;padding:26px 16px}
-.gate-wrap{width:100%;max-width:440px}
+.gate-wrap{width:100%;max-width:460px}
 .gate-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;box-shadow:var(--shadow)}
 .brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:6px}
 .wordmark{display:flex;align-items:baseline;gap:10px}
-.wordmark .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:30px;color:var(--green-deep);line-height:1}
+.wordmark .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:30px;color:var(--green-deep);line-height:1.6}
 .wordmark .en{font-family:'Marcellus',serif;font-size:27px;letter-spacing:3px;color:var(--ink);text-transform:uppercase}
 [data-theme="dark"] .wordmark .ur{color:var(--brass)}
-.slogan{font-size:12.5px;color:var(--ink-faint);max-width:300px}
-.slogan .ur{font-size:14px;color:var(--ink-soft);display:block;margin-bottom:2px}
-.gate-h{font-family:'Marcellus',serif;font-size:21px;letter-spacing:.5px;margin:22px 0 4px;text-align:center}
+.slogan{font-size:12.5px;color:var(--ink-faint);max-width:320px}
+.gate-h{font-family:'Marcellus',serif;font-size:21px;margin:20px 0 4px;text-align:center}
 .gate-sub{font-size:13px;color:var(--ink-faint);text-align:center;margin-bottom:20px}
 .tabs{display:flex;background:var(--sand);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;margin-bottom:18px}
 .tabs button{flex:1;border:none;background:none;padding:9px;border-radius:6px;font-weight:600;font-size:13.5px;color:var(--ink-soft)}
 .tabs button.on{background:var(--card);color:var(--green-deep);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+[data-theme="dark"] .tabs button.on{color:var(--brass)}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
 .field label .req{color:var(--red)}
 .field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);transition:.15s}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
 .field textarea{resize:vertical;min-height:74px}
+.field .hint{font-size:11.5px;color:var(--ink-faint);margin-top:5px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .note{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:14px;line-height:1.6}
+
 .av-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .av{width:66px;height:66px;border-radius:50%;border:2px solid var(--brass);object-fit:cover;background:var(--green-tint);display:grid;place-items:center;color:var(--green);font-weight:700;font-size:24px;font-family:'Marcellus',serif;background-position:center}
 
-/* plans / payment */
+/* plans + pay */
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .plan{border:1.5px solid var(--line);border-radius:var(--r);padding:16px 14px;background:var(--card);cursor:pointer;position:relative;transition:.15s;text-align:center}
 .plan:hover{border-color:var(--brass)}
 .plan.on{border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
-.plan .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--brass);color:#2A1E07;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.4px;white-space:nowrap}
+.plan .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--brass);color:#2A1E07;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
 .plan .price{font-family:'Marcellus',serif;font-size:27px;color:var(--green-deep)}
+[data-theme="dark"] .plan .price{color:var(--brass)}
 .plan .per{font-size:11.5px;color:var(--ink-faint)}
 .plan .save{font-size:11px;color:var(--green);font-weight:600;margin-top:4px}
-[data-theme="dark"] .plan .price{color:var(--brass)}
-.plan .pr{font-size:9px;font-weight:700;color:var(--green);position:absolute;top:9px;right:10px;opacity:0}
-.plan.on .pr{opacity:1}
 .pay-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .pm{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 11px;background:var(--card)}
 .pm .ic{width:36px;height:36px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px;font-family:'Spline Sans Mono',monospace}
-.pm .info{flex:1;min-width:0}
-.pm .info .l{font-size:13px;font-weight:600}
+.pm .info{flex:1;min-width:0}.pm .info .l{font-size:13px;font-weight:600}
 .pm .info .v{font-size:12.5px;color:var(--ink-soft);font-family:'Spline Sans Mono',monospace;word-break:break-all}
 .pm .info .s{font-size:11px;color:var(--ink-faint)}
 .pm .copy{flex:none;border:1px solid var(--line);background:var(--sand);border-radius:7px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink)}
@@ -107,26 +113,19 @@ input,select,textarea{font-family:inherit;font-size:14px}
 
 /* app shell */
 #appShell{min-height:100dvh;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F2EEE3;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(7,61,39,.25)}
-.tb-brand{display:flex;align-items:center;gap:9px;flex:none}
-.tb-brand .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:20px;color:#F4D58D;line-height:1}
-.tb-brand .en{font-family:'Marcellus',serif;font-size:16px;letter-spacing:2px;text-transform:uppercase}
-.tb-search{flex:1;max-width:460px;position:relative}
-.tb-search input{width:100%;padding:9px 12px 9px 34px;border-radius:30px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.12);color:#fff;font-size:13.5px}
-.tb-search input::placeholder{color:rgba(242,238,227,.7)}
-.tb-search input:focus{outline:none;background:rgba(255,255,255,.2)}
-.tb-search .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.8;font-size:13px}
-.tb-right{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F2EEE3;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 14px rgba(6,58,38,.25)}
+.tb-brand{display:flex;align-items:center;gap:10px}
+.tb-brand .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:22px;color:#F4D58D;line-height:1}
+.tb-brand .en{font-family:'Marcellus',serif;font-size:17px;letter-spacing:2.5px;text-transform:uppercase}
+.tb-right{display:flex;align-items:center;gap:8px}
 .icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#F2EEE3;display:grid;place-items:center;font-size:15px}
 .icon-btn:hover{background:rgba(255,255,255,.18)}
 .userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:5px 10px 5px 5px;border-radius:30px;color:#F2EEE3;font-size:13px;font-weight:600}
 .userchip .av{width:28px;height:28px;font-size:13px;border-width:1.5px}
+.trial-banner{background:var(--brass);color:#2A1E07;text-align:center;font-size:12.5px;font-weight:600;padding:7px 14px}
+.trial-banner button{background:#2A1E07;color:#F4D58D;border:none;border-radius:20px;padding:3px 12px;font-size:11.5px;font-weight:700;margin-left:8px}
 
-.trial{background:linear-gradient(90deg,rgba(180,134,47,.16),rgba(180,134,47,.07));border-bottom:1px solid var(--line);color:var(--ink);padding:9px 16px;font-size:13px;display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
-.trial b{color:var(--green-deep)}
-[data-theme="dark"] .trial b{color:var(--brass)}
-
-.tabbar{display:flex;gap:4px;background:var(--card);border-bottom:1px solid var(--line);padding:0 12px;overflow-x:auto;position:sticky;top:56px;z-index:30}
+.tabbar{display:flex;gap:4px;background:var(--card);border-bottom:1px solid var(--line);padding:0 12px;overflow-x:auto;position:sticky;top:60px;z-index:30}
 .tabbar button{border:none;background:none;padding:13px 14px;font-weight:600;font-size:13.5px;color:var(--ink-faint);border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
 .tabbar button.on{color:var(--green-deep);border-bottom-color:var(--brass)}
 [data-theme="dark"] .tabbar button.on{color:var(--green)}
@@ -136,32 +135,31 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
 .view{display:none}.view.on{display:block;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.page-head h2{font-family:'Marcellus',serif;font-size:23px;font-weight:400;letter-spacing:.3px}
-.page-head .sub{font-size:13px;color:var(--ink-faint);margin-top:2px}
+.page-head h2{font-family:'Marcellus',serif;font-size:23px;font-weight:400}
+.page-head .sub{font-size:13px;color:var(--ink-faint);margin-top:2px;max-width:560px}
 
-.explain{background:var(--green-tint);border:1px solid var(--line);border-left:3px solid var(--green);border-radius:var(--r-sm);padding:11px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:16px}
-.explain b{color:var(--green-deep)}
-[data-theme="dark"] .explain b{color:var(--green)}
+.info-card{background:var(--green-tint);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+.info-card b{color:var(--green-deep)}
+[data-theme="dark"] .info-card b{color:var(--green)}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
 .stat .n{font-family:'Marcellus',serif;font-size:30px;color:var(--green-deep);line-height:1}
 [data-theme="dark"] .stat .n{color:var(--brass)}
-.stat .l{font-size:12px;color:var(--ink-faint);margin-top:5px;text-transform:uppercase;letter-spacing:.6px}
+.stat .l{font-size:11.5px;color:var(--ink-faint);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
 .stat.alert .n{color:var(--red)}
 
 .alert{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:10px}
-.alert.urgent{border-left-color:var(--red);background:linear-gradient(90deg,rgba(155,45,36,.05),var(--card) 40%)}
-.alert .when{flex:none;text-align:center;min-width:48px}
+.alert.urgent{border-left-color:var(--red)}
+.alert .when{flex:none;text-align:center;min-width:52px}
 .alert .when .d{font-family:'Marcellus',serif;font-size:22px;color:var(--green-deep);line-height:1}
 .alert.urgent .when .d{color:var(--red)}
-.alert .when .m{font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px}
-.alert .body{flex:1;min-width:0}
-.alert .body .t{font-weight:600;font-size:14.5px}
+.alert .when .m{font-size:10px;color:var(--ink-faint);text-transform:uppercase}
+.alert .body{flex:1;min-width:0}.alert .body .t{font-weight:600;font-size:14.5px}
 .alert .body .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
-.alert .tag{flex:none;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
-.tag.client{background:var(--sand);color:var(--ink-soft)}
-.tag.mine{background:var(--green-tint);color:var(--green-deep)}
+.alert .tag{flex:none;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase}
+.tag.client{background:var(--sand);color:var(--ink-soft)}.tag.mine{background:var(--green-tint);color:var(--green-deep)}
+[data-theme="dark"] .tag.mine{color:var(--green)}
 
 .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 .case{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);transition:.15s}
@@ -169,59 +167,66 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
 .case .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
 .case .name{font-weight:700;font-size:15.5px;color:var(--green-deep)}
 [data-theme="dark"] .case .name{color:var(--brass)}
-.st{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;flex:none}
+.st{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;flex:none}
 .st.active{background:rgba(11,93,59,.13);color:var(--green)}
-.st.hold{background:rgba(180,134,47,.16);color:#8d6a24}
+.st.hold{background:rgba(169,120,31,.16);color:#8a6014}
 .st.complete{background:rgba(70,84,76,.14);color:var(--ink-soft)}
 [data-theme="dark"] .st.hold{color:var(--brass)}
-.case .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-soft);margin:8px 0}
+.case .meta{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12.5px;color:var(--ink-soft);margin:8px 0}
 .case .meta span{display:inline-flex;align-items:center;gap:5px}
 .case .next{background:var(--green-tint);border-left:3px solid var(--green);border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--green-deep);margin-top:8px}
 [data-theme="dark"] .case .next{color:var(--green)}
 .case .next.due{background:rgba(155,45,36,.08);border-left-color:var(--red);color:var(--red)}
 .case .rem{background:var(--paper);border:1px solid var(--line-soft);border-radius:7px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);margin-top:8px;font-style:italic}
+.case .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.file-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--ink-soft);text-decoration:none}
+.file-chip:hover{border-color:var(--green);color:var(--green)}
 .case .acts{display:flex;gap:7px;margin-top:12px}
 
 .bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .bar input,.bar select{padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);color:var(--ink)}
 .bar input{flex:1;min-width:180px}
 
-.empty{text-align:center;padding:50px 20px;color:var(--ink-faint)}
-.empty .seal{margin:0 auto 14px;opacity:.55;display:block}
+.empty{text-align:center;padding:48px 20px;color:var(--ink-faint)}
+.empty .seal{margin:0 auto 14px}
 .empty h3{font-family:'Marcellus',serif;font-weight:400;color:var(--ink-soft);font-size:19px;margin-bottom:6px}
 .empty p{font-size:13.5px;max-width:360px;margin:0 auto 16px}
-
-/* judgments */
-.jud-tools{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px}
-.tool{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
-.tool h3{font-family:'Marcellus',serif;font-weight:400;font-size:17px;margin-bottom:4px}
-.tool .d{font-size:12.5px;color:var(--ink-faint);margin-bottom:12px}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
-.chip{border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);border-radius:30px;padding:6px 13px;font-size:12.5px;font-weight:600}
-.chip.on{background:var(--green);color:#fff;border-color:var(--green-deep)}
-.row{display:flex;gap:8px}.row input{flex:1}
-.jcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow);margin-bottom:12px}
-.jcard .cite{font-family:'Spline Sans Mono',monospace;font-size:12.5px;color:var(--brass);font-weight:600}
-.jcard .cn{font-weight:700;font-size:15px;margin:3px 0;color:var(--green-deep)}
-[data-theme="dark"] .jcard .cn{color:var(--brass)}
-.jcard .jm{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
-.jcard .hold{font-size:13px;color:var(--ink);background:var(--paper);border-left:3px solid var(--brass);border-radius:6px;padding:8px 10px}
-.jtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.jtag{font-size:11px;background:var(--green-tint);color:var(--green-deep);border-radius:20px;padding:2px 9px;font-weight:600}
-[data-theme="dark"] .jtag{color:var(--green)}
 
 .cal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cal-head h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--ink-faint);padding:4px;text-transform:uppercase;letter-spacing:.5px}
-.cal-day{min-height:74px;border:1px solid var(--line-soft);border-radius:8px;padding:5px;background:var(--paper);font-size:11px}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--ink-faint);padding:4px;text-transform:uppercase}
+.cal-day{min-height:72px;border:1px solid var(--line-soft);border-radius:8px;padding:5px;background:var(--paper);font-size:11px}
 .cal-day.out{opacity:.35}
 .cal-day.today{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
 .cal-day .dn{font-weight:700;color:var(--ink-soft)}
-.cal-ev{background:var(--green);color:#fff;border-radius:4px;padding:2px 4px;margin-top:3px;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-ev{background:var(--green);color:#fff;border-radius:4px;padding:2px 4px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cal-ev.mine{background:var(--brass);color:#2A1E07}
 
+/* search */
+.search-block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
+.search-block h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px;margin-bottom:4px}
+.search-block .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
+.search-row{display:flex;gap:10px;flex-wrap:wrap}
+.search-row input{flex:1;min-width:200px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.search-row select{padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.res-item{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:8px;background:var(--card)}
+.res-item .rt{font-weight:600;font-size:14px}
+.res-item .rk{font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--green);background:var(--green-tint);padding:2px 8px;border-radius:20px;margin-left:6px}
+.res-item .rm{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+mark{background:rgba(169,120,31,.35);color:inherit;border-radius:2px;padding:0 1px}
+
+/* judgments */
+.jcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.jcard .jcite{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--brass);font-weight:600}
+.jcard .jname{font-weight:700;font-size:15.5px;color:var(--green-deep);margin:3px 0}
+[data-theme="dark"] .jcard .jname{color:var(--brass)}
+.jcard .jmeta{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
+.jcard .jhold{font-size:13px;color:var(--ink);margin:6px 0}
+.jcard .jnotes{background:var(--paper);border-left:3px solid var(--brass);border-radius:6px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);font-style:italic}
+
+/* panels / settings */
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;max-width:640px}
 .panel h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px;margin-bottom:4px}
 .panel .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px}
@@ -229,44 +234,40 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
 .kv:last-child{border-bottom:none}.kv .k{color:var(--ink-faint)}.kv .v{font-weight:600;text-align:right}
 .sub-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:20px}
 .sub-status.ok{background:var(--green-tint);color:var(--green-deep)}
+[data-theme="dark"] .sub-status.ok{color:var(--green)}
 .sub-status.exp{background:rgba(155,45,36,.1);color:var(--red)}
+details.help{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-soft)}
+details.help summary{cursor:pointer;font-weight:600;color:var(--green)}
+details.help ol{margin:8px 0 0 18px;line-height:1.7}
+details.help a{color:var(--brass)}
 
+/* modal */
 .overlay{position:fixed;inset:0;background:rgba(15,22,17,.55);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
 .overlay.on{display:flex}
-.modal{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);width:100%;max-width:560px;max-height:92dvh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);width:100%;max-width:580px;max-height:92dvh;overflow-y:auto;box-shadow:var(--shadow)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
 .modal-head h3{font-family:'Marcellus',serif;font-weight:400;font-size:19px}
 .modal-body{padding:20px 22px}
 .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--card)}
-
-/* global search results */
-.sr-item{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;cursor:pointer}
-.sr-item:hover{border-color:var(--brass)}
-.sr-kind{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--brass)}
-.sr-title{font-weight:600;font-size:14px;margin-top:2px}
-.sr-meta{font-size:12px;color:var(--ink-faint);margin-top:2px}
+.uploads{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:200;opacity:0;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:90vw;text-align:center}
 #toast.on{transform:translateX(-50%) translateY(0);opacity:1}
-.fab{position:fixed;right:20px;bottom:22px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;font-size:26px;box-shadow:0 6px 22px rgba(180,134,47,.45);z-index:50;display:grid;place-items:center}
+.fab{position:fixed;right:20px;bottom:22px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;font-size:26px;box-shadow:0 6px 22px rgba(169,120,31,.45);z-index:50;display:grid;place-items:center}
 
-@media(max-width:620px){
-  .grid2{grid-template-columns:1fr}.plans{grid-template-columns:1fr}
-  .userchip span.nm{display:none}.tb-brand .en{display:none}
-  main{padding:18px 13px 80px}
-}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}.plans{grid-template-columns:1fr}.userchip .nm{display:none}main{padding:18px 13px 80px}}
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
+<!-- ============ AUTH ============ -->
 <div class="gate" id="authScreen">
   <div class="gate-wrap">
     <div class="gate-card">
       <div class="brand">
         <svg class="seal" width="78" height="78" viewBox="0 0 80 80" id="sealAuth"></svg>
-        <div class="wordmark"><span class="ur">میری عدالت</span><span class="en">MERI ADALAT</span></div>
-        <div class="slogan"><span class="urdu">ہر پیشی، ہر مثل — ایک جگہ</span>Every hearing, every file, in one place.</div>
+        <div class="wordmark"><span class="ur">وکالت</span><span class="en">Wakalat</span></div>
+        <div class="slogan">Every hearing, every file, in one place.</div>
       </div>
       <div class="tabs" id="authTabs">
         <button class="on" data-tab="login">Sign in</button>
@@ -276,74 +277,102 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
         <div class="field"><label>Email or phone <span class="req">*</span></label><input id="liEmail" type="text" placeholder="you@example.com / 03xx-xxxxxxx"></div>
         <div class="field"><label>Password <span class="req">*</span></label><input id="liPass" type="password" placeholder="Your password"></div>
         <button class="btn primary wide" id="liBtn">Sign in</button>
-        <div class="note"><button class="link" id="toReg">New here? Create a free account</button> · <button class="link" id="forgot">Forgot password?</button></div>
+        <div class="note"><button class="link" id="toReg">New here? Create a free account</button> · <button class="link" id="forgotLink">Forgot password</button></div>
       </div>
       <div id="registerForm" class="hidden">
         <div class="field"><label>Full name <span class="req">*</span></label><input id="rgName" type="text" placeholder="Adv. Your Name"></div>
-        <div class="field"><label>Email <span class="req">*</span></label><input id="rgEmail" type="text" placeholder="you@example.com"></div>
-        <div class="field"><label>Phone <span class="req">*</span></label><input id="rgPhone" type="text" placeholder="03xx-xxxxxxx"></div>
+        <div class="grid2">
+          <div class="field"><label>Email <span class="req">*</span></label><input id="rgEmail" type="email" placeholder="you@example.com"></div>
+          <div class="field"><label>Phone <span class="req">*</span></label><input id="rgPhone" type="tel" placeholder="03xx-xxxxxxx"></div>
+        </div>
         <div class="field"><label>Password <span class="req">*</span></label><input id="rgPass" type="password" placeholder="At least 6 characters"></div>
-        <button class="btn primary wide" id="rgBtn">Create free account</button>
-        <div class="note">It's free to register and explore. You only subscribe when you want to save your work.<br><button class="link" id="toLogin">Already registered? Sign in</button></div>
+        <button class="btn primary wide" id="rgBtn">Create account &amp; explore free</button>
+        <div class="note">Free to explore the full app — you only subscribe when you want to <b>save</b> your cases.<br><button class="link" id="toLogin">Already registered? Sign in</button></div>
+      </div>
+      <div class="note" style="margin-top:18px;border-top:1px solid var(--line-soft);padding-top:12px">
+        <button class="link" id="adminLink">⚙ Admin access</button>
       </div>
     </div>
-    <div class="note" style="margin-top:14px">Pakistan's digital legal chambers · Meri Adalat</div>
   </div>
 </div>
 
-<!-- PROFILE -->
-<div class="gate hidden" id="profileScreen">
+<!-- ============ ADMIN CONSOLE (PIN, no account needed) ============ -->
+<div class="gate hidden" id="adminScreen">
   <div class="gate-wrap">
-    <div class="gate-card">
-      <h2 class="gate-h" id="profTitle">Set up your chambers</h2>
-      <p class="gate-sub">This appears on your dashboard. You can change it anytime.</p>
-      <div class="av-row">
-        <div class="av" id="profAv">?</div>
-        <div>
-          <button class="btn sm" id="profPhotoBtn">Upload photo</button>
-          <input type="file" id="profPhoto" accept="image/*" class="hidden">
-          <div class="note" style="text-align:left;margin-top:6px">JPG/PNG, under 2 MB</div>
-        </div>
+    <div class="gate-card" id="adminLock">
+      <div class="brand"><svg class="seal" width="58" height="58" viewBox="0 0 80 80" id="sealAdmin"></svg>
+        <div class="wordmark"><span class="ur">وکالت</span><span class="en" style="font-size:20px">Admin</span></div></div>
+      <h2 class="gate-h">Owner console</h2>
+      <p class="gate-sub">Enter your admin PIN to manage subscriptions.</p>
+      <div class="field"><label>Admin PIN</label><input id="adminPin" type="password" placeholder="••••" style="text-align:center;letter-spacing:4px;font-size:18px"></div>
+      <button class="btn primary wide" id="adminEnter">Enter console</button>
+      <div class="note"><button class="link" id="adminBack">← Back to sign in</button></div>
+    </div>
+
+    <div class="gate-card hidden" id="adminTools" style="max-width:460px">
+      <h2 class="gate-h">Generate unlock code</h2>
+      <p class="gate-sub">Confirm the payment landed in your account, then make the code from the lawyer's email (or reference).</p>
+      <div class="field"><label>Lawyer's email <span class="hint" style="display:inline">(from their request)</span></label><input id="adEmail" type="text" placeholder="lawyer@example.com"></div>
+      <div class="note" style="margin:-6px 0 12px">— or paste their reference code directly —</div>
+      <div class="field"><label>Reference code</label><input id="adRef" placeholder="WK-XXXXXX" style="font-family:'Spline Sans Mono',monospace"></div>
+      <div class="field"><label>Plan paid</label><select id="adPlan"><option value="1m">1 month — ₨250</option><option value="6m">6 months — ₨1,000</option></select></div>
+      <button class="btn brass wide" id="adGen">Generate unlock code</button>
+      <div id="adOut" class="ref-box hidden" style="margin-top:14px;text-align:left"></div>
+
+      <div class="divider">Requests seen on this device</div>
+      <div id="adReqs" style="font-size:12.5px;color:var(--ink-faint)"></div>
+
+      <div class="note" style="margin-top:18px;border-top:1px solid var(--line-soft);padding-top:12px">
+        <button class="link danger" id="adminExit">Exit console</button>
       </div>
-      <div class="field"><label>Full name <span class="req">*</span></label><input id="pfName" type="text" placeholder="Adv. Your Name"></div>
-      <div class="grid2">
-        <div class="field"><label>Practice area <span class="req">*</span></label>
-          <select id="pfArea"><option value="">Choose…</option><option>Criminal</option><option>Civil</option><option>Family</option><option>Corporate / Commercial</option><option>Constitutional</option><option>Tax</option><option>Property / Revenue</option><option>Intellectual Property</option><option>Banking</option><option>Service / Labour</option><option>Other</option></select>
-        </div>
-        <div class="field"><label>Experience (years)</label><input id="pfExp" type="number" min="0" placeholder="e.g. 5"></div>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>City <span class="req">*</span></label><input id="pfCity" type="text" placeholder="e.g. Turbat / Karachi"></div>
-        <div class="field"><label>Bar enrolment no.</label><input id="pfBar" type="text" placeholder="optional"></div>
-      </div>
-      <button class="btn primary wide" id="pfSave">Save & enter</button>
-      <div class="note"><button class="link danger" id="pfSignout">Sign out</button></div>
     </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ============ PROFILE ============ -->
+<div class="gate hidden" id="profileScreen">
+  <div class="gate-wrap"><div class="gate-card">
+    <h2 class="gate-h" id="profTitle">Set up your chambers</h2>
+    <p class="gate-sub">This appears on your dashboard.</p>
+    <div class="av-row">
+      <div class="av" id="profAv">?</div>
+      <div><button class="btn sm" id="profPhotoBtn">Upload photo</button>
+        <input type="file" id="profPhoto" accept="image/*" class="hidden">
+        <div class="hint" style="margin-top:6px">JPG/PNG, under 2 MB</div></div>
+    </div>
+    <div class="field"><label>Full name <span class="req">*</span></label><input id="pfName" type="text" placeholder="Adv. Your Name"></div>
+    <div class="grid2">
+      <div class="field"><label>Practice area <span class="req">*</span></label>
+        <select id="pfArea"><option value="">Choose…</option><option>Criminal</option><option>Civil</option><option>Family</option><option>Corporate / Commercial</option><option>Constitutional</option><option>Tax</option><option>Property / Revenue</option><option>Intellectual Property</option><option>Banking</option><option>Service / Labour</option><option>Other</option></select></div>
+      <div class="field"><label>Experience (years)</label><input id="pfExp" type="number" min="0" placeholder="e.g. 5"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>City <span class="req">*</span></label><input id="pfCity" type="text" placeholder="e.g. Turbat / Karachi"></div>
+      <div class="field"><label>Bar enrolment no.</label><input id="pfBar" type="text" placeholder="optional"></div>
+    </div>
+    <button class="btn primary wide" id="pfSave">Save &amp; continue</button>
+    <div class="note"><button class="link danger" id="pfSignout">Sign out</button></div>
+  </div></div>
+</div>
+
+<!-- ============ APP ============ -->
 <div id="appShell" class="hidden">
   <div class="topbar">
-    <div class="tb-brand"><svg class="seal" width="32" height="32" viewBox="0 0 80 80" id="sealTop"></svg><div><span class="ur">میری عدالت</span> <span class="en">MERI ADALAT</span></div></div>
-    <div class="tb-search"><span class="si">🔎</span><input id="globalSearch" placeholder="Search all your cases & judgments…"></div>
+    <div class="tb-brand"><svg class="seal" width="34" height="34" viewBox="0 0 80 80" id="sealTop"></svg>
+      <div><span class="ur">وکالت</span> <span class="en">Wakalat</span></div></div>
     <div class="tb-right">
-      <button class="btn brass sm" id="subBtn" style="display:none">Subscribe</button>
       <button class="icon-btn" id="themeBtn" title="Theme">◐</button>
       <button class="userchip" id="userChip"><span class="av" id="chipAv">?</span><span class="nm" id="chipName">You</span></button>
     </div>
   </div>
-
-  <div class="trial hidden" id="trialBanner">
-    <span>You're exploring in <b>trial mode</b> — add and try everything, but your work isn't saved yet.</span>
-    <button class="btn brass sm" id="trialSub">Subscribe to save</button>
-  </div>
+  <div class="trial-banner hidden" id="trialBanner">You're exploring free — saving is locked. <button id="trialCta">Subscribe to save</button></div>
 
   <div class="tabbar" id="tabbar">
-    <button class="on" data-view="vAlerts">⚖︎ Hearings &amp; alerts <span class="pill hidden" id="alertPill">0</span></button>
+    <button class="on" data-view="vAlerts">⚖︎ Hearings <span class="pill hidden" id="alertPill">0</span></button>
     <button data-view="vMine">📁 My cases</button>
     <button data-view="vClient">👤 Client cases</button>
-    <button data-view="vJud">📜 Judgments &amp; research</button>
+    <button data-view="vJudge">📜 Judgments</button>
+    <button data-view="vSearch">🔍 Search</button>
     <button data-view="vCal">🗓 Calendar</button>
     <button data-view="vSettings">⚙︎ Settings</button>
   </div>
@@ -351,7 +380,8 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
   <main>
     <!-- ALERTS -->
     <section class="view on" id="vAlerts">
-      <div class="page-head"><div><h2>Hearings &amp; alerts</h2><div class="sub">Your upcoming court dates (پیشی), nearest first.</div></div></div>
+      <div class="page-head"><div><h2>Hearings &amp; alerts</h2><div class="sub">Upcoming court dates (پیشی) across all your matters, nearest first.</div></div>
+        <button class="btn sm" id="remindBtn">🔔 Enable reminders</button></div>
       <div class="stats" id="statRow"></div>
       <div id="alertList"></div>
     </section>
@@ -359,57 +389,66 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
     <!-- MY CASES -->
     <section class="view" id="vMine">
       <div class="page-head"><div><h2>My cases</h2></div><button class="btn primary" id="addMine">＋ New matter</button></div>
-      <div class="explain"><b>My cases</b> are matters where <b>you are personally a party</b> — your own property dispute, a family matter, or any case you are fighting for yourself. Use this to keep your personal litigation separate from your professional client work.</div>
-      <div class="bar"><input id="mineSearch" placeholder="Filter my cases…"><select id="mineFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
+      <div class="info-card"><b>My cases</b> are matters where <b>you are a party</b> — your own legal affairs (your property, family, or personal disputes). Track their status, next hearing and notes here.</div>
+      <div class="bar"><input id="mineSearch" placeholder="Search these cases…"><select id="mineFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
       <div class="cases" id="mineList"></div>
     </section>
 
     <!-- CLIENT CASES -->
     <section class="view" id="vClient">
       <div class="page-head"><div><h2>Client cases</h2></div><button class="btn primary" id="addClient">＋ New client case</button></div>
-      <div class="explain"><b>Client cases</b> are matters you handle <b>on behalf of clients</b> — your professional caseload and paid retainers. These carry the client's name and co-counsel, so you can track who you represent and the outcome for each matter.</div>
-      <div class="bar"><input id="clientSearch" placeholder="Filter client cases…"><select id="clientFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
+      <div class="info-card"><b>Client cases</b> are matters you handle <b>for clients</b> — where you appear as their advocate. Track the client, co-counsel, hearing and outcome here. (Keeping them separate from <b>My cases</b> means your own affairs never mix with your clients'.)</div>
+      <div class="bar"><input id="clientSearch" placeholder="Search these cases…"><select id="clientFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
       <div class="cases" id="clientList"></div>
     </section>
 
     <!-- JUDGMENTS -->
-    <section class="view" id="vJud">
-      <div class="page-head"><div><h2>Judgments &amp; research</h2><div class="sub">Build a citation library and search Pakistani &amp; foreign case law.</div></div><button class="btn primary" id="addJud">＋ New judgment</button></div>
+    <section class="view" id="vJudge">
+      <div class="page-head"><div><h2>Judgments &amp; citations</h2><div class="sub">Save case law. Paste a URL or the judgment text and let AI fill the fields for you.</div></div>
+        <button class="btn primary" id="addJudge">＋ New judgment</button></div>
+      <div class="bar"><input id="judgeSearch" placeholder="Search saved judgments…"></div>
+      <div id="judgeList"></div>
+    </section>
 
-      <div class="jud-tools">
-        <div class="tool">
-          <h3>Legal web search</h3>
-          <div class="d">Pick a source, type your terms, and we open Google with the right legal filters.</div>
-          <div class="chips" id="searchChips">
-            <button class="chip on" data-preset="none">General</button>
-            <button class="chip" data-preset="sc">Supreme Court</button>
-            <button class="chip" data-preset="hc">All High Courts</button>
-            <button class="chip" data-preset="india">Indian law</button>
-            <button class="chip" data-preset="pdf">PDF judgments</button>
-          </div>
-          <div class="row"><input id="webQuery" placeholder='e.g. bail in narcotics case'><button class="btn primary" id="webGo">Search</button></div>
-        </div>
+    <!-- SEARCH -->
+    <section class="view" id="vSearch">
+      <div class="page-head"><div><h2>Search &amp; research</h2></div></div>
 
-        <div class="tool">
-          <h3>AI auto-fill (Gemini 2.5 Flash)</h3>
-          <div class="d">Paste a judgment's text (or a link), then let AI fill the citation, court, holding and tags. Uses <b>your own</b> Google AI Studio key — it stays in this browser.</div>
-          <div class="field"><label>Gemini API key</label><input id="aiKey" type="password" placeholder="Paste your AI Studio API key"></div>
-          <div class="field"><label>Judgment text or URL</label><textarea id="aiText" placeholder="Paste the judgment text here (recommended), or a public URL to fetch…"></textarea></div>
-          <button class="btn brass" id="aiRun">✦ Auto-fill a new judgment</button>
-        </div>
+      <div class="search-block">
+        <h3>Search everything I've saved</h3>
+        <div class="desc">Like Ctrl+F across <b>all</b> your cases and judgments at once — every field, every section.</div>
+        <div class="search-row"><input id="localQ" placeholder="Type any keyword — name, court, party, citation, note…"></div>
+        <div id="localResults" style="margin-top:14px"></div>
       </div>
 
-      <div class="bar"><input id="judSearch" placeholder="Filter saved judgments…"></div>
-      <div id="judList"></div>
+      <div class="search-block">
+        <h3>Search the courts &amp; legal web</h3>
+        <div class="desc">Pick a target — it opens Google focused on that source (site-scoped dork).</div>
+        <div class="search-row">
+          <select id="webTarget">
+            <option value="">General web</option>
+            <option value="site:supremecourt.gov.pk">Supreme Court of Pakistan</option>
+            <option value="site:lhc.gov.pk">Lahore High Court</option>
+            <option value="site:sindhhighcourt.gov.pk">Sindh High Court</option>
+            <option value="site:bhc.gov.pk">Balochistan High Court</option>
+            <option value="site:peshawarhighcourt.gov.pk">Peshawar High Court</option>
+            <option value="site:ihc.gov.pk">Islamabad High Court</option>
+            <option value="site:federalshariatcourt.gov.pk">Federal Shariat Court</option>
+            <option value="site:pakistancode.gov.pk">Pakistan Code (statutes)</option>
+            <option value="site:plsbeta.com OR site:pakistanlawsite.com">PLD / PLJ case law</option>
+            <option value="site:indiankanoon.org">Indian law (IndianKanoon)</option>
+          </select>
+          <input id="webQ" placeholder="e.g. bail section 497 misuse of narcotics">
+          <button class="btn primary" id="webGo">Search</button>
+        </div>
+        <div class="hint" style="margin-top:8px;font-size:11.5px;color:var(--ink-faint)">Opens in a new tab on Google with your target applied.</div>
+      </div>
     </section>
 
     <!-- CALENDAR -->
     <section class="view" id="vCal">
       <div class="page-head"><div><h2>Calendar</h2><div class="sub">All hearings across your matters.</div></div></div>
-      <div class="cal">
-        <div class="cal-head"><button class="btn sm" id="calPrev">‹ Prev</button><h3 id="calLabel">Month</h3><button class="btn sm" id="calNext">Next ›</button></div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
+      <div class="cal"><div class="cal-head"><button class="btn sm" id="calPrev">‹ Prev</button><h3 id="calLabel">Month</h3><button class="btn sm" id="calNext">Next ›</button></div><div class="cal-grid" id="calGrid"></div></div>
     </section>
 
     <!-- SETTINGS -->
@@ -418,25 +457,38 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
 
       <div class="panel">
         <h3>Subscription</h3>
-        <div class="desc">Save your work and unlock everything.</div>
+        <div class="desc">Saving cases requires an active subscription.</div>
         <div class="kv"><span class="k">Status</span><span class="v" id="setSubStatus">—</span></div>
         <div class="kv"><span class="k">Plan</span><span class="v" id="setSubPlan">—</span></div>
         <div class="kv"><span class="k">Expires</span><span class="v" id="setSubExp">—</span></div>
         <div class="kv"><span class="k">Your reference</span><span class="v" id="setSubRef">—</span></div>
-        <div style="margin-top:14px"><button class="btn primary" id="setSubBtn">Subscribe / renew</button></div>
+        <div style="margin-top:14px"><button class="btn primary" id="subscribeBtn">Subscribe / renew</button></div>
       </div>
 
       <div class="panel">
-        <h3>Profile</h3>
+        <h3>AI assistant (Gemini 2.5 Flash)</h3>
+        <div class="desc">Paste your Google AI Studio API key to auto-fill judgments from a URL or text. The key stays in this browser only.</div>
+        <div class="field"><label>Gemini API key</label><input id="aiKey" type="password" placeholder="AIza…"></div>
+        <button class="btn" id="aiSave">Save key</button> <button class="btn sm" id="aiClear">Remove</button>
+        <details class="help"><summary>How to get a free Gemini 2.5 Flash key</summary>
+          <ol>
+            <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> and sign in with Google.</li>
+            <li>Click <b>Create API key</b> → choose or create a project.</li>
+            <li>Copy the key that starts with <b>AIza…</b></li>
+            <li>Paste it above and press <b>Save key</b>. Done — the “Auto-fill with AI” button in Judgments now works.</li>
+          </ol>
+          Flash has a generous free tier. Keep your key private.
+        </details>
+      </div>
+
+      <div class="panel"><h3>Profile</h3>
         <div class="kv"><span class="k">Name</span><span class="v" id="setName">—</span></div>
         <div class="kv"><span class="k">Practice area</span><span class="v" id="setArea">—</span></div>
         <div class="kv"><span class="k">City</span><span class="v" id="setCity">—</span></div>
-        <div class="kv"><span class="k">Phone</span><span class="v" id="setPhone">—</span></div>
         <div style="margin-top:14px"><button class="btn" id="editProfile">Edit profile</button></div>
       </div>
 
-      <div class="panel">
-        <h3>Data</h3>
+      <div class="panel"><h3>Data</h3>
         <div class="desc">Everything is stored privately in this browser. Back it up regularly.</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn" id="exportData">Download backup</button>
@@ -445,18 +497,7 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
         </div>
       </div>
 
-      <div class="panel" id="adminPanel" style="display:none">
-        <h3>Admin — issue unlock codes</h3>
-        <div class="desc">Subscription requests reach you on <b>WhatsApp 0332-3254841</b> and <b>email trendcatcher299@gmail.com</b>, each carrying the lawyer's reference (e.g. MA-AB12CD). Confirm the payment landed, then issue their code below.</div>
-        <div class="field"><label>Lawyer's reference code</label><input id="adRef" placeholder="MA-XXXXXX" style="font-family:'Spline Sans Mono',monospace"></div>
-        <div class="field"><label>Plan paid</label><select id="adPlan"><option value="1m">1 month — ₨250</option><option value="6m">6 months — ₨1,000</option></select></div>
-        <button class="btn brass" id="adGen">Generate unlock code</button>
-        <div id="adOut" class="ref-box hidden" style="margin-top:14px"></div>
-        <div class="note" style="text-align:left;margin-top:12px">This panel is only visible to the admin account.</div>
-      </div>
-
-      <div class="panel">
-        <h3>Account</h3>
+      <div class="panel"><h3>Account</h3>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn" id="signoutBtn">Sign out</button>
           <button class="btn" id="deleteAcct" style="border-color:var(--red);color:var(--red)">Delete account</button>
@@ -467,140 +508,150 @@ main{flex:1;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 18px 80p
   <button class="fab" id="fab" title="Quick add">＋</button>
 </div>
 
-<!-- CASE MODAL -->
-<div class="overlay" id="caseOverlay">
-  <div class="modal">
-    <div class="modal-head"><h3 id="caseModalTitle">New matter</h3><button class="icon-btn" id="caseClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="cId"><input type="hidden" id="cKind">
-      <div class="field"><label>Case / matter title <span class="req">*</span></label><input id="cTitle" placeholder="e.g. Khan vs Federation"></div>
-      <div class="grid2">
-        <div class="field"><label>Status <span class="req">*</span></label><select id="cStatus"><option>Active</option><option>Hold</option><option>Complete</option></select></div>
-        <div class="field"><label>Court</label><select id="cCourt"><option value="">Choose…</option><option>Supreme Court of Pakistan</option><option>Lahore High Court</option><option>Sindh High Court</option><option>Balochistan High Court</option><option>Peshawar High Court</option><option>Islamabad High Court</option><option>District &amp; Sessions Court</option><option>Civil Court</option><option>Family Court</option><option>Banking Court</option><option>Anti-Terrorism Court</option><option>Tribunal</option><option>Other</option></select></div>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Case / FIR no.</label><input id="cNumber" placeholder="optional"></div>
-        <div class="field"><label>Opposing party</label><input id="cParty" placeholder="optional"></div>
-      </div>
-      <div class="grid2" id="clientOnly">
-        <div class="field"><label>Client name</label><input id="cClient" placeholder="optional"></div>
-        <div class="field"><label>Co-counsel</label><input id="cCounsel" placeholder="optional"></div>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Filed / opened on</label><input id="cOpened" type="date"></div>
-        <div class="field"><label>Next hearing (پیشی)</label><input id="cNext" type="date"></div>
-      </div>
-      <div class="field"><label>Remarks / notes</label><textarea id="cNotes" placeholder="Adjournment reason, directions, follow-ups, what to prepare…"></textarea></div>
+<!-- ============ CASE MODAL ============ -->
+<div class="overlay" id="caseOverlay"><div class="modal">
+  <div class="modal-head"><h3 id="caseModalTitle">New matter</h3><button class="icon-btn" id="caseClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="cId"><input type="hidden" id="cKind">
+    <div class="field"><label>Case / matter title <span class="req">*</span></label><input id="cTitle" placeholder="e.g. Khan vs Federation"></div>
+    <div class="grid2">
+      <div class="field"><label>Status <span class="req">*</span></label><select id="cStatus"><option>Active</option><option>Hold</option><option>Complete</option></select></div>
+      <div class="field"><label>Court</label><select id="cCourt"><option value="">Choose…</option><option>Supreme Court of Pakistan</option><option>Lahore High Court</option><option>Sindh High Court</option><option>Balochistan High Court</option><option>Peshawar High Court</option><option>Islamabad High Court</option><option>District &amp; Sessions Court</option><option>Civil Court</option><option>Family Court</option><option>Banking Court</option><option>Anti-Terrorism Court</option><option>Tribunal</option><option>Other</option></select></div>
     </div>
-    <div class="modal-foot"><button class="btn" id="caseCancel">Cancel</button><button class="btn primary" id="caseSave">Save matter</button></div>
+    <div class="grid2">
+      <div class="field"><label>Case / FIR no.</label><input id="cNumber" placeholder="optional"></div>
+      <div class="field"><label>Opposing party</label><input id="cParty" placeholder="optional"></div>
+    </div>
+    <div class="grid2" id="clientOnly">
+      <div class="field"><label>Client name</label><input id="cClient" placeholder="optional"></div>
+      <div class="field"><label>Co-counsel</label><input id="cCounsel" placeholder="optional"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Filed / opened on</label><input id="cOpened" type="date"></div>
+      <div class="field"><label>Next hearing (پیشی)</label><input id="cNext" type="date"></div>
+    </div>
+    <div class="field"><label>Remarks / notes</label><textarea id="cNotes" placeholder="Adjournment reason, directions, follow-ups, what to prepare…"></textarea></div>
+    <div class="field"><label>Attach PDF / image</label><input id="cFiles" type="file" accept="application/pdf,image/*" multiple>
+      <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
+      <div class="uploads" id="cUploads"></div></div>
   </div>
-</div>
+  <div class="modal-foot"><button class="btn" id="caseCancel">Cancel</button><button class="btn primary" id="caseSave">Save matter</button></div>
+</div></div>
 
-<!-- JUDGMENT MODAL -->
-<div class="overlay" id="judOverlay">
-  <div class="modal">
-    <div class="modal-head"><h3 id="judModalTitle">New judgment</h3><button class="icon-btn" id="judClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="jId">
-      <div class="field"><label>Citation</label><input id="jCite" placeholder="e.g. PLD 2021 SC 145 / 2023 SCMR 441"></div>
-      <div class="field"><label>Case name</label><input id="jName" placeholder="e.g. State v. Khalid"></div>
-      <div class="grid2">
-        <div class="field"><label>Court</label><input id="jCourt" placeholder="e.g. Supreme Court of Pakistan"></div>
-        <div class="field"><label>Year</label><input id="jYear" type="number" placeholder="e.g. 2021"></div>
-      </div>
-      <div class="field"><label>Key point / holding</label><textarea id="jHold" placeholder="What did this case decide? Core holding and precedent…"></textarea></div>
-      <div class="field"><label>Tags (comma separated)</label><input id="jTags" placeholder="Bail, Murder, Constitutional Law"></div>
-      <div class="field"><label>Source URL</label><input id="jUrl" placeholder="optional link to the judgment"></div>
-      <div class="field"><label>Personal notes</label><textarea id="jNotes" placeholder="Why this matters to your matter, how you'll use it…"></textarea></div>
+<!-- ============ JUDGMENT MODAL ============ -->
+<div class="overlay" id="judgeOverlay"><div class="modal">
+  <div class="modal-head"><h3 id="judgeModalTitle">New judgment</h3><button class="icon-btn" id="judgeClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="jId">
+    <div class="field" style="background:var(--green-tint);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px">
+      <label>Auto-fill with AI — paste a judgment URL or its text</label>
+      <textarea id="jSource" placeholder="Paste the judgment URL (e.g. https://...) or the full judgment text here…"></textarea>
+      <button class="btn brass sm" id="jAiBtn" style="margin-top:8px">✨ Auto-fill from this</button>
+      <div class="hint" id="jAiHint">Needs your Gemini key in Settings → AI assistant.</div>
     </div>
-    <div class="modal-foot"><button class="btn" id="judCancel">Cancel</button><button class="btn primary" id="judSave">Save judgment</button></div>
+    <div class="field"><label>Citation</label><input id="jCite" placeholder="e.g. PLD 2021 SC 451"></div>
+    <div class="field"><label>Case name / parties</label><input id="jName" placeholder="e.g. The State vs Imran Khan"></div>
+    <div class="grid2">
+      <div class="field"><label>Court</label><input id="jCourt" placeholder="e.g. Supreme Court"></div>
+      <div class="field"><label>Year</label><input id="jYear" type="number" placeholder="e.g. 2021"></div>
+    </div>
+    <div class="field"><label>Key holding</label><textarea id="jHold" placeholder="The ratio / principle decided…"></textarea></div>
+    <div class="field"><label>Summary</label><textarea id="jSummary" placeholder="Short summary of facts &amp; decision…"></textarea></div>
+    <div class="field"><label>Personal notes</label><textarea id="jNotes" placeholder="How this helps your matter, where to cite it…"></textarea></div>
+    <div class="field"><label>Source URL</label><input id="jUrl" placeholder="https://…"></div>
+    <div class="field"><label>Attach PDF / image</label><input id="jFiles" type="file" accept="application/pdf,image/*" multiple>
+      <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
+      <div class="uploads" id="jUploads"></div></div>
   </div>
-</div>
+  <div class="modal-foot"><button class="btn" id="judgeCancel">Cancel</button><button class="btn primary" id="judgeSave">Save judgment</button></div>
+</div></div>
 
-<!-- SUBSCRIPTION MODAL -->
-<div class="overlay" id="subOverlay">
-  <div class="modal">
-    <div class="modal-head"><h3>Subscribe to Meri Adalat</h3><button class="icon-btn" id="subClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-    <div class="modal-body">
-      <p class="gate-sub" style="margin-bottom:16px">Subscribing lets you <b>save your cases &amp; judgments permanently</b>. Pick a plan, pay by Easypaisa / UPaisa / bank, then send the receipt — we unlock you the same day.</p>
-      <div class="plans" id="planPick">
-        <div class="plan on" data-plan="1m"><span class="pr">✓ Selected</span><div class="price">₨250</div><div class="per">per month</div></div>
-        <div class="plan" data-plan="6m"><span class="badge">Best value</span><span class="pr">✓ Selected</span><div class="price">₨1,000</div><div class="per">for 6 months</div><div class="save">Save ₨500</div></div>
-      </div>
-      <div class="pay-methods" id="payMethods"></div>
-      <div class="ref-box">Your reference code <b id="refCode">MA-000000</b><br><span>Write this in the payment note &amp; your message.</span></div>
-      <div class="grid2">
-        <button class="btn wa" id="waBtn">Send proof on WhatsApp</button>
-        <button class="btn" id="emailBtn">Request by email</button>
-      </div>
-      <div class="divider">After we confirm</div>
-      <div class="field"><label>Enter the unlock code we send you</label><input id="unlockInput" placeholder="Paste unlock code" style="font-family:'Spline Sans Mono',monospace;text-align:center;letter-spacing:1px"></div>
-      <button class="btn primary wide" id="unlockBtn">Unlock Meri Adalat</button>
-      <div class="note">Questions? Email <b>trendcatcher299@gmail.com</b></div>
+<!-- ============ SUBSCRIPTION MODAL ============ -->
+<div class="overlay" id="subOverlay"><div class="modal">
+  <div class="modal-head"><h3>Subscribe to save your work</h3><button class="icon-btn" id="subClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
+  <div class="modal-body">
+    <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px">You can explore everything for free. To <b>save</b> cases and judgments, pick a plan, pay, then send the receipt — we unlock you the same day.</p>
+    <div class="plans" id="planPick">
+      <div class="plan on" data-plan="1m"><div class="price">₨250</div><div class="per">per month</div></div>
+      <div class="plan" data-plan="6m"><span class="badge">Best value</span><div class="price">₨1,000</div><div class="per">for 6 months</div><div class="save">Save ₨500</div></div>
     </div>
+    <div class="pay-methods" id="payMethods"></div>
+    <div class="ref-box">Your reference code <b id="refCode">WK-000000</b><br><span>Write this in the payment note &amp; your message.</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn wa" style="flex:1" id="waBtn">Send proof on WhatsApp</button>
+      <button class="btn" style="flex:1" id="emailReqBtn">Request by email</button>
+    </div>
+    <div class="divider">After we confirm</div>
+    <div class="field"><label>Enter the unlock code we send you</label><input id="unlockInput" placeholder="Paste unlock code" style="font-family:'Spline Sans Mono',monospace;text-align:center"></div>
+    <button class="btn primary wide" id="unlockBtn">Unlock saving</button>
+    <div class="note">Questions? Email <b id="payEmail"></b></div>
   </div>
-</div>
+</div></div>
 
 <div id="toast"></div>
 
 <script>
-/* ===== config (EDIT BEFORE LAUNCH) ===== */
-const PAY={ WHATSAPP:"923323254841", EMAIL:"trendcatcher299@gmail.com",
+/* ===== CONFIG — edit before launch ===== */
+const ADMIN_EMAIL = "trendcatcher299@gmail.com";
+const ADMIN_PIN = "4841";                            // CHANGE THIS — used to open the admin console
+const ACTIVATION_SECRET = "WAKALAT-CHANGE-ME-7731";  // CHANGE THIS — keep private; validates unlock codes
+const PAY = {
+  WHATSAPP:"923323254841", EMAIL:"trendcatcher299@gmail.com",
   METHODS:[
     {ic:"EP",c:"#3aaa35",l:"Easypaisa",v:"0321-2736510",s:"Send to this number"},
     {ic:"UP",c:"#e87722",l:"UPaisa",v:"0332-3254841",s:"Send to this number"},
     {ic:"₨",c:"#0B5D3B",l:"Meezan Bank (IBAN)",v:"PK73MEZN0098590115082198",s:"Bank transfer / IBFT"}
-  ]};
-const ADMIN_EMAIL="trendcatcher299@gmail.com";
-const ACTIVATION_SECRET="MERIADALAT-CHANGE-ME-7731";   // <- change to a private random string before launch
+  ]
+};
 const PLANS={ "1m":{label:"1 month",price:"₨250",days:30}, "6m":{label:"6 months",price:"₨1,000",days:182} };
-const LS_PREFIX="meriAdalat.";
 
 /* ===== helpers ===== */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),2600);}
-function hash32(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36).toUpperCase();}
+function hash32(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return(h>>>0).toString(36).toUpperCase();}
 function todayISO(){return new Date().toISOString().slice(0,10);}
 function fmtDate(iso){if(!iso)return"—";const d=new Date(iso+"T00:00:00");return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
-function daysFromToday(iso){if(!iso)return null;return Math.round((new Date(iso+"T00:00:00")-new Date(todayISO()+"T00:00:00"))/86400000);}
+function daysFromToday(iso){if(!iso)return null;const d=new Date(iso+"T00:00:00"),t=new Date(todayISO()+"T00:00:00");return Math.round((d-t)/86400000);}
+function readFiles(fileList,cb){
+  const out=[],arr=[...fileList];if(!arr.length){cb(out);return;}
+  let done=0;
+  arr.forEach(f=>{
+    if(f.size>3*1024*1024){toast(`"${f.name}" is over 3 MB — skipped`);if(++done===arr.length)cb(out);return;}
+    const r=new FileReader();r.onload=()=>{out.push({name:f.name,type:f.type,data:r.result});if(++done===arr.length)cb(out);};
+    r.onerror=()=>{if(++done===arr.length)cb(out);};r.readAsDataURL(f);
+  });
+}
 
+/* ===== storage ===== */
 const DB={
-  users(){try{return JSON.parse(localStorage.getItem(LS_PREFIX+"users")||"{}")}catch(e){return{}}},
-  saveUsers(u){localStorage.setItem(LS_PREFIX+"users",JSON.stringify(u))},
-  session(){return localStorage.getItem(LS_PREFIX+"session")||null},
-  setSession(e){e?localStorage.setItem(LS_PREFIX+"session",e):localStorage.removeItem(LS_PREFIX+"session")},
-  key(k){return LS_PREFIX+(state.email||"guest")+"."+k},
+  users(){try{return JSON.parse(localStorage.getItem("wakalat.users")||"{}")}catch(e){return{}}},
+  saveUsers(u){localStorage.setItem("wakalat.users",JSON.stringify(u))},
+  session(){return localStorage.getItem("wakalat.session")||null},
+  setSession(e){e?localStorage.setItem("wakalat.session",e):localStorage.removeItem("wakalat.session")},
+  reqs(){try{return JSON.parse(localStorage.getItem("wakalat.requests")||"[]")}catch(e){return[]}},
+  saveReqs(r){localStorage.setItem("wakalat.requests",JSON.stringify(r))},
+  key(k){return"wakalat."+state.email+"."+k},
   get(k,def){try{const v=localStorage.getItem(DB.key(k));return v?JSON.parse(v):def}catch(e){return def}},
-  set(k,v){localStorage.setItem(DB.key(k),JSON.stringify(v))}
+  set(k,v){try{localStorage.setItem(DB.key(k),JSON.stringify(v));return true}catch(e){toast("Storage full — remove some attachments or back up & clear");return false}}
 };
-
-let state={email:null,profile:null,sub:null,mine:[],client:[],jud:[],calMonth:new Date(),trialPopShown:false};
+let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],aikey:null,calMonth:new Date()};
 
 /* ===== seal ===== */
 function sealSVG(withText){
-  const ring=`<circle class="ring" cx="40" cy="40" r="37"/><circle class="ring2" cx="40" cy="40" r="32.5"/>`;
-  const scales=`<g class="scale"><line class="post" x1="40" y1="26" x2="40" y2="56"/><circle class="dot" cx="40" cy="24" r="2.4" stroke="none"/><line x1="24" y1="33" x2="56" y2="33"/><line x1="24" y1="33" x2="19" y2="44"/><line x1="24" y1="33" x2="29" y2="44"/><path d="M19 44a5 5 0 0 0 10 0"/><line x1="56" y1="33" x2="51" y2="44"/><line x1="56" y1="33" x2="61" y2="44"/><path d="M51 44a5 5 0 0 0 10 0"/><line x1="31" y1="56" x2="49" y2="56"/></g>`;
+  const base=`<circle class="disc" cx="40" cy="40" r="37"/><circle class="ring" cx="40" cy="40" r="37"/><circle class="ring2" cx="40" cy="40" r="32.5"/>`;
+  const scales=`<g class="scale"><line x1="40" y1="26" x2="40" y2="56"/><circle class="dot" cx="40" cy="24" r="2.4" stroke="none"/><line x1="24" y1="33" x2="56" y2="33"/><line x1="24" y1="33" x2="19" y2="44"/><line x1="24" y1="33" x2="29" y2="44"/><path d="M19 44a5 5 0 0 0 10 0"/><line x1="56" y1="33" x2="51" y2="44"/><line x1="56" y1="33" x2="61" y2="44"/><path d="M51 44a5 5 0 0 0 10 0"/><line x1="31" y1="56" x2="49" y2="56"/></g>`;
   let text="";
-  if(withText){text=`<defs><path id="sp" d="M40,40 m-28,0 a28,28 0 1,1 56,0 a28,28 0 1,1 -56,0"/></defs><text class="sealtext"><textPath href="#sp" startOffset="0%">میری عدالت · MERI ADALAT · PAKISTAN · LEGAL · </textPath></text>`;}
-  return ring+text+scales;
+  if(withText)text=`<defs><path id="sp" d="M40,40 m-28,0 a28,28 0 1,1 56,0 a28,28 0 1,1 -56,0"/></defs><text class="sealtext"><textPath href="#sp" startOffset="0%">وکالت · WAKALAT · PAKISTAN · LEGAL · </textPath></text>`;
+  return base+text+scales;
 }
-["sealAuth","sealTop"].forEach(id=>{if($(id))$(id).innerHTML=sealSVG(id==="sealAuth");});
+["sealAuth","sealAdmin","sealTop"].forEach(id=>{if($(id))$(id).innerHTML=sealSVG(id==="sealAuth");});
 
-/* ===== auth ===== */
-$("authTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  [...$("authTabs").children].forEach(x=>x.classList.toggle("on",x===b));
-  $("loginForm").classList.toggle("hidden",b.dataset.tab!=="login");
-  $("registerForm").classList.toggle("hidden",b.dataset.tab!=="register");});
+/* ===== AUTH ===== */
+$("authTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...$("authTabs").children].forEach(x=>x.classList.toggle("on",x===b));$("loginForm").classList.toggle("hidden",b.dataset.tab!=="login");$("registerForm").classList.toggle("hidden",b.dataset.tab!=="register");});
 $("toReg").onclick=()=>$("authTabs").children[1].click();
 $("toLogin").onclick=()=>$("authTabs").children[0].click();
-$("forgot").onclick=()=>{
-  const email=prompt("Enter your registered email or phone to reset the password in this browser:");
-  if(!email)return; const e=email.trim().toLowerCase(); const users=DB.users();
-  if(!users[e]){ toast("No account with that email/phone in this browser"); return; }
-  const np=prompt("Enter a new password (at least 6 characters):"); if(!np||np.length<6){toast("Password too short");return;}
-  users[e].pass=hash32(np+e); DB.saveUsers(users); toast("Password updated — sign in now");
-};
+function findUserByLogin(id){const users=DB.users();id=id.trim().toLowerCase();if(users[id])return users[id];return Object.values(users).find(u=>(u.phone||"").replace(/\D/g,"")===id.replace(/\D/g,"")&&id.replace(/\D/g,"").length>=7)||null;}
 $("rgBtn").onclick=()=>{
   const name=$("rgName").value.trim(),email=$("rgEmail").value.trim().toLowerCase(),phone=$("rgPhone").value.trim(),pass=$("rgPass").value;
   if(!name||!email||!phone||pass.length<6){toast("Fill name, email, phone and a 6+ char password");return;}
@@ -608,21 +659,65 @@ $("rgBtn").onclick=()=>{
   if(users[email]){toast("That account already exists — sign in");return;}
   users[email]={name,email,phone,pass:hash32(pass+email),createdAt:todayISO()};
   DB.saveUsers(users);DB.setSession(email);state.email=email;
-  DB.set("profile",{fullName:name,phone});
-  toast("Welcome to Meri Adalat");route();
+  localStorage.setItem(DB.key("profile"),JSON.stringify({fullName:name}));
+  toast("Welcome to Wakalat");route();
 };
 $("liBtn").onclick=()=>{
-  const email=$("liEmail").value.trim().toLowerCase(),pass=$("liPass").value;const users=DB.users();
-  if(!users[email]||users[email].pass!==hash32(pass+email)){toast("Wrong email/phone or password");return;}
-  DB.setSession(email);state.email=email;route();toast("Welcome back");
+  const u=findUserByLogin($("liEmail").value),pass=$("liPass").value;
+  if(!u||u.pass!==hash32(pass+u.email)){toast("Wrong email/phone or password");return;}
+  DB.setSession(u.email);state.email=u.email;toast("Welcome back");route();
+};
+$("forgotLink").onclick=()=>{
+  const id=prompt("Enter your registered email to reset the password:");if(!id)return;
+  const u=findUserByLogin(id);if(!u){toast("No account found for that email");return;}
+  const np=prompt("Enter a new password (6+ characters):");if(!np||np.length<6){toast("Password too short");return;}
+  const users=DB.users();users[u.email].pass=hash32(np+u.email);DB.saveUsers(users);toast("Password updated — sign in now");
 };
 
-/* ===== routing: open after profile, NO paywall gate ===== */
-function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.jud=DB.get("jud",[]);}
+/* ===== ADMIN CONSOLE ===== */
+$("adminLink").onclick=()=>{showOnly("adminScreen");$("adminTools").classList.add("hidden");$("adminLock").classList.remove("hidden");$("adminPin").value="";};
+$("adminBack").onclick=()=>route();
+$("adminEnter").onclick=()=>{
+  if($("adminPin").value!==ADMIN_PIN){toast("Wrong PIN");return;}
+  $("adminLock").classList.add("hidden");$("adminTools").classList.remove("hidden");renderAdminReqs();
+};
+$("adminExit").onclick=()=>route();
+function refFromEmail(email){return"WK-"+hash32(email.trim().toLowerCase()).slice(0,6).padEnd(6,"0");}
+$("adGen").onclick=()=>{
+  let ref=$("adRef").value.trim().toUpperCase();
+  const email=$("adEmail").value.trim().toLowerCase();
+  if(!ref&&email)ref=refFromEmail(email);
+  if(!/^WK-[0-9A-Z]{6}$/.test(ref)){toast("Enter the lawyer's email, or a valid WK-XXXXXX reference");return;}
+  const plan=$("adPlan").value;
+  const exp=new Date();exp.setDate(exp.getDate()+PLANS[plan].days);
+  const expiresAt=exp.toISOString().slice(0,10);
+  const code=makeUnlock(ref,plan,expiresAt);
+  const out=$("adOut");out.classList.remove("hidden");
+  out.innerHTML=`<div style="margin-bottom:6px">Code for <b>${esc(ref)}</b> · ${PLANS[plan].label} · expires ${fmtDate(expiresAt)}</div>
+    <b style="font-size:12px;word-break:break-all">${esc(code)}</b>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn sm" id="adCopy">Copy code</button>
+      ${email?`<button class="btn sm" id="adMail">Email to ${esc(email)}</button>`:""}
+    </div>`;
+  $("adCopy").onclick=()=>navigator.clipboard?.writeText(code).then(()=>toast("Copied"),()=>toast(code));
+  if(email)$("adMail").onclick=()=>{const sub="Your Wakalat unlock code";const body=`Assalam o Alaikum,\n\nThank you for subscribing to Wakalat (${PLANS[plan].label}).\n\nYour unlock code:\n${code}\n\nOpen Wakalat → Settings → Subscribe / renew → paste this code → Unlock saving.\nIt is valid until ${fmtDate(expiresAt)}.\n\nRegards,\nWakalat`;window.open(`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
+};
+function renderAdminReqs(){
+  const r=DB.reqs();
+  $("adReqs").innerHTML=r.length?r.slice(-8).reverse().map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--line-soft)"><b>${esc(x.name||"—")}</b> · ${esc(x.plan)}<br>${esc(x.email)} · ${esc(x.phone||"")}<br><span style="font-family:'Spline Sans Mono',monospace;color:var(--green)">${esc(x.ref)}</span> <button class="link" data-ref="${esc(x.ref)}" data-email="${esc(x.email)}">use</button></div>`).join(""):"No requests captured on this device yet. Requests also arrive in your email / WhatsApp inbox.";
+  $("adReqs").querySelectorAll("button[data-ref]").forEach(b=>b.onclick=()=>{$("adRef").value=b.dataset.ref;$("adEmail").value=b.dataset.email;toast("Filled — pick plan & generate");});
+}
+
+/* unlock token */
+function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`;return btoa(base).replace(/=/g,"")+"."+hash32(base+ACTIVATION_SECRET);}
+function verifyUnlock(token,ref){try{const[b64,sig]=token.trim().split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
+
+/* ===== ROUTING ===== */
+function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.aikey=DB.get("aikey",null);}
 function isAdmin(){return state.email===ADMIN_EMAIL;}
-function subActive(){return state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO();}
-function canSave(){return isAdmin()||subActive();}
-function showOnly(id){["authScreen","profileScreen","appShell"].forEach(s=>$(s).classList.toggle("hidden",s!==id));}
+function subActive(){return isAdmin()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
+function canSave(){return subActive();}
+function showOnly(id){["authScreen","adminScreen","profileScreen","appShell"].forEach(s=>$(s).classList.toggle("hidden",s!==id));}
 function route(){
   state.email=DB.session();
   if(!state.email){showOnly("authScreen");return;}
@@ -631,97 +726,78 @@ function route(){
   enterApp();
 }
 
-/* ===== profile ===== */
+/* ===== PROFILE ===== */
 let pendingPhoto=null;
-function openProfile(){
-  const p=state.profile||{};
-  $("pfName").value=p.fullName||"";$("pfArea").value=p.area||"";$("pfExp").value=p.exp||"";
-  $("pfCity").value=p.city||"";$("pfBar").value=p.bar||"";
-  pendingPhoto=p.photo||null;paintAvatar($("profAv"),p.fullName,p.photo);
-  $("profTitle").textContent=(p.area&&p.city)?"Edit your chambers":"Set up your chambers";
-}
+function openProfile(){const p=state.profile||{};$("pfName").value=p.fullName||"";$("pfArea").value=p.area||"";$("pfExp").value=p.exp||"";$("pfCity").value=p.city||"";$("pfBar").value=p.bar||"";pendingPhoto=p.photo||null;paintAvatar($("profAv"),p.fullName,p.photo);$("profTitle").textContent=(p.area&&p.city)?"Edit your chambers":"Set up your chambers";}
 function paintAvatar(el,name,photo){if(photo){el.style.backgroundImage=`url(${photo})`;el.style.backgroundSize="cover";el.textContent="";}else{el.style.backgroundImage="";el.textContent=(name||"?").trim().charAt(0).toUpperCase()||"?";}}
 $("profPhotoBtn").onclick=()=>$("profPhoto").click();
 $("profPhoto").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image must be under 2 MB");return;}const r=new FileReader();r.onload=()=>{pendingPhoto=r.result;paintAvatar($("profAv"),$("pfName").value,pendingPhoto);};r.readAsDataURL(f);};
-$("pfSave").onclick=()=>{
-  const fullName=$("pfName").value.trim(),area=$("pfArea").value,city=$("pfCity").value.trim();
-  if(!fullName||!area||!city){toast("Name, practice area and city are required");return;}
-  const prev=state.profile||{};
-  state.profile={fullName,area,city,exp:$("pfExp").value,bar:$("pfBar").value.trim(),phone:prev.phone||"",photo:pendingPhoto};
-  DB.set("profile",state.profile);
-  const users=DB.users();if(users[state.email]){users[state.email].name=fullName;DB.saveUsers(users);}
-  toast("Profile saved");route();
-};
+$("pfSave").onclick=()=>{const fullName=$("pfName").value.trim(),area=$("pfArea").value,city=$("pfCity").value.trim();if(!fullName||!area||!city){toast("Name, practice area and city are required");return;}state.profile={fullName,area,city,exp:$("pfExp").value,bar:$("pfBar").value.trim(),photo:pendingPhoto};DB.set("profile",state.profile);const users=DB.users();if(users[state.email]){users[state.email].name=fullName;DB.saveUsers(users);}toast("Profile saved");route();};
 $("pfSignout").onclick=signOut;
 
-/* ===== app ===== */
+/* ===== APP ===== */
 function enterApp(){
   showOnly("appShell");
   paintAvatar($("chipAv"),state.profile.fullName,state.profile.photo);
   $("chipName").textContent=(state.profile.fullName||"You").split(" ").slice(0,2).join(" ");
-  $("adminPanel").style.display=isAdmin()?"block":"none";
-  const showSub=!canSave();
-  $("subBtn").style.display=showSub?"inline-flex":"none";
-  $("trialBanner").classList.toggle("hidden",!showSub);
-  const k=localStorage.getItem("gemini_api_key");if(k)$("aiKey").value=k;
+  $("aiKey").value=state.aikey||"";
+  $("payEmail").textContent=PAY.EMAIL;
+  $("trialBanner").classList.toggle("hidden",subActive());
   renderAll();
 }
-function renderAll(){renderAlerts();renderCases("mine");renderCases("client");renderJud();renderCalendar();renderSettings();}
+function renderAll(){renderAlerts();renderCases("mine");renderCases("client");renderJudge();renderCalendar();renderSettings();}
+$("tabbar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...$("tabbar").children].forEach(x=>x.classList.toggle("on",x===b));["vAlerts","vMine","vClient","vJudge","vSearch","vCal","vSettings"].forEach(v=>$(v).classList.toggle("on",v===b.dataset.view));});
+$("userChip").onclick=()=>$("tabbar").querySelector('[data-view="vSettings"]').click();
+$("themeBtn").onclick=()=>{const cur=document.documentElement.getAttribute("data-theme")==="dark"?"":"dark";document.documentElement.setAttribute("data-theme",cur);localStorage.setItem("wakalat.theme",cur);};
+$("trialCta").onclick=openSub;
 
-$("tabbar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  [...$("tabbar").children].forEach(x=>x.classList.toggle("on",x===b));
-  ["vAlerts","vMine","vClient","vJud","vCal","vSettings"].forEach(v=>$(v).classList.toggle("on",v===b.dataset.view));});
-function gotoTab(view){$("tabbar").querySelector(`[data-view="${view}"]`).click();}
-$("userChip").onclick=()=>gotoTab("vSettings");
-$("themeBtn").onclick=()=>{const c=document.documentElement.getAttribute("data-theme")==="dark"?"":"dark";document.documentElement.setAttribute("data-theme",c);localStorage.setItem(LS_PREFIX+"theme",c);};
-
-/* commit: only persist when subscribed/admin; otherwise keep in memory (trial) */
-function commit(which){
-  if(which==="mine")  { if(canSave())DB.set("mine",state.mine); }
-  if(which==="client"){ if(canSave())DB.set("client",state.client); }
-  if(which==="jud")   { if(canSave())DB.set("jud",state.jud); }
+/* ALERTS + reminders */
+$("remindBtn").onclick=()=>{
+  if(!("Notification"in window)){toast("This browser can't show reminders");return;}
+  Notification.requestPermission().then(p=>{if(p==="granted"){localStorage.setItem("wakalat.remind","1");toast("Reminders on — we'll alert you for hearings within 2 days");fireReminders();}else toast("Reminders blocked in browser settings");});
+};
+function fireReminders(){
+  if(localStorage.getItem("wakalat.remind")!=="1"||Notification.permission!=="granted")return;
+  const soon=[...state.mine,...state.client].filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)>=0&&daysFromToday(c.next)<=2);
+  const key="wakalat.remind.fired."+todayISO();
+  if(soon.length&&localStorage.getItem(key)!=="1"){
+    new Notification("Wakalat — upcoming hearing",{body:soon.map(c=>`${c.title} · ${fmtDate(c.next)}`).join("\n")});
+    localStorage.setItem(key,"1");
+  }
 }
-function afterTrialSave(){
-  if(canSave()){toast("Saved");return;}
-  if(!state.trialPopShown){state.trialPopShown=true;openSub();toast("Trial mode — subscribe to keep your work forever.");}
-  else toast("Added (trial — not saved yet). Refreshing will lose trial data.");
-}
-
-/* ===== alerts ===== */
 function renderAlerts(){
   const all=[];
-  const collect=(arr,kind)=>arr.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!==null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind});}});
-  collect(state.mine,"mine");collect(state.client,"client");all.sort((a,b)=>a.d-b.d);
+  state.mine.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"mine"});}});
+  state.client.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"client"});}});
+  all.sort((a,b)=>a.d-b.d);
   const allCases=[...state.mine,...state.client];
   const active=allCases.filter(c=>c.status==="Active").length;
   const overdue=allCases.filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)<0).length;
-  $("statRow").innerHTML=`<div class="stat"><div class="n">${allCases.length}</div><div class="l">Total cases</div></div>
-    <div class="stat"><div class="n">${active}</div><div class="l">Active</div></div>
-    <div class="stat"><div class="n">${all.length}</div><div class="l">Hearings ≤ 14 days</div></div>
-    <div class="stat alert"><div class="n">${overdue}</div><div class="l">Overdue dates</div></div>`;
-  if(!all.length){$("alertList").innerHTML=`<div class="empty"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>No hearings in the next two weeks</h3><p>Add a next-hearing (پیشی) date to any active matter and it appears here, nearest first.</p></div>`;$("alertPill").classList.add("hidden");return;}
+  $("statRow").innerHTML=`<div class="stat"><div class="n">${allCases.length}</div><div class="l">Total cases</div></div><div class="stat"><div class="n">${active}</div><div class="l">Active</div></div><div class="stat"><div class="n">${state.judge.length}</div><div class="l">Judgments</div></div><div class="stat alert"><div class="n">${overdue}</div><div class="l">Overdue dates</div></div>`;
+  if(!all.length){$("alertList").innerHTML=`<div class="empty"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>No hearings in the next two weeks</h3><p>Add a next-hearing (پیشی) date to any active matter and it shows here, nearest first.</p></div>`;$("alertPill").classList.add("hidden");return;}
   $("alertPill").textContent=all.length;$("alertPill").classList.remove("hidden");
-  $("alertList").innerHTML=all.map(a=>`<div class="alert ${a.d<=3?'urgent':''}"><div class="when"><div class="d">${a.d===0?'•':a.d}</div><div class="m">${a.d===0?'today':a.d===1?'day':'days'}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="meta">${esc(a.court||'Court not set')} · ${fmtDate(a.iso)}</div></div><span class="tag ${a.kind}">${a.kind==='mine'?'My case':'Client'}</span></div>`).join("");
+  $("alertList").innerHTML=all.map(a=>{const urgent=a.d<=3;return `<div class="alert ${urgent?'urgent':''}"><div class="when"><div class="d">${a.d===0?'•':a.d}</div><div class="m">${a.d===0?'today':a.d===1?'day':'days'}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="meta">${esc(a.court||'Court not set')} · ${fmtDate(a.iso)}</div></div><span class="tag ${a.kind}">${a.kind==='mine'?'My case':'Client'}</span></div>`;}).join("");
 }
 
-/* ===== cases ===== */
+/* CASES */
 function renderCases(kind){
   const list=kind==="mine"?state.mine:state.client;
   const box=$(kind==="mine"?"mineList":"clientList");
   const q=$(kind==="mine"?"mineSearch":"clientSearch").value.toLowerCase();
   const f=$(kind==="mine"?"mineFilter":"clientFilter").value;
   const rows=list.filter(c=>{const t=(c.title+" "+(c.court||"")+" "+(c.party||"")+" "+(c.client||"")+" "+(c.counsel||"")+" "+(c.notes||"")).toLowerCase();return t.includes(q)&&(f==="ALL"||c.status===f);});
-  if(!rows.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${list.length?'Nothing matches that filter':'No cases yet'}</h3><p>${list.length?'Try clearing the search or status filter.':'Add your first matter to start tracking hearings and notes.'}</p>${list.length?'':`<button class="btn primary" onclick="document.getElementById('${kind==='mine'?'addMine':'addClient'}').click()">＋ New ${kind==='mine'?'matter':'client case'}</button>`}</div>`;return;}
+  if(!rows.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1"><svg class="seal" width="64" height="64" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${list.length?'Nothing matches':'No cases yet'}</h3><p>${list.length?'Clear the search or filter.':'Add your first matter to start tracking hearings and notes.'}</p>${list.length?'':`<button class="btn primary" onclick="document.getElementById('${kind==='mine'?'addMine':'addClient'}').click()">＋ New ${kind==='mine'?'matter':'client case'}</button>`}</div>`;return;}
   box.innerHTML=rows.map(c=>{
     const d=c.next?daysFromToday(c.next):null;
     const nextHtml=c.next&&c.status==="Active"?`<div class="next ${d<0?'due':''}">Next hearing: ${fmtDate(c.next)}${d!=null?` · ${d<0?Math.abs(d)+'d overdue':d===0?'today':d+'d away'}`:''}</div>`:"";
-    const who=kind==="client"&&c.client?`<span>👤 ${esc(c.client)}</span>`:"";
-    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st ${c.status.toLowerCase()}">${c.status}</span></div><div class="meta">${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:""}${c.number?`<span># ${esc(c.number)}</span>`:""}${who}${c.party?`<span>vs ${esc(c.party)}</span>`:""}</div>${nextHtml}${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}<div class="acts"><button class="btn sm" onclick="editCase('${kind}','${c.id}')">Edit</button><button class="btn sm" onclick="delCase('${kind}','${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    const files=(c.files||[]).map((f,i)=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a>`).join("");
+    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st ${c.status.toLowerCase()}">${c.status}</span></div><div class="meta">${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:""}${c.number?`<span># ${esc(c.number)}</span>`:""}${kind==="client"&&c.client?`<span>👤 ${esc(c.client)}</span>`:""}${c.party?`<span>vs ${esc(c.party)}</span>`:""}</div>${nextHtml}${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm" onclick="editCase('${kind}','${c.id}')">Edit</button><button class="btn sm" onclick="delCase('${kind}','${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
   }).join("");
 }
 ["mineSearch","mineFilter"].forEach(id=>$(id).addEventListener("input",()=>renderCases("mine")));
 ["clientSearch","clientFilter"].forEach(id=>$(id).addEventListener("input",()=>renderCases("client")));
 
+let caseUploads=[];
 function openCase(kind,c){
   $("cKind").value=kind;$("cId").value=c?.id||"";
   $("caseModalTitle").textContent=c?"Edit matter":(kind==="mine"?"New matter":"New client case");
@@ -729,135 +805,110 @@ function openCase(kind,c){
   $("cTitle").value=c?.title||"";$("cStatus").value=c?.status||"Active";$("cCourt").value=c?.court||"";
   $("cNumber").value=c?.number||"";$("cParty").value=c?.party||"";$("cClient").value=c?.client||"";$("cCounsel").value=c?.counsel||"";
   $("cOpened").value=c?.opened||"";$("cNext").value=c?.next||"";$("cNotes").value=c?.notes||"";
+  caseUploads=(c?.files||[]).slice();$("cFiles").value="";renderUploadChips("cUploads",caseUploads);
   $("caseOverlay").classList.add("on");
 }
-const closeCase=()=>$("caseOverlay").classList.remove("on");
+function renderUploadChips(boxId,arr){$(boxId).innerHTML=arr.map((f,i)=>`<span class="file-chip">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)} <button onclick="this.parentNode.dispatchEvent(new CustomEvent('rm',{bubbles:true}))" data-i="${i}" style="border:none;background:none;color:var(--red);cursor:pointer">✕</button></span>`).join("");}
+$("cUploads").addEventListener("rm",e=>{const i=+e.target.getAttribute("data-i");caseUploads.splice(i,1);renderUploadChips("cUploads",caseUploads);});
+$("cFiles").onchange=e=>{readFiles(e.target.files,fs=>{caseUploads=caseUploads.concat(fs);renderUploadChips("cUploads",caseUploads);});};
+function closeCase(){$("caseOverlay").classList.remove("on");}
 $("addMine").onclick=()=>openCase("mine",null);
 $("addClient").onclick=()=>openCase("client",null);
 $("caseClose").onclick=closeCase;$("caseCancel").onclick=closeCase;
 $("caseOverlay").addEventListener("click",e=>{if(e.target===$("caseOverlay"))closeCase();});
 $("caseSave").onclick=()=>{
+  if(!canSave()){closeCase();openSub();return;}
   const kind=$("cKind").value,title=$("cTitle").value.trim();
   if(!title){toast("Give the matter a title");return;}
-  const obj={id:$("cId").value||("c"+Date.now()),title,status:$("cStatus").value,court:$("cCourt").value,number:$("cNumber").value.trim(),party:$("cParty").value.trim(),client:$("cClient").value.trim(),counsel:$("cCounsel").value.trim(),opened:$("cOpened").value,next:$("cNext").value,notes:$("cNotes").value.trim()};
+  const obj={id:$("cId").value||("c"+Date.now()),title,status:$("cStatus").value,court:$("cCourt").value,number:$("cNumber").value.trim(),party:$("cParty").value.trim(),client:$("cClient").value.trim(),counsel:$("cCounsel").value.trim(),opened:$("cOpened").value,next:$("cNext").value,notes:$("cNotes").value.trim(),files:caseUploads};
   const arr=kind==="mine"?state.mine:state.client;const i=arr.findIndex(x=>x.id===obj.id);
   if(i>=0)arr[i]=obj;else arr.unshift(obj);
-  commit(kind);closeCase();renderAll();afterTrialSave();
+  if(DB.set(kind==="mine"?"mine":"client",arr)){closeCase();renderAll();toast("Saved");}
 };
 window.editCase=(kind,id)=>{const arr=kind==="mine"?state.mine:state.client;openCase(kind,arr.find(c=>c.id===id));};
-window.delCase=(kind,id)=>{if(!confirm("Delete this case?"))return;if(kind==="mine"){state.mine=state.mine.filter(c=>c.id!==id);commit("mine");}else{state.client=state.client.filter(c=>c.id!==id);commit("client");}renderAll();toast("Deleted");};
-$("fab").onclick=()=>{const v=$("tabbar").querySelector("button.on").dataset.view;if(v==="vJud")openJud(null);else openCase(v==="vClient"?"client":"mine",null);};
+window.delCase=(kind,id)=>{if(!confirm("Delete this case? This cannot be undone."))return;if(kind==="mine"){state.mine=state.mine.filter(c=>c.id!==id);DB.set("mine",state.mine);}else{state.client=state.client.filter(c=>c.id!==id);DB.set("client",state.client);}renderAll();toast("Deleted");};
+$("fab").onclick=()=>{const v=$("tabbar").querySelector("button.on").dataset.view;if(v==="vJudge")openJudge(null);else openCase(v==="vClient"?"client":"mine",null);};
 
-/* ===== judgments ===== */
-function renderJud(){
-  const q=$("judSearch").value.toLowerCase();
-  const rows=state.jud.filter(j=>(`${j.citation} ${j.caseName} ${j.court} ${j.year} ${j.keyPoint} ${j.notes} ${(j.tags||[]).join(" ")}`).toLowerCase().includes(q));
-  const box=$("judList");
-  if(!rows.length){box.innerHTML=`<div class="empty"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${state.jud.length?'Nothing matches that filter':'No judgments saved yet'}</h3><p>${state.jud.length?'Try a different keyword.':'Paste a judgment into the AI box above to auto-fill one, or add it manually.'}</p></div>`;return;}
-  box.innerHTML=rows.map(j=>`<div class="jcard"><div class="cite">${esc(j.citation||'No citation')}</div><div class="cn">${esc(j.caseName||'Untitled')}</div><div class="jm">${esc(j.court||'')}${j.year?` · ${esc(j.year)}`:''}</div>${j.keyPoint?`<div class="hold">${esc(j.keyPoint)}</div>`:''}${j.notes?`<div class="rem" style="margin-top:8px">${esc(j.notes)}</div>`:''}${(j.tags&&j.tags.length)?`<div class="jtags">${j.tags.map(t=>`<span class="jtag">${esc(t)}</span>`).join("")}</div>`:''}<div class="acts">${j.sourceUrl?`<a class="btn sm" href="${esc(j.sourceUrl)}" target="_blank" rel="noopener">Open source</a>`:''}<button class="btn sm" onclick="editJud('${j.id}')">Edit</button><button class="btn sm" onclick="delJud('${j.id}')" style="color:var(--red)">Delete</button></div></div>`).join("");
+/* JUDGMENTS */
+function renderJudge(){
+  const q=$("judgeSearch").value.toLowerCase();
+  const rows=state.judge.filter(j=>(j.cite+" "+j.name+" "+j.court+" "+(j.hold||"")+" "+(j.notes||"")).toLowerCase().includes(q));
+  if(!rows.length){$("judgeList").innerHTML=`<div class="empty"><svg class="seal" width="64" height="64" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${state.judge.length?'Nothing matches':'No judgments saved'}</h3><p>${state.judge.length?'Clear the search.':'Paste a judgment URL or text and let AI fill the details.'}</p>${state.judge.length?'':`<button class="btn primary" onclick="document.getElementById('addJudge').click()">＋ New judgment</button>`}</div>`;return;}
+  $("judgeList").innerHTML=rows.map(j=>{
+    const files=(j.files||[]).map(f=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a>`).join("");
+    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px"><button class="btn sm" onclick="editJudge('${j.id}')">Edit</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
+  }).join("");
 }
-$("judSearch").addEventListener("input",renderJud);
-function openJud(j){
-  $("jId").value=j?.id||"";$("judModalTitle").textContent=j?"Edit judgment":"New judgment";
-  $("jCite").value=j?.citation||"";$("jName").value=j?.caseName||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";
-  $("jHold").value=j?.keyPoint||"";$("jTags").value=(j?.tags||[]).join(", ");$("jUrl").value=j?.sourceUrl||"";$("jNotes").value=j?.notes||"";
-  $("judOverlay").classList.add("on");
+$("judgeSearch").addEventListener("input",renderJudge);
+let judgeUploads=[];
+function openJudge(j){
+  $("jId").value=j?.id||"";$("judgeModalTitle").textContent=j?"Edit judgment":"New judgment";
+  $("jSource").value="";$("jCite").value=j?.cite||"";$("jName").value=j?.name||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";$("jHold").value=j?.hold||"";$("jSummary").value=j?.summary||"";$("jNotes").value=j?.notes||"";$("jUrl").value=j?.url||"";
+  judgeUploads=(j?.files||[]).slice();$("jFiles").value="";renderUploadChips("jUploads",judgeUploads);
+  $("jAiHint").textContent=state.aikey?"Gemini key found — ready to auto-fill.":"Add your Gemini key in Settings → AI assistant to enable this.";
+  $("judgeOverlay").classList.add("on");
 }
-const closeJud=()=>$("judOverlay").classList.remove("on");
-$("addJud").onclick=()=>openJud(null);$("judClose").onclick=closeJud;$("judCancel").onclick=closeJud;
-$("judOverlay").addEventListener("click",e=>{if(e.target===$("judOverlay"))closeJud();});
-$("judSave").onclick=()=>{
-  const name=$("jName").value.trim(),cite=$("jCite").value.trim();
-  if(!name&&!cite){toast("Add at least a case name or citation");return;}
-  const obj={id:$("jId").value||("j"+Date.now()),citation:cite,caseName:name,court:$("jCourt").value.trim(),year:$("jYear").value.trim(),keyPoint:$("jHold").value.trim(),notes:$("jNotes").value.trim(),sourceUrl:$("jUrl").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean)};
-  const i=state.jud.findIndex(x=>x.id===obj.id);if(i>=0)state.jud[i]=obj;else state.jud.unshift(obj);
-  commit("jud");closeJud();renderJud();afterTrialSave();
+$("jUploads").addEventListener("rm",e=>{const i=+e.target.getAttribute("data-i");judgeUploads.splice(i,1);renderUploadChips("jUploads",judgeUploads);});
+$("jFiles").onchange=e=>{readFiles(e.target.files,fs=>{judgeUploads=judgeUploads.concat(fs);renderUploadChips("jUploads",judgeUploads);});};
+$("addJudge").onclick=()=>openJudge(null);
+$("judgeClose").onclick=()=>$("judgeOverlay").classList.remove("on");
+$("judgeCancel").onclick=()=>$("judgeOverlay").classList.remove("on");
+$("judgeOverlay").addEventListener("click",e=>{if(e.target===$("judgeOverlay"))$("judgeOverlay").classList.remove("on");});
+$("judgeSave").onclick=()=>{
+  if(!canSave()){$("judgeOverlay").classList.remove("on");openSub();return;}
+  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),url:$("jUrl").value.trim(),files:judgeUploads};
+  if(!obj.name&&!obj.cite){toast("Add at least a citation or case name");return;}
+  const i=state.judge.findIndex(x=>x.id===obj.id);if(i>=0)state.judge[i]=obj;else state.judge.unshift(obj);
+  if(DB.set("judge",state.judge)){$("judgeOverlay").classList.remove("on");renderJudge();renderAlerts();toast("Judgment saved");}
 };
-window.editJud=id=>openJud(state.jud.find(j=>j.id===id));
-window.delJud=id=>{if(!confirm("Delete this judgment?"))return;state.jud=state.jud.filter(j=>j.id!==id);commit("jud");renderJud();toast("Deleted");};
+window.editJudge=id=>openJudge(state.judge.find(j=>j.id===id));
+window.delJudge=id=>{if(!confirm("Delete this judgment?"))return;state.judge=state.judge.filter(j=>j.id!==id);DB.set("judge",state.judge);renderJudge();renderAlerts();toast("Deleted");};
 
-/* web legal search (Google dorks) */
-$("searchChips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;[...$("searchChips").children].forEach(x=>x.classList.toggle("on",x===c));});
-function runWebSearch(){
-  const q=$("webQuery").value.trim();if(!q){toast("Type something to search");return;}
-  const preset=$("searchChips").querySelector(".chip.on").dataset.preset;
-  let dq;
-  switch(preset){
-    case"sc":dq=`site:supremecourt.gov.pk OR site:pakistanlawsite.com OR site:pakistanlawjournal.com "${q}" judgment`;break;
-    case"hc":dq=`(site:peshawarhighcourt.gov.pk OR site:lhc.gov.pk OR site:sindhhighcourt.gov.pk OR site:bhc.gov.pk OR site:ihc.gov.pk) "${q}" judgment`;break;
-    case"india":dq=`site:indiankanoon.org OR site:sci.gov.in "${q}" judgment`;break;
-    case"pdf":dq=`"${q}" judgment filetype:pdf`;break;
-    default:dq=`"${q}" judgment OR "case law"`;
-  }
-  window.open(`https://www.google.com/search?q=${encodeURIComponent(dq)}`,"_blank","noopener");
-  toast("Opened Google legal search in a new tab");
-}
-$("webGo").onclick=runWebSearch;
-$("webQuery").addEventListener("keydown",e=>{if(e.key==="Enter")runWebSearch();});
-
-/* AI auto-fill via Gemini 2.5 Flash */
-$("aiKey").addEventListener("change",()=>{const k=$("aiKey").value.trim();if(k)localStorage.setItem("gemini_api_key",k);else localStorage.removeItem("gemini_api_key");});
-$("aiRun").onclick=runAI;
-async function runAI(){
-  const key=$("aiKey").value.trim();
-  if(!key){toast("Paste your Gemini API key first");return;}
-  let content=$("aiText").value.trim();
-  if(!content){toast("Paste judgment text or a URL");return;}
-  $("aiRun").disabled=true;$("aiRun").textContent="✦ Working…";
+/* AI auto-fill (Gemini 2.5 Flash) */
+$("jAiBtn").onclick=async()=>{
+  const key=state.aikey;if(!key){toast("Add your Gemini key in Settings → AI assistant");$("tabbar").querySelector('[data-view="vSettings"]').click();$("judgeOverlay").classList.remove("on");return;}
+  let src=$("jSource").value.trim();if(!src){toast("Paste a judgment URL or text first");return;}
+  const btn=$("jAiBtn");btn.disabled=true;const old=btn.textContent;btn.textContent="Reading…";
   try{
-    if(/^https?:\/\/\S+$/.test(content)){
-      toast("Fetching the link…");
-      try{const r=await fetch(content);content=(await r.text()).replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,12000);}
-      catch(e){throw new Error("Could not fetch that URL (the site blocks it). Please paste the judgment text instead.");}
+    if(/^https?:\/\/\S+$/i.test(src)){
+      $("jUrl").value=src;
+      try{const r=await fetch(src);const t=await r.text();src=t.replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,12000);}
+      catch(e){toast("Couldn't fetch that URL (site blocked it) — paste the text instead");btn.disabled=false;btn.textContent=old;return;}
     }
-    const prompt=`You are a legal document parser. Read the judgment excerpt and return ONLY a valid JSON object:
-{"citation":"e.g. PLD 2021 SC 145 or 2023 SCMR 441, else \\"\\"","caseName":"parties, concise","court":"deciding court","year":2021,"keyPointHolding":"2-4 sentences on what it decided and the precedent","tags":["legal","subjects","like","Bail","Murder"]}
-JUDGMENT:
-"""${content.slice(0,12000)}"""`;
-    const ep=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
-    const res=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json"}})});
-    if(!res.ok){const ed=await res.json().catch(()=>({}));throw new Error(ed.error?.message||"API request failed");}
-    const data=await res.json();
-    const txt=data.candidates?.[0]?.content?.parts?.[0]?.text||"{}";
-    const p=JSON.parse(txt);
-    openJud(null);
-    $("jCite").value=p.citation||"";$("jName").value=p.caseName||"";$("jCourt").value=p.court||"";
-    $("jYear").value=p.year||"";$("jHold").value=p.keyPointHolding||"";
-    $("jTags").value=Array.isArray(p.tags)?p.tags.join(", "):"";
-    if(/^https?:\/\/\S+$/.test($("aiText").value.trim()))$("jUrl").value=$("aiText").value.trim();
-    toast("AI filled the judgment — review and save");
-  }catch(err){toast(err.message||"AI extraction failed");}
-  finally{$("aiRun").disabled=false;$("aiRun").textContent="✦ Auto-fill a new judgment";}
-}
+    const prompt=`You are a Pakistani legal research assistant. From the judgment text below, extract structured data. Return ONLY valid JSON (no markdown) with keys: citation, caseName, court, year, keyHolding, summary, notes. "notes" should be a one-line practical note on how a lawyer might use this precedent. If a field is unknown use "".\n\nTEXT:\n${src}`;
+    const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,responseMimeType:"application/json"}})});
+    if(!resp.ok){const er=await resp.text();throw new Error(resp.status+" "+er.slice(0,120));}
+    const data=await resp.json();
+    let txt=data?.candidates?.[0]?.content?.parts?.[0]?.text||"";
+    txt=txt.replace(/```json|```/g,"").trim();
+    const j=JSON.parse(txt);
+    if(j.citation)$("jCite").value=j.citation;
+    if(j.caseName)$("jName").value=j.caseName;
+    if(j.court)$("jCourt").value=j.court;
+    if(j.year)$("jYear").value=j.year;
+    if(j.keyHolding)$("jHold").value=j.keyHolding;
+    if(j.summary)$("jSummary").value=j.summary;
+    if(j.notes)$("jNotes").value=j.notes;
+    toast("Filled by AI — review & save");
+  }catch(e){toast("AI error: "+(e.message||"try again"));}
+  btn.disabled=false;btn.textContent=old;
+};
 
-/* ===== global search (Ctrl+F across everything) ===== */
-$("globalSearch").addEventListener("keydown",e=>{if(e.key==="Enter")runGlobal();});
-$("globalSearch").addEventListener("input",()=>{if($("globalSearch").value.trim().length>=2)runGlobal();else closeOverlayById("globalOverlay");});
-function runGlobal(){
-  const q=$("globalSearch").value.trim().toLowerCase();if(!q)return;
-  const res=[];
-  state.mine.forEach(c=>{if((`${c.title} ${c.court} ${c.party} ${c.number} ${c.notes}`).toLowerCase().includes(q))res.push({kind:"My case",title:c.title,meta:`${c.status} · ${c.court||'court n/a'}`,view:"vMine"});});
-  state.client.forEach(c=>{if((`${c.title} ${c.court} ${c.client} ${c.counsel} ${c.party} ${c.number} ${c.notes}`).toLowerCase().includes(q))res.push({kind:"Client case",title:c.title,meta:`${c.status} · ${c.client||'client n/a'}`,view:"vClient"});});
-  state.jud.forEach(j=>{if((`${j.citation} ${j.caseName} ${j.court} ${j.year} ${j.keyPoint} ${j.notes} ${(j.tags||[]).join(" ")}`).toLowerCase().includes(q))res.push({kind:"Judgment",title:j.caseName||j.citation,meta:`${j.citation||''} ${j.court||''}`.trim(),view:"vJud"});});
-  showGlobal(q,res);
-}
-function showGlobal(q,res){
-  let ov=$("globalOverlay");
-  if(!ov){ov=document.createElement("div");ov.className="overlay";ov.id="globalOverlay";
-    ov.innerHTML=`<div class="modal"><div class="modal-head"><h3>Search results</h3><button class="icon-btn" id="globalClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div><div class="modal-body" id="globalBody"></div></div>`;
-    document.body.appendChild(ov);
-    ov.addEventListener("click",e=>{if(e.target===ov)closeOverlayById("globalOverlay");});
-    $("globalClose").onclick=()=>closeOverlayById("globalOverlay");
-  }
-  $("globalBody").innerHTML = res.length
-    ? `<p class="note" style="text-align:left;margin:0 0 12px">${res.length} match${res.length>1?'es':''} for “${esc(q)}” across all your records.</p>`+res.map((r,i)=>`<button class="sr-item" data-view="${r.view}"><span class="sr-kind">${r.kind}</span><div class="sr-title">${esc(r.title||'Untitled')}</div><div class="sr-meta">${esc(r.meta)}</div></button>`).join("")
-    : `<div class="empty" style="padding:30px"><h3>No matches</h3><p>Nothing in your cases or judgments matches “${esc(q)}”.</p></div>`;
-  $("globalBody").querySelectorAll(".sr-item").forEach(b=>b.onclick=()=>{closeOverlayById("globalOverlay");gotoTab(b.dataset.view);});
-  ov.classList.add("on");
-}
-function closeOverlayById(id){const o=$(id);if(o)o.classList.remove("on");}
+/* SEARCH */
+function highlight(text,q){if(!q)return esc(text);const i=text.toLowerCase().indexOf(q.toLowerCase());if(i<0)return esc(text);return esc(text.slice(0,i))+"<mark>"+esc(text.slice(i,i+q.length))+"</mark>"+esc(text.slice(i+q.length));}
+$("localQ").addEventListener("input",e=>{
+  const q=e.target.value.trim();const box=$("localResults");
+  if(!q){box.innerHTML="";return;}
+  const hits=[];
+  const scan=(arr,kind)=>arr.forEach(c=>{const blob=Object.values(c).filter(v=>typeof v==="string").join("  ");if(blob.toLowerCase().includes(q.toLowerCase())){const title=c.title||c.name||c.cite||"Untitled";const ctxField=Object.entries(c).find(([k,v])=>typeof v==="string"&&v.toLowerCase().includes(q.toLowerCase())&&k!=="id");hits.push({kind,title,ctx:ctxField?ctxField[1]:"",id:c.id});}});
+  scan(state.mine,"My case");scan(state.client,"Client case");scan(state.judge,"Judgment");
+  if(!hits.length){box.innerHTML=`<div class="empty" style="padding:24px"><p>No matches for “${esc(q)}” across your saved records.</p></div>`;return;}
+  box.innerHTML=hits.map(h=>`<div class="res-item"><div class="rt">${highlight(h.title,q)}<span class="rk">${h.kind}</span></div><div class="rm">${highlight((h.ctx||"").slice(0,160),q)}</div></div>`).join("");
+});
+$("webGo").onclick=()=>{const t=$("webTarget").value,q=$("webQ").value.trim();if(!q){toast("Type what to search");return;}const query=(t?t+" ":"")+q;window.open("https://www.google.com/search?q="+encodeURIComponent(query),"_blank","noopener");};
+$("webQ").addEventListener("keydown",e=>{if(e.key==="Enter")$("webGo").click();});
 
-/* ===== calendar ===== */
+/* CALENDAR */
 $("calPrev").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()-1);renderCalendar();};
 $("calNext").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()+1);renderCalendar();};
 function renderCalendar(){
@@ -872,66 +923,47 @@ function renderCalendar(){
   $("calGrid").innerHTML=html;
 }
 
-/* ===== settings ===== */
+/* SETTINGS */
 function renderSettings(){
   const p=state.profile||{};
-  $("setName").textContent=p.fullName||"—";$("setArea").textContent=p.area||"—";$("setCity").textContent=p.city||"—";$("setPhone").textContent=p.phone||"—";
+  $("setName").textContent=p.fullName||"—";$("setArea").textContent=p.area||"—";$("setCity").textContent=p.city||"—";
   const admin=isAdmin(),ok=admin||subActive();
-  $("setSubStatus").innerHTML=ok?`<span class="sub-status ok">● ${admin?'Admin · full access':'Active'}</span>`:`<span class="sub-status exp">● Free / trial</span>`;
+  $("setSubStatus").innerHTML=ok?`<span class="sub-status ok">● ${admin?'Owner · full access':'Active'}</span>`:`<span class="sub-status exp">● Free (saving locked)</span>`;
   $("setSubPlan").textContent=admin?"Owner":(state.sub?(PLANS[state.sub.plan]?.label||state.sub.plan):"—");
   $("setSubExp").textContent=admin?"—":(state.sub?fmtDate(state.sub.expiresAt):"—");
   $("setSubRef").textContent=refCode();
-  $("setSubBtn").style.display=ok?"none":"inline-flex";
 }
+$("aiSave").onclick=()=>{const k=$("aiKey").value.trim();state.aikey=k||null;DB.set("aikey",state.aikey);toast(k?"Gemini key saved":"Key cleared");};
+$("aiClear").onclick=()=>{$("aiKey").value="";state.aikey=null;DB.set("aikey",null);toast("Key removed");};
 $("editProfile").onclick=()=>{openProfile();showOnly("profileScreen");};
-$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,jud:state.jud,exportedAt:new Date().toISOString()};const b=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`meri-adalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
+$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
 $("importBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.profile){state.profile=d.profile;DB.set("profile",d.profile);}if(d.mine){state.mine=d.mine;commit("mine");}if(d.client){state.client=d.client;commit("client");}if(d.jud){state.jud=d.jud;commit("jud");}if(d.sub){state.sub=d.sub;DB.set("sub",d.sub);}enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 $("signoutBtn").onclick=signOut;
-$("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","jud"].forEach(k=>localStorage.removeItem(DB.key(k)));const u=DB.users();delete u[state.email];DB.saveUsers(u);DB.setSession(null);state.email=null;toast("Account deleted");route();};
+$("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
+$("subscribeBtn").onclick=openSub;
 
-/* ===== subscription modal ===== */
+/* SUBSCRIPTION */
 let chosenPlan="1m";
-function refCode(){return "MA-"+hash32(state.email||"x").slice(0,6).padEnd(6,"0");}
+function refCode(){return"WK-"+hash32(state.email).slice(0,6).padEnd(6,"0");}
 function openSub(){
   $("refCode").textContent=refCode();
   $("payMethods").innerHTML="";
-  PAY.METHODS.forEach(m=>{const row=document.createElement("div");row.className="pm";row.innerHTML=`<span class="ic" style="background:${m.c}">${esc(m.ic)}</span><span class="info"><span class="l">${esc(m.l)}</span><span class="v">${esc(m.v)}</span><span class="s">${esc(m.s)}</span></span><button class="copy">Copy</button>`;row.querySelector(".copy").onclick=()=>{navigator.clipboard?.writeText(m.v).then(()=>toast("Copied"),()=>toast(m.v));};$("payMethods").appendChild(row);});
+  PAY.METHODS.forEach(m=>{const row=document.createElement("div");row.className="pm";row.innerHTML=`<span class="ic" style="background:${m.c}">${esc(m.ic)}</span><span class="info"><span class="l">${esc(m.l)}</span><span class="v">${esc(m.v)}</span><span class="s">${esc(m.s)}</span></span><button class="copy">Copy</button>`;row.querySelector(".copy").onclick=()=>navigator.clipboard?.writeText(m.v).then(()=>toast("Copied"),()=>toast(m.v));$("payMethods").appendChild(row);});
   $("subOverlay").classList.add("on");
 }
-const closeSub=()=>$("subOverlay").classList.remove("on");
-$("subBtn").onclick=openSub;$("trialSub").onclick=openSub;$("setSubBtn").onclick=openSub;$("subClose").onclick=closeSub;
-$("subOverlay").addEventListener("click",e=>{if(e.target===$("subOverlay"))closeSub();});
+$("subClose").onclick=()=>$("subOverlay").classList.remove("on");
+$("subOverlay").addEventListener("click",e=>{if(e.target===$("subOverlay"))$("subOverlay").classList.remove("on");});
 $("planPick").addEventListener("click",e=>{const p=e.target.closest(".plan");if(!p)return;chosenPlan=p.dataset.plan;[...$("planPick").children].forEach(x=>x.classList.toggle("on",x===p));});
-function reqMessage(){const pl=PLANS[chosenPlan];return `Assalam o Alaikum, I want the Meri Adalat ${pl.label} plan (${pl.price}).\nName: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nI will send the payment receipt.`;}
-$("waBtn").onclick=()=>window.open(`https://wa.me/${PAY.WHATSAPP}?text=${encodeURIComponent(reqMessage())}`,"_blank","noopener");
-$("emailBtn").onclick=()=>window.open(`mailto:${PAY.EMAIL}?subject=${encodeURIComponent("Meri Adalat subscription — "+refCode())}&body=${encodeURIComponent(reqMessage())}`,"_blank");
-$("unlockBtn").onclick=()=>{
-  const r=verifyUnlock($("unlockInput").value.trim(),refCode());
-  if(!r.ok){toast(r.msg);return;}
-  state.sub={plan:r.plan,activatedAt:todayISO(),expiresAt:r.expiresAt,code:$("unlockInput").value.trim()};
-  DB.set("sub",state.sub);
-  // persist anything created during trial
-  DB.set("mine",state.mine);DB.set("client",state.client);DB.set("jud",state.jud);
-  closeSub();enterApp();toast("Unlocked — your work is now saved");
-};
-function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`;return btoa(base).replace(/=/g,"")+"."+hash32(base+ACTIVATION_SECRET);}
-function verifyUnlock(token,ref){try{const[b64,sig]=token.split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
+function logRequest(){const u=DB.users()[state.email]||{};const reqs=DB.reqs();reqs.push({name:state.profile?.fullName||u.name||"",email:state.email,phone:u.phone||"",ref:refCode(),plan:PLANS[chosenPlan].label,at:new Date().toISOString()});DB.saveReqs(reqs);}
+$("waBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const msg=`Assalam o Alaikum, I want the Wakalat ${pl.label} plan (${pl.price}).\nName: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nI will send the payment receipt.`;window.open(`https://wa.me/${PAY.WHATSAPP}?text=${encodeURIComponent(msg)}`,"_blank","noopener");};
+$("emailReqBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const sub="Wakalat subscription request";const body=`Name: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nPlan: ${pl.label} (${pl.price})\n\nI have paid / will pay and attach the receipt.`;window.open(`mailto:${PAY.EMAIL}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
+$("unlockBtn").onclick=()=>{const res=verifyUnlock($("unlockInput").value,refCode());if(!res.ok){toast(res.msg);return;}state.sub={plan:res.plan,activatedAt:todayISO(),expiresAt:res.expiresAt};DB.set("sub",state.sub);$("subOverlay").classList.remove("on");$("trialBanner").classList.add("hidden");renderSettings();toast("Unlocked — you can save now");};
 
-/* admin */
-$("adGen").onclick=()=>{
-  const ref=$("adRef").value.trim().toUpperCase(),plan=$("adPlan").value;
-  if(!/^MA-[0-9A-Z]{6}$/.test(ref)){toast("Enter a valid reference like MA-AB12CD");return;}
-  const e=new Date();e.setDate(e.getDate()+PLANS[plan].days);const exp=e.toISOString().slice(0,10);
-  const code=makeUnlock(ref,plan,exp);
-  const out=$("adOut");out.classList.remove("hidden");
-  out.innerHTML=`Unlock code for <b>${esc(ref)}</b> (${PLANS[plan].label}, expires ${fmtDate(exp)}):<br><b style="font-size:12px;word-break:break-all">${esc(code)}</b><br><button class="btn sm" style="margin-top:8px" id="adCopy">Copy code</button>`;
-  $("adCopy").onclick=()=>navigator.clipboard?.writeText(code).then(()=>toast("Unlock code copied"),()=>toast(code));
-};
+function signOut(){DB.setSession(null);state.email=null;["liEmail","liPass","rgName","rgEmail","rgPhone","rgPass"].forEach(i=>{if($(i))$(i).value="";});route();toast("Signed out");}
 
-function signOut(){DB.setSession(null);state.email=null;state.trialPopShown=false;["liEmail","liPass","rgName","rgEmail","rgPhone","rgPass"].forEach(i=>{if($(i))$(i).value="";});route();toast("Signed out");}
-
-(function init(){const t=localStorage.getItem(LS_PREFIX+"theme");if(t)document.documentElement.setAttribute("data-theme",t);route();})();
+/* boot */
+(function init(){const t=localStorage.getItem("wakalat.theme");if(t)document.documentElement.setAttribute("data-theme",t);route();setTimeout(fireReminders,1500);})();
 </script>
 </body>
 </html>
