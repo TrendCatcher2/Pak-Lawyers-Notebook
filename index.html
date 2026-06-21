@@ -1,1435 +1,423 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PAK Lawyer's Notebook — Every hearing, every file, in one place</title>
-<meta name="theme-color" content="#0B5D3B">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --ink:#15241C; --ink-soft:#445349; --ink-faint:#79877D;
-  --green:#0C6E48; --green-deep:#064A2E; --green-tint:#E2F0E8;
-  --brass:#B07D1C; --brass-soft:#D6A646;
-  --red:#A52A20;
-  --blue:#1E5FA8; --indigo:#5A4BB3; --plum:#8C3A6A; --teal:#0E7C76; --amber:#C8851A;
-  --paper:#F3F0E6; --card:#FFFFFB; --sand:#EBE5D4; --line:#D9D0BC; --line-soft:#E7E0CE;
-  --shadow:0 1px 2px rgba(20,32,24,.05),0 8px 24px rgba(20,32,24,.06);
-  --r:14px; --r-sm:9px; --r-lg:22px; --maxw:1180px;
+state.client.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"client",id:c.id});}});
+  
+  // Sort by days remaining (ascending)
+  all.sort((a,b)=>a.d-b.d);
+  
+  const pill = $("alertPill");
+  if(pill) {
+    pill.textContent = all.length;
+    pill.classList.toggle("hidden", all.length === 0);
+  }
+
+  const statRow = $("statRow");
+  if(statRow) {
+    const totalActive = state.mine.filter(c=>c.status==="Active").length + state.client.filter(c=>c.status==="Active").length;
+    statRow.innerHTML = `
+      <div class="stat"><div class="n">${all.length}</div><div class="l">Upcoming (14 days)</div></div>
+      <div class="stat"><div class="n">${totalActive}</div><div class="l">Total Active Matters</div></div>
+      <div class="stat"><div class="n">${state.judge.length}</div><div class="l">Saved Citations</div></div>
+    `;
+  }
+
+  const list = $("alertList");
+  if(!list) return;
+  if(!all.length) {
+    list.innerHTML = `
+      <div class="empty">
+        <svg class="seal" width="48" height="48" viewBox="0 0 80 80">${sealSVG(false)}</svg>
+        <h3>No urgent hearings</h3>
+        <p>No court appearances or peshis scheduled for the next 14 days.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = all.map(x=>{
+    const dateObj = new Date(x.iso+"T00:00:00");
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleDateString('en-GB',{month:'short'});
+    const urgentClass = x.d <= 2 ? "urgent" : "";
+    const tagLabel = x.kind === "mine" ? "My Affair" : "Client Matter";
+    
+    return `
+      <div class="alert ${urgentClass}">
+        <div class="when"><div class="d">${day}</div><div class="m">${month}</div></div>
+        <div class="body">
+          <div class="t">${esc(x.title)}</div>
+          <div class="meta">${esc(x.court || "No court assigned")} · ${x.d === 0 ? "<b>Today</b>" : x.d === 1 ? "Tomorrow" : x.d + " days left"}</div>
+        </div>
+        <div class="tag ${x.kind}">${tagLabel}</div>
+      </div>`;
+  }).join("");
 }
-[data-theme="dark"]{
-  --ink:#EAE6D7; --ink-soft:#B4BCAE; --ink-faint:#86907F;
-  --green:#46B886; --green-deep:#2E9466; --green-tint:#15291F;
-  --brass:#E0B463; --brass-soft:#CDA254; --red:#E8786C;
-  --blue:#6AA6E6; --indigo:#9A8CE8; --plum:#D979AE; --teal:#4FC2BC; --amber:#E0AE55;
-  --paper:#0D1510; --card:#141F18; --sand:#1A261E; --line:#293A30; --line-soft:#213029;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Inter',sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
-  background:radial-gradient(820px 460px at 88% -12%,rgba(176,125,28,.10),transparent 60%),
-             radial-gradient(700px 420px at 8% 8%,rgba(30,95,168,.06),transparent 60%),
-             radial-gradient(800px 500px at -10% 110%,rgba(11,93,59,.07),transparent 55%),var(--paper);}
-button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit;font-size:14px}
-.hidden{display:none !important}
-.urdu{font-family:'Noto Nastaliq Urdu',serif}
 
-.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 18px;border-radius:var(--r-sm);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:.15s}
-.btn:hover{border-color:var(--brass);color:var(--green-deep)}
-[data-theme="dark"] .btn:hover{color:var(--green)}
-.btn.primary{background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F6F2E9;border-color:var(--green-deep);box-shadow:0 2px 0 var(--green-deep)}
-.btn.primary:hover{filter:brightness(1.07);color:#fff}
-.btn.brass{background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;border-color:var(--brass);box-shadow:0 2px 0 #8a6014}
-.btn.wide{width:100%}
-.btn.sm{padding:7px 12px;font-size:12.5px}
-.link{background:none;border:none;color:var(--green);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:13.5px}
-[data-theme="dark"] .link{color:var(--brass)}
-.link.danger{color:var(--red)}
+/* ===== CASES MANAGEMENT ===== */
+function renderCases(kind) {
+  const list = $(kind + "List");
+  if(!list) return;
+  const arr = kind === "mine" ? state.mine : state.client;
+  const q = ($(kind + "Search")?.value || "").toLowerCase();
+  const filter = $(kind + "Filter")?.value || "ALL";
 
-/* seal — high contrast on paper */
-.seal .disc{fill:var(--card)}
-.seal .ring{fill:none;stroke:var(--brass);stroke-width:2}
-.seal .ring2{fill:none;stroke:var(--brass);stroke-width:.8;opacity:.65}
-.seal .scale{fill:none;stroke:var(--green);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.seal .dot{fill:var(--green)}
-.seal .sealtext{fill:var(--green-deep);font-family:'Marcellus',serif;font-size:5.3px;letter-spacing:1.4px}
-[data-theme="dark"] .seal .scale,[data-theme="dark"] .seal .dot{stroke:var(--green);fill:var(--green)}
-[data-theme="dark"] .seal .sealtext{fill:var(--brass)}
-[data-theme="dark"] .seal .disc{fill:#101A14}
-
-/* gate */
-.gate{min-height:100dvh;display:grid;place-items:center;padding:26px 16px}
-.gate-wrap{width:100%;max-width:460px}
-.gate-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;box-shadow:var(--shadow)}
-.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:6px}
-.wordmark{display:flex;align-items:baseline;gap:10px}
-.wordmark .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:30px;color:var(--green-deep);line-height:1.6}
-.wordmark .en{font-family:'Marcellus',serif;font-size:17px;letter-spacing:1.4px;color:var(--ink);text-transform:uppercase;text-align:center;line-height:1.25}
-[data-theme="dark"] .wordmark .ur{color:var(--brass)}
-.slogan{font-size:12.5px;color:var(--ink-faint);max-width:320px}
-.gate-h{font-family:'Marcellus',serif;font-size:21px;margin:20px 0 4px;text-align:center}
-.gate-sub{font-size:13px;color:var(--ink-faint);text-align:center;margin-bottom:20px}
-.tabs{display:flex;background:var(--sand);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;margin-bottom:18px}
-.tabs button{flex:1;border:none;background:none;padding:9px;border-radius:6px;font-weight:600;font-size:13.5px;color:var(--ink-soft)}
-.tabs button.on{background:var(--card);color:var(--green-deep);box-shadow:0 1px 2px rgba(0,0,0,.06)}
-[data-theme="dark"] .tabs button.on{color:var(--brass)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
-.field label .req{color:var(--red)}
-.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);transition:.15s}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
-.field textarea{resize:vertical;min-height:74px}
-.field .hint{font-size:11.5px;color:var(--ink-faint);margin-top:5px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.note{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:14px;line-height:1.6}
-
-.av-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.av{width:66px;height:66px;border-radius:50%;border:2px solid var(--brass);object-fit:cover;background:var(--green-tint);display:grid;place-items:center;color:var(--green);font-weight:700;font-size:24px;font-family:'Marcellus',serif;background-position:center}
-
-/* plans + pay */
-.plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.plan{border:1.5px solid var(--line);border-radius:var(--r);padding:16px 14px;background:var(--card);cursor:pointer;position:relative;transition:.15s;text-align:center}
-.plan:hover{border-color:var(--brass)}
-.plan.on{border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
-.plan .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--brass);color:#2A1E07;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
-.plan .price{font-family:'Marcellus',serif;font-size:27px;color:var(--green-deep)}
-[data-theme="dark"] .plan .price{color:var(--brass)}
-.plan .per{font-size:11.5px;color:var(--ink-faint)}
-.plan .save{font-size:11px;color:var(--green);font-weight:600;margin-top:4px}
-.pay-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.pm{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 11px;background:var(--card)}
-.pm .ic{width:36px;height:36px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px;font-family:'Spline Sans Mono',monospace}
-.pm .info{flex:1;min-width:0}.pm .info .l{font-size:13px;font-weight:600}
-.pm .info .v{font-size:12.5px;color:var(--ink-soft);font-family:'Spline Sans Mono',monospace;word-break:break-all}
-.pm .info .s{font-size:11px;color:var(--ink-faint)}
-.pm .copy{flex:none;border:1px solid var(--line);background:var(--sand);border-radius:7px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink)}
-.pm .copy:hover{border-color:var(--green);color:var(--green)}
-.ref-box{text-align:center;background:var(--green-tint);border:1px dashed var(--green);border-radius:var(--r-sm);padding:10px;margin-bottom:14px;font-size:12.5px;color:var(--ink-soft)}
-.ref-box b{font-family:'Spline Sans Mono',monospace;color:var(--green-deep);font-size:15px;letter-spacing:1px}
-[data-theme="dark"] .ref-box b{color:var(--brass)}
-.wa{background:#1f9d55 !important;border-color:#16723d !important;color:#fff !important;box-shadow:0 2px 0 #16723d !important}
-.divider{display:flex;align-items:center;gap:10px;color:var(--ink-faint);font-size:11.5px;margin:16px 0;text-transform:uppercase;letter-spacing:1px}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
-
-/* app shell */
-#appShell{min-height:100dvh;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F2EEE3;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 14px rgba(6,58,38,.25)}
-.tb-brand{display:flex;align-items:center;gap:10px}
-.tb-brand .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:22px;color:#F4D58D;line-height:1}
-.tb-brand .en{font-family:'Marcellus',serif;font-size:12.5px;letter-spacing:.8px;text-transform:uppercase}
-.tb-right{display:flex;align-items:center;gap:8px}
-.icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#F2EEE3;display:grid;place-items:center;font-size:15px}
-.icon-btn:hover{background:rgba(255,255,255,.18)}
-.userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:5px 10px 5px 5px;border-radius:30px;color:#F2EEE3;font-size:13px;font-weight:600}
-.userchip .av{width:28px;height:28px;font-size:13px;border-width:1.5px}
-.trial-banner{background:var(--brass);color:#2A1E07;text-align:center;font-size:12.5px;font-weight:600;padding:7px 14px}
-.trial-banner button{background:#2A1E07;color:#F4D58D;border:none;border-radius:20px;padding:3px 12px;font-size:11.5px;font-weight:700;margin-left:8px}
-
-.shell-body{display:flex;align-items:flex-start;max-width:1320px;margin:0 auto}
-.sidebar{width:228px;flex:none;position:sticky;top:60px;align-self:flex-start;height:calc(100dvh - 60px);overflow-y:auto;background:linear-gradient(180deg,var(--card),var(--paper));border-right:1px solid var(--line);padding:14px 12px 24px;z-index:35}
-.sidebar .nav-group{font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);padding:14px 12px 6px}
-.sidebar button{width:100%;border:none;background:none;text-align:left;padding:10px 12px;border-radius:10px;font-weight:600;font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:10px;margin-bottom:2px;transition:.13s}
-.sidebar button span{flex:1}
-.sidebar button:hover{background:var(--green-tint);color:var(--green-deep)}
-.sidebar button.on{background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F4F0E3;box-shadow:0 4px 12px rgba(12,110,72,.28)}
-.sidebar button.on:hover{color:#fff}
-.sidebar .pill{flex:none;background:var(--red);color:#fff;border-radius:20px;font-size:10px;font-weight:700;padding:1px 7px;min-width:18px;text-align:center}
-.sidebar button.on .pill{background:rgba(255,255,255,.3)}
-.nav-foot{margin-top:18px;padding:12px;border-top:1px solid var(--line-soft);font-family:'Marcellus',serif;font-size:12px;color:var(--ink-soft);line-height:1.5}
-.nav-foot span{font-family:'Inter',sans-serif;font-size:10.5px;color:var(--ink-faint)}
-.burger{display:none}
-.scrim{display:none}
-@media(max-width:900px){
-  .sidebar{position:fixed;left:0;top:0;height:100dvh;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.25);width:250px}
-  .sidebar.open{transform:none}
-  .burger{display:grid}
-  .scrim.show{display:block;position:fixed;inset:0;background:rgba(10,16,12,.45);z-index:34}
-}
-main{flex:1;min-width:0;width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 22px 80px}
-/* explore / content cards */
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-.tile{display:block;border:1px solid var(--line);border-radius:var(--r);padding:15px;background:var(--card);box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:.15s;position:relative;overflow:hidden}
-.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--green))}
-.tile:hover{transform:translateY(-3px);border-color:var(--accent,var(--brass))}
-.tile .tk{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent,var(--green));margin-bottom:6px}
-.tile .tt{font-weight:700;font-size:15px;color:var(--ink);margin-bottom:4px}
-.tile .td{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
-.tile .tgo{font-size:11.5px;color:var(--accent,var(--brass));font-weight:600;margin-top:8px;display:inline-block}
-.sec-head{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
-.sec-head .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#fff;font-size:15px;flex:none}
-.sec-head h3{font-family:'Marcellus',serif;font-weight:400;font-size:19px}
-.sec-head .sline{font-size:12px;color:var(--ink-faint)}
-.view{display:none}.view.on{display:block;animation:fade .25s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.page-head h2{font-family:'Marcellus',serif;font-size:23px;font-weight:400}
-.page-head .sub{font-size:13px;color:var(--ink-faint);margin-top:2px;max-width:560px}
-
-.info-card{background:var(--green-tint);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:16px}
-.info-card b{color:var(--green-deep)}
-[data-theme="dark"] .info-card b{color:var(--green)}
-
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
-.stat .n{font-family:'Marcellus',serif;font-size:30px;color:var(--green-deep);line-height:1}
-[data-theme="dark"] .stat .n{color:var(--brass)}
-.stat .l{font-size:11.5px;color:var(--ink-faint);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
-.stat.alert .n{color:var(--red)}
-
-.alert{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:10px}
-.alert.urgent{border-left-color:var(--red)}
-.alert .when{flex:none;text-align:center;min-width:52px}
-.alert .when .d{font-family:'Marcellus',serif;font-size:22px;color:var(--green-deep);line-height:1}
-.alert.urgent .when .d{color:var(--red)}
-.alert .when .m{font-size:10px;color:var(--ink-faint);text-transform:uppercase}
-.alert .body{flex:1;min-width:0}.alert .body .t{font-weight:600;font-size:14.5px}
-.alert .body .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
-.alert .tag{flex:none;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase}
-.tag.client{background:var(--sand);color:var(--ink-soft)}.tag.mine{background:var(--green-tint);color:var(--green-deep)}
-[data-theme="dark"] .tag.mine{color:var(--green)}
-
-.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.case{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);transition:.15s}
-.case:hover{border-color:var(--brass);transform:translateY(-2px)}
-.case .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
-.case .name{font-weight:700;font-size:15.5px;color:var(--green-deep)}
-[data-theme="dark"] .case .name{color:var(--brass)}
-.st{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;flex:none}
-.st.active{background:rgba(11,93,59,.13);color:var(--green)}
-.st.hold{background:rgba(169,120,31,.16);color:#8a6014}
-.st.complete{background:rgba(70,84,76,.14);color:var(--ink-soft)}
-[data-theme="dark"] .st.hold{color:var(--brass)}
-.case .meta{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12.5px;color:var(--ink-soft);margin:8px 0}
-.case .meta span{display:inline-flex;align-items:center;gap:5px}
-.case .next{background:var(--green-tint);border-left:3px solid var(--green);border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--green-deep);margin-top:8px}
-[data-theme="dark"] .case .next{color:var(--green)}
-.case .next.due{background:rgba(155,45,36,.08);border-left-color:var(--red);color:var(--red)}
-.case .rem{background:var(--paper);border:1px solid var(--line-soft);border-radius:7px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);margin-top:8px;font-style:italic}
-.case .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.file-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--ink-soft);text-decoration:none}
-.file-chip:hover{border-color:var(--green);color:var(--green)}
-.case .acts{display:flex;gap:7px;margin-top:12px}
-
-.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-.bar input,.bar select{padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);color:var(--ink)}
-.bar input{flex:1;min-width:180px}
-
-.empty{text-align:center;padding:48px 20px;color:var(--ink-faint)}
-.empty .seal{margin:0 auto 14px}
-.empty h3{font-family:'Marcellus',serif;font-weight:400;color:var(--ink-soft);font-size:19px;margin-bottom:6px}
-.empty p{font-size:13.5px;max-width:360px;margin:0 auto 16px}
-
-.cal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-head h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--ink-faint);padding:4px;text-transform:uppercase}
-.cal-day{min-height:72px;border:1px solid var(--line-soft);border-radius:8px;padding:5px;background:var(--paper);font-size:11px}
-.cal-day.out{opacity:.35}
-.cal-day.today{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
-.cal-day .dn{font-weight:700;color:var(--ink-soft)}
-.cal-ev{background:var(--green);color:#fff;border-radius:4px;padding:2px 4px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-ev.mine{background:var(--brass);color:#2A1E07}
-.cal-ev.rem{background:#6b4ea8;color:#fff}
-.cal-day{cursor:pointer;transition:.12s}.cal-day:hover{border-color:var(--brass);background:var(--green-tint)}
-.cal-day.out{cursor:default}.cal-day.out:hover{border-color:var(--line-soft);background:var(--paper)}
-.cal-add{position:absolute;opacity:0}
-/* clickable search results */
-.res-item{cursor:pointer}.res-item:hover{border-color:var(--brass);background:var(--green-tint)}
-.res-fields{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.res-f{font-size:10.5px;font-weight:600;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--ink-soft)}
-.res-go{font-size:11px;color:var(--brass);font-weight:600;float:right}
-/* helptip */
-.helptip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);font-size:11px;font-weight:700;cursor:help;margin-left:6px}
-.helptip .tipbox{display:none;position:absolute;bottom:130%;right:-6px;width:250px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:var(--shadow);padding:12px 13px;font-size:12px;color:var(--ink-soft);font-weight:400;z-index:20;line-height:1.5}
-.helptip:hover .tipbox{display:block}
-.helptip .tipbox::after{content:"";position:absolute;top:100%;right:10px;border:7px solid transparent;border-top-color:var(--card)}
-.helptip .tipbox b{color:var(--green-deep);display:block;margin-bottom:5px}
-[data-theme="dark"] .helptip .tipbox b{color:var(--green)}
-.helptip .tipbox ol{margin:0 0 8px 16px}.helptip .tipbox a{display:block;color:var(--brass);font-weight:600;margin-top:4px}
-.aikey-row{display:flex;align-items:center;gap:8px;margin-top:8px}
-.aikey-row input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink);font-size:12.5px}
-/* link chips + custom fields */
-.link-pick{display:flex;flex-wrap:wrap;gap:7px;max-height:120px;overflow:auto;border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;background:var(--paper)}
-.link-opt{font-size:12px;border:1px solid var(--line);border-radius:20px;padding:5px 11px;cursor:pointer;background:var(--card);color:var(--ink-soft)}
-.link-opt.on{background:var(--green-tint);border-color:var(--green);color:var(--green-deep);font-weight:600}
-[data-theme="dark"] .link-opt.on{color:var(--green)}
-.tagrow{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.tagrow .tg{font-size:11px;background:var(--green-tint);border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--green-deep)}
-[data-theme="dark"] .tagrow .tg{color:var(--green)}
-.cf-row{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-bottom:8px}
-.ev-row{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px;margin-bottom:10px;background:var(--paper)}
-.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ev-row input,.ev-row select,.ev-row textarea{padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink);font-size:13px;width:100%}
-.ev-row textarea{min-height:46px;resize:vertical}
-.ev-row .ev-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.ev-row .ev-head b{font-size:12.5px;color:var(--green-deep)}
-[data-theme="dark"] .ev-row .ev-head b{color:var(--brass)}
-.ev-row .ev-del{border:none;background:none;color:var(--red);cursor:pointer;font-size:13px}
-.ev-file{font-size:12px;margin-top:6px}
-.case .evlist{display:flex;flex-direction:column;gap:5px;margin-top:8px}
-.case .ev-line{font-size:12.5px;color:var(--ink-soft);display:flex;gap:7px;align-items:baseline}
-.case .ev-line .et{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--green-tint);color:var(--green-deep);border-radius:20px;padding:2px 8px;flex:none}
-[data-theme="dark"] .case .ev-line .et{color:var(--green)}
-.case .ev-line .es{font-size:10.5px;color:var(--ink-faint);flex:none}
-.cf-row input{padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink)}
-.cf-row button{border:1px solid var(--line);background:var(--sand);border-radius:7px;color:var(--red);cursor:pointer;padding:0 12px}
-.case .cflist{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
-.case .cflist b{color:var(--ink)}
-
-/* search */
-.search-block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
-.search-block h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px;margin-bottom:4px}
-.search-block .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
-.search-row{display:flex;gap:10px;flex-wrap:wrap}
-.search-row input{flex:1;min-width:200px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
-.search-row select{padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
-.res-item{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:8px;background:var(--card)}
-.res-item .rt{font-weight:600;font-size:14px}
-.res-item .rk{font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--green);background:var(--green-tint);padding:2px 8px;border-radius:20px;margin-left:6px}
-.res-item .rm{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
-mark{background:var(--brass);color:#2A1E07;border-radius:3px;padding:0 3px;font-weight:700}
-[data-theme="dark"] mark{background:var(--brass);color:#15201A}
-.cat-chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:5px 12px;margin:0 7px 7px 0;cursor:pointer;color:var(--ink-soft)}
-.cat-chip:hover{border-color:var(--brass);color:var(--green-deep)}
-[data-theme="dark"] .cat-chip:hover{color:var(--green)}
-.cat-chip b{color:var(--green-deep);font-family:'Spline Sans Mono',monospace}
-[data-theme="dark"] .cat-chip b{color:var(--brass)}
-.news-item{display:block;border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;background:var(--card);text-decoration:none;color:inherit}
-.news-item:hover{border-color:var(--brass)}
-.news-item .nt{font-weight:600;font-size:13.5px;color:var(--green-deep)}
-[data-theme="dark"] .news-item .nt{color:var(--brass)}
-.news-item .nm{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
-.news-item .nd{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
-.src-grid{display:flex;flex-wrap:wrap;gap:8px}
-.src-grid a{font-size:12.5px;border:1px solid var(--line);border-radius:20px;padding:6px 13px;text-decoration:none;color:var(--ink-soft);background:var(--card)}
-.src-grid a:hover{border-color:var(--green);color:var(--green-deep)}
-
-/* judgments */
-.jcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
-.jcard .jcite{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--brass);font-weight:600}
-.jcard .jname{font-weight:700;font-size:15.5px;color:var(--green-deep);margin:3px 0}
-[data-theme="dark"] .jcard .jname{color:var(--brass)}
-.jcard .jmeta{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
-.jcard .jhold{font-size:13px;color:var(--ink);margin:6px 0}
-.jcard .jnotes{background:var(--paper);border-left:3px solid var(--brass);border-radius:6px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);font-style:italic}
-
-/* panels / settings */
-.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;max-width:640px}
-.panel h3{font-family:'Marcellus',serif;font-weight:400;font-size:18px;margin-bottom:4px}
-.panel .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px}
-.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
-.kv:last-child{border-bottom:none}.kv .k{color:var(--ink-faint)}.kv .v{font-weight:600;text-align:right}
-.sub-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:20px}
-.sub-status.ok{background:var(--green-tint);color:var(--green-deep)}
-[data-theme="dark"] .sub-status.ok{color:var(--green)}
-.sub-status.exp{background:rgba(155,45,36,.1);color:var(--red)}
-details.help{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-soft)}
-details.help summary{cursor:pointer;font-weight:600;color:var(--green)}
-details.help ol{margin:8px 0 0 18px;line-height:1.7}
-details.help a{color:var(--brass)}
-
-/* modal */
-.overlay{position:fixed;inset:0;background:rgba(15,22,17,.55);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
-.overlay.on{display:flex}
-.modal{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);width:100%;max-width:580px;max-height:92dvh;overflow-y:auto;box-shadow:var(--shadow)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
-.modal-head h3{font-family:'Marcellus',serif;font-weight:400;font-size:19px}
-.modal-body{padding:20px 22px}
-.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--card)}
-.uploads{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-
-#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:200;opacity:0;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:90vw;text-align:center}
-#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
-.fab{position:fixed;right:20px;bottom:22px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--brass-soft),var(--brass));color:#2A1E07;font-size:26px;box-shadow:0 6px 22px rgba(169,120,31,.45);z-index:50;display:grid;place-items:center}
-
-@media(max-width:560px){.grid2{grid-template-columns:1fr}.plans{grid-template-columns:1fr}.userchip .nm{display:none}main{padding:18px 13px 80px}}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-</head>
-<body>
-
-<!-- ============ AUTH ============ -->
-<div class="gate" id="authScreen">
-  <div class="gate-wrap">
-    <div class="gate-card">
-      <div class="brand">
-        <svg class="seal" width="78" height="78" viewBox="0 0 80 80" id="sealAuth"></svg>
-        <div class="wordmark"><span class="en">PAK Lawyer&#39;s Notebook</span></div>
-        <div class="slogan">Every hearing, every file, in one place.</div>
-      </div>
-      <div class="tabs" id="authTabs">
-        <button class="on" data-tab="login">Sign in</button>
-        <button data-tab="register">Create account</button>
-      </div>
-      <div id="loginForm">
-        <div class="field"><label>Email or phone <span class="req">*</span></label><input id="liEmail" type="text" placeholder="you@example.com / 03xx-xxxxxxx"></div>
-        <div class="field"><label>Password <span class="req">*</span></label><input id="liPass" type="password" placeholder="Your password"></div>
-        <button class="btn primary wide" id="liBtn">Sign in</button>
-        <div class="note"><button class="link" id="toReg">New here? Create a free account</button> · <button class="link" id="forgotLink">Forgot password</button></div>
-      </div>
-      <div id="registerForm" class="hidden">
-        <div class="field"><label>Full name <span class="req">*</span></label><input id="rgName" type="text" placeholder="Adv. Your Name"></div>
-        <div class="grid2">
-          <div class="field"><label>Email <span class="req">*</span></label><input id="rgEmail" type="email" placeholder="you@example.com"></div>
-          <div class="field"><label>Phone <span class="req">*</span></label><input id="rgPhone" type="tel" placeholder="03xx-xxxxxxx"></div>
-        </div>
-        <div class="field"><label>Password <span class="req">*</span></label><input id="rgPass" type="password" placeholder="At least 6 characters"></div>
-        <button class="btn primary wide" id="rgBtn">Create account &amp; explore free</button>
-        <div class="note">Free to explore the full app — you only subscribe when you want to <b>save</b> your cases.<br><button class="link" id="toLogin">Already registered? Sign in</button></div>
-      </div>
-      <div class="note" style="margin-top:18px;border-top:1px solid var(--line-soft);padding-top:12px">
-        <button class="link" id="adminLink">⚙ Admin access</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ ADMIN CONSOLE (PIN, no account needed) ============ -->
-<div class="gate hidden" id="adminScreen">
-  <div class="gate-wrap">
-    <div class="gate-card" id="adminLock">
-      <div class="brand"><svg class="seal" width="58" height="58" viewBox="0 0 80 80" id="sealAdmin"></svg>
-        <div class="wordmark"><span class="en" style="font-size:18px">PAK Lawyer&#39;s Notebook · Admin</span></div></div>
-      <h2 class="gate-h">Owner console</h2>
-      <p class="gate-sub">Enter your admin PIN to manage subscriptions.</p>
-      <div class="field"><label>Admin PIN</label><input id="adminPin" type="password" placeholder="••••" style="text-align:center;letter-spacing:4px;font-size:18px"></div>
-      <button class="btn primary wide" id="adminEnter">Enter console</button>
-      <div class="note"><button class="link" id="adminBack">← Back to sign in</button></div>
-    </div>
-
-    <div class="gate-card hidden" id="adminTools" style="max-width:460px">
-      <h2 class="gate-h">Generate unlock code</h2>
-      <p class="gate-sub">Confirm the payment landed in your account, then make the code from the lawyer's email (or reference).</p>
-      <div class="field"><label>Lawyer's email <span class="hint" style="display:inline">(from their request)</span></label><input id="adEmail" type="text" placeholder="lawyer@example.com"></div>
-      <div class="note" style="margin:-6px 0 12px">— or paste their reference code directly —</div>
-      <div class="field"><label>Reference code</label><input id="adRef" placeholder="WK-XXXXXX" style="font-family:'Spline Sans Mono',monospace"></div>
-      <div class="field"><label>Plan paid</label><select id="adPlan"><option value="1m">1 month — ₨250</option><option value="6m">6 months — ₨1,000</option></select></div>
-      <button class="btn brass wide" id="adGen">Generate unlock code</button>
-      <div id="adOut" class="ref-box hidden" style="margin-top:14px;text-align:left"></div>
-
-      <div class="divider">Requests seen on this device</div>
-      <div id="adReqs" style="font-size:12.5px;color:var(--ink-faint)"></div>
-
-      <div class="note" style="margin-top:18px;border-top:1px solid var(--line-soft);padding-top:12px">
-        <button class="link danger" id="adminExit">Exit console</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ PROFILE ============ -->
-<div class="gate hidden" id="profileScreen">
-  <div class="gate-wrap"><div class="gate-card">
-    <h2 class="gate-h" id="profTitle">Set up your chambers</h2>
-    <p class="gate-sub">This appears on your dashboard.</p>
-    <div class="av-row">
-      <div class="av" id="profAv">?</div>
-      <div><button class="btn sm" id="profPhotoBtn">Upload photo</button>
-        <input type="file" id="profPhoto" accept="image/*" class="hidden">
-        <div class="hint" style="margin-top:6px">JPG/PNG, under 2 MB</div></div>
-    </div>
-    <div class="field"><label>Full name <span class="req">*</span></label><input id="pfName" type="text" placeholder="Adv. Your Name"></div>
-    <div class="grid2">
-      <div class="field"><label>Practice area <span class="req">*</span></label>
-        <select id="pfArea"><option value="">Choose…</option><option>Criminal</option><option>Civil</option><option>Family</option><option>Corporate / Commercial</option><option>Constitutional</option><option>Tax</option><option>Property / Revenue</option><option>Intellectual Property</option><option>Banking</option><option>Service / Labour</option><option>Other</option></select></div>
-      <div class="field"><label>Experience (years)</label><input id="pfExp" type="number" min="0" placeholder="e.g. 5"></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>City <span class="req">*</span></label><input id="pfCity" type="text" placeholder="e.g. Turbat / Karachi"></div>
-      <div class="field"><label>Bar enrolment no.</label><input id="pfBar" type="text" placeholder="optional"></div>
-    </div>
-    <button class="btn primary wide" id="pfSave">Save &amp; continue</button>
-    <div class="note"><button class="link danger" id="pfSignout">Sign out</button></div>
-  </div></div>
-</div>
-
-<!-- ============ APP ============ -->
-<div id="appShell" class="hidden">
-  <div class="topbar">
-    <div class="tb-brand"><button class="icon-btn burger" id="burger" title="Menu">☰</button><svg class="seal" width="32" height="32" viewBox="0 0 80 80" id="sealTop"></svg>
-      <div><span class="en">PAK Lawyer&#39;s Notebook</span></div></div>
-    <div class="tb-right">
-      <button class="icon-btn" id="themeBtn" title="Theme">◐</button>
-      <button class="userchip" id="userChip"><span class="av" id="chipAv">?</span><span class="nm" id="chipName">You</span></button>
-    </div>
-  </div>
-  <div class="trial-banner hidden" id="trialBanner">You're exploring free — saving is locked. <button id="trialCta">Subscribe to save</button></div>
-
-  <div class="shell-body">
-    <div class="scrim" id="scrim"></div>
-    <nav class="sidebar" id="tabbar">
-      <div class="nav-group">Workspace</div>
-      <button class="on" data-view="vAlerts">⚖︎ <span>Hearings</span> <span class="pill hidden" id="alertPill">0</span></button>
-      <button data-view="vMine">📁 <span>My cases</span></button>
-      <button data-view="vClient">👤 <span>Client cases</span></button>
-      <button data-view="vJudge">📜 <span>Judgments</span></button>
-      <button data-view="vSearch">🔍 <span>Search</span></button>
-      <button data-view="vCal">🗓 <span>Calendar</span></button>
-      <div class="nav-group">Explore &amp; learn</div>
-      <button data-view="vNews">📰 <span>Legal news</span></button>
-      <button data-view="vLive">🛰 <span>Live &amp; community</span></button>
-      <button data-view="vLearn">🎓 <span>Learning hub</span></button>
-      <button data-view="vMedia">🎬 <span>Media &amp; books</span></button>
-      <div class="nav-group">Account</div>
-      <button data-view="vSettings">⚙︎ <span>Settings</span></button>
-      <div class="nav-foot">PAK Lawyer&#39;s Notebook<br><span>Every hearing, every file, one place.</span></div>
-    </nav>
-
-  <main>
-    <!-- ALERTS -->
-    <section class="view on" id="vAlerts">
-      <div class="page-head"><div><h2>Hearings &amp; alerts</h2><div class="sub">Upcoming court dates (Peshi) across all your matters, nearest first.</div></div>
-        <button class="btn sm" id="remindBtn">🔔 Enable reminders</button></div>
-      <div class="stats" id="statRow"></div>
-      <div id="catSummary" style="margin-bottom:22px"></div>
-      <div id="alertList"></div>
-    </section>
-
-    <!-- MY CASES -->
-    <section class="view" id="vMine">
-      <div class="page-head"><div><h2>My cases</h2></div><button class="btn primary" id="addMine">＋ New matter</button></div>
-      <div class="info-card"><b>My cases</b> are matters where <b>you are a party</b> — your own legal affairs (your property, family, or personal disputes). Track their status, next hearing and notes here.</div>
-      <div class="bar"><input id="mineSearch" placeholder="Search these cases…"><select id="mineFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
-      <div class="cases" id="mineList"></div>
-    </section>
-
-    <!-- CLIENT CASES -->
-    <section class="view" id="vClient">
-      <div class="page-head"><div><h2>Client cases</h2></div><button class="btn primary" id="addClient">＋ New client case</button></div>
-      <div class="info-card"><b>Client cases</b> are matters you handle <b>for clients</b> — where you appear as their advocate. Track the client, co-counsel, hearing and outcome here. (Keeping them separate from <b>My cases</b> means your own affairs never mix with your clients'.)</div>
-      <div class="bar"><input id="clientSearch" placeholder="Search these cases…"><select id="clientFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
-      <div class="cases" id="clientList"></div>
-    </section>
-
-    <!-- JUDGMENTS -->
-    <section class="view" id="vJudge">
-      <div class="page-head"><div><h2>Judgments &amp; citations</h2><div class="sub">Save case law. Paste a URL or the judgment text and let AI fill the fields for you.</div></div>
-        <button class="btn primary" id="addJudge">＋ New judgment</button></div>
-      <div class="bar"><input id="judgeSearch" placeholder="Search saved judgments…"></div>
-      <div id="judgeList"></div>
-    </section>
-
-    <!-- SEARCH -->
-    <section class="view" id="vSearch">
-      <div class="page-head"><div><h2>Search &amp; research</h2></div></div>
-
-      <div class="search-block">
-        <h3>Search everything I've saved</h3>
-        <div class="desc">Like Ctrl+F across <b>all</b> your cases and judgments at once — every field, every section.</div>
-        <div class="search-row"><input id="localQ" placeholder="Type any keyword — name, court, party, citation, note…"></div>
-        <div id="localResults" style="margin-top:14px"></div>
-      </div>
-
-      <div class="search-block">
-        <h3>Search the courts &amp; legal web</h3>
-        <div class="desc">Pick a target — it opens Google focused on that source (site-scoped dork).</div>
-        <div class="search-row">
-          <select id="webTarget">
-            <option value="">General web</option>
-            <option value="site:supremecourt.gov.pk">Supreme Court of Pakistan</option>
-            <option value="site:lhc.gov.pk">Lahore High Court</option>
-            <option value="site:sindhhighcourt.gov.pk">Sindh High Court</option>
-            <option value="site:bhc.gov.pk">Balochistan High Court</option>
-            <option value="site:peshawarhighcourt.gov.pk">Peshawar High Court</option>
-            <option value="site:ihc.gov.pk">Islamabad High Court</option>
-            <option value="site:federalshariatcourt.gov.pk">Federal Shariat Court</option>
-            <option value="site:pakistancode.gov.pk">Pakistan Code (statutes)</option>
-            <option value="site:plsbeta.com OR site:pakistanlawsite.com">PLD / PLJ case law</option>
-            <option value="site:indiankanoon.org">Indian law (IndianKanoon)</option>
-          </select>
-          <input id="webQ" placeholder="e.g. bail section 497 misuse of narcotics">
-          <button class="btn primary" id="webGo">Search</button>
-        </div>
-        <div class="hint" style="margin-top:8px;font-size:11.5px;color:var(--ink-faint)">Opens in a new tab on Google with your target applied.</div>
-      </div>
-    </section>
-
-    <!-- NEWS -->
-    <section class="view" id="vNews">
-      <div class="page-head"><div><h2>Legal news &amp; reports</h2><div class="sub">Latest Pakistan court &amp; law headlines, plus trusted sources you can open.</div></div><button class="btn sm" id="newsRefresh">↻ Refresh</button></div>
-      <div class="search-block">
-        <h3>Latest headlines</h3>
-        <div class="desc">Pulled live from Pakistani legal/court coverage. Tap any item to read the full report.</div>
-        <div id="newsList"><div class="hint" style="display:block">Loading headlines…</div></div>
-      </div>
-      <div class="search-block">
-        <h3>Trusted sources</h3>
-        <div class="desc">Pakistani platforms, plus a couple of international ones.</div>
-        <div class="src-grid">
-          <a href="https://www.dawn.com/newspaper/national" target="_blank" rel="noopener">Dawn</a>
-          <a href="https://www.supremecourt.gov.pk/latest-judgements/" target="_blank" rel="noopener">Supreme Court — judgments</a>
-          <a href="https://www.thenews.com.pk/latest/category/national" target="_blank" rel="noopener">The News</a>
-          <a href="https://courtingthelaw.com/" target="_blank" rel="noopener">Courting The Law</a>
-          <a href="https://www.pakistantoday.com.pk/category/national/" target="_blank" rel="noopener">Pakistan Today</a>
-          <a href="https://nation.com.pk/national" target="_blank" rel="noopener">The Nation</a>
-          <a href="https://www.jurist.org/news/" target="_blank" rel="noopener">JURIST (intl)</a>
-          <a href="https://www.bbc.com/news/world/asia" target="_blank" rel="noopener">BBC Asia (intl)</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- LIVE & COMMUNITY -->
-    <section class="view" id="vLive">
-      <div class="page-head"><div><h2>Live &amp; community</h2><div class="sub">Current proceedings, legal discussions, X spaces, blogs &amp; channels worth following.</div></div><button class="btn sm" id="liveRefresh">↻ Refresh</button></div>
-      <div class="search-block">
-        <div class="sec-head"><span class="ic" style="background:var(--teal)">🛰</span><div><h3>Live scoreboard — what's happening now</h3><div class="sline">Latest court &amp; legal headlines from Pakistan.</div></div></div>
-        <div id="liveList"><div class="hint" style="display:block">Loading…</div></div>
-      </div>
-      <div class="search-block">
-        <div class="sec-head"><span class="ic" style="background:var(--blue)">𝕏</span><div><h3>Discussions &amp; X Spaces</h3><div class="sline">Open live conversations &amp; searches on X.</div></div></div>
-        <div class="tiles" id="liveX"></div>
-      </div>
-      <div class="search-block">
-        <div class="sec-head"><span class="ic" style="background:var(--indigo)">✍️</span><div><h3>Blogs &amp; channels to follow</h3><div class="sline">Quality legal commentary.</div></div></div>
-        <div class="tiles" id="liveBlogs"></div>
-      </div>
-    </section>
-
-    <!-- LEARNING HUB -->
-    <section class="view" id="vLearn">
-      <div class="page-head"><div><h2>Learning hub</h2><div class="sub">For students &amp; new lawyers — curated starting points. Tap any card to open.</div></div></div>
-      <div id="learnWrap"></div>
-    </section>
-
-    <!-- MEDIA & BOOKS -->
-    <section class="view" id="vMedia">
-      <div class="page-head"><div><h2>Media &amp; books</h2><div class="sub">Films, series and reading that every lawyer enjoys. Tap to open.</div></div></div>
-      <div id="mediaWrap"></div>
-    </section>
-
-    <!-- CALENDAR -->
-    <section class="view" id="vCal">
-      <div class="page-head"><div><h2>Calendar</h2><div class="sub">All hearings across your matters.</div></div></div>
-      <div class="cal"><div class="cal-head"><button class="btn sm" id="calPrev">‹ Prev</button><h3 id="calLabel">Month</h3><button class="btn sm" id="calNext">Next ›</button></div><div class="cal-grid" id="calGrid"></div></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section class="view" id="vSettings">
-      <div class="page-head"><div><h2>Settings</h2></div></div>
-
-      <div class="panel">
-        <h3>Subscription</h3>
-        <div class="desc">Saving cases requires an active subscription.</div>
-        <div class="kv"><span class="k">Status</span><span class="v" id="setSubStatus">—</span></div>
-        <div class="kv"><span class="k">Plan</span><span class="v" id="setSubPlan">—</span></div>
-        <div class="kv"><span class="k">Expires</span><span class="v" id="setSubExp">—</span></div>
-        <div class="kv"><span class="k">Your reference</span><span class="v" id="setSubRef">—</span></div>
-        <div style="margin-top:14px"><button class="btn primary" id="subscribeBtn">Subscribe / renew</button></div>
-      </div>
-
-      <div class="panel">
-        <h3>AI assistant (Gemini 2.5 Flash)</h3>
-        <div class="desc">Paste your Google AI Studio API key to auto-fill judgments from a URL or text. The key stays in this browser only.</div>
-        <div class="field"><label>Gemini API key</label><input id="aiKey" type="password" placeholder="AIza…"></div>
-        <button class="btn" id="aiSave">Save key</button> <button class="btn sm" id="aiClear">Remove</button>
-        <details class="help"><summary>How to get a free Gemini 2.5 Flash key</summary>
-          <ol>
-            <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> and sign in with Google.</li>
-            <li>Click <b>Create API key</b> → choose or create a project.</li>
-            <li>Copy the key that starts with <b>AIza…</b></li>
-            <li>Paste it above and press <b>Save key</b>. Done — the “Auto-fill with AI” button in Judgments now works.</li>
-          </ol>
-          Flash has a generous free tier. Keep your key private.
-          <a href="https://www.youtube.com/results?search_query=how+to+get+gemini+api+key+google+ai+studio" target="_blank" rel="noopener" style="display:block;margin-top:6px">▶ Watch a 2-min video guide</a>
-        </details>
-      </div>
-
-      <div class="panel"><h3>Profile</h3>
-        <div class="kv"><span class="k">Name</span><span class="v" id="setName">—</span></div>
-        <div class="kv"><span class="k">Practice area</span><span class="v" id="setArea">—</span></div>
-        <div class="kv"><span class="k">City</span><span class="v" id="setCity">—</span></div>
-        <div style="margin-top:14px"><button class="btn" id="editProfile">Edit profile</button></div>
-      </div>
-
-      <div class="panel"><h3>Data</h3>
-        <div class="desc">Everything is stored privately in this browser. Back it up regularly.</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn" id="exportData">Download backup</button>
-          <button class="btn" id="importBtn">Restore backup</button>
-          <input type="file" id="importFile" accept="application/json" class="hidden">
-        </div>
-      </div>
-
-      <div class="panel"><h3>Account</h3>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn" id="signoutBtn">Sign out</button>
-          <button class="btn" id="deleteAcct" style="border-color:var(--red);color:var(--red)">Delete account</button>
-        </div>
-      </div>
-    </section>
-  </main>
-  </div>
-  <button class="fab" id="fab" title="Quick add">＋</button>
-</div>
-
-<!-- ============ CASE MODAL ============ -->
-<div class="overlay" id="caseOverlay"><div class="modal">
-  <div class="modal-head"><h3 id="caseModalTitle">New matter</h3><button class="icon-btn" id="caseClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-  <div class="modal-body">
-    <input type="hidden" id="cId"><input type="hidden" id="cKind">
-    <div class="field"><label>Case / matter title <span class="req">*</span></label><input id="cTitle" placeholder="e.g. Khan vs Federation"></div>
-    <div class="grid2">
-      <div class="field"><label>Status <span class="req">*</span></label><select id="cStatus"><option>Active</option><option>Hold</option><option>Complete</option></select></div>
-      <div class="field"><label>Court</label><select id="cCourt"><option value="">Choose…</option><option>Supreme Court of Pakistan</option><option>Lahore High Court</option><option>Sindh High Court</option><option>Balochistan High Court</option><option>Peshawar High Court</option><option>Islamabad High Court</option><option>District &amp; Sessions Court</option><option>Civil Court</option><option>Family Court</option><option>Banking Court</option><option>Anti-Terrorism Court</option><option>Tribunal</option><option>Other</option></select></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Category</label><input id="cCategory" list="catList" placeholder="e.g. Bail, Appeal, Suit, Family"><datalist id="catList"><option>Bail</option><option>Appeal</option><option>Civil Suit</option><option>Criminal Trial</option><option>Family</option><option>Writ / Constitutional</option><option>Tax</option><option>Property / Revenue</option><option>Banking / Recovery</option><option>Service / Labour</option><option>Execution</option></datalist></div>
-      <div class="field"><label>Case / FIR no.</label><input id="cNumber" placeholder="optional"></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Opposing party</label><input id="cParty" placeholder="optional"></div>
-      <div class="field"></div>
-    </div>
-    <div class="grid2" id="clientOnly">
-      <div class="field"><label>Client name</label><input id="cClient" placeholder="optional"></div>
-      <div class="field"><label>Co-counsel</label><input id="cCounsel" placeholder="optional"></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Filed / opened on</label><input id="cOpened" type="date"></div>
-      <div class="field"><label>Next hearing (Peshi)</label><input id="cNext" type="date"></div>
-    </div>
-    <div class="field"><label>Remarks / notes</label><textarea id="cNotes" placeholder="Adjournment reason, directions, follow-ups, what to prepare…"></textarea></div>
-    <div class="field"><label>Your own sections <span class="hint" style="display:inline;font-weight:400">(add any field you track — category, stage, fee, witness…)</span></label>
-      <div id="cCustom"></div>
-      <button class="btn sm" id="cAddField" type="button">＋ Add section</button>
-      <datalist id="secList"><option>Stage</option><option>Case status detail</option><option>Next step</option><option>Last order / roznamcha</option><option>Adjournment reason</option><option>Filing date</option><option>Institution no.</option><option>Diary no.</option><option>Court room / hall</option><option>Judge name</option><option>Client CNIC</option><option>Client contact</option><option>Opponent counsel</option><option>Opponent contact</option><option>Witnesses</option><option>Agreed fee</option><option>Fee received</option><option>Fee pending</option><option>Court fee paid</option><option>Expenses</option><option>Limitation date</option><option>Appeal deadline</option><option>Filing deadline</option><option>Reference</option><option>Remarks</option></datalist></div>
-    <div class="field"><label>Evidence &amp; documents <span class="hint" style="display:inline;font-weight:400">(FIR, MLR, deeds, statements… with exhibit no. &amp; status)</span></label>
-      <div id="cEvidence"></div>
-      <button class="btn sm" id="cAddEv" type="button">＋ Add evidence / document</button>
-      <datalist id="evTypeList"></datalist><datalist id="docTypes"></datalist></div>
-    <div class="field"><label>Attach PDF / image</label><input id="cFiles" type="file" accept="application/pdf,image/*" multiple>
-      <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
-      <div class="uploads" id="cUploads"></div></div>
-  </div>
-  <div class="modal-foot"><button class="btn" id="caseCancel">Cancel</button><button class="btn primary" id="caseSave">Save matter</button></div>
-</div></div>
-
-<!-- ============ JUDGMENT MODAL ============ -->
-<div class="overlay" id="judgeOverlay"><div class="modal">
-  <div class="modal-head"><h3 id="judgeModalTitle">New judgment</h3><button class="icon-btn" id="judgeClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-  <div class="modal-body">
-    <input type="hidden" id="jId">
-    <div class="field" style="background:var(--green-tint);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px">
-      <label>AI Bhai — paste a judgment URL or its text, I'll fill the rest</label>
-      <textarea id="jSource" placeholder="Paste the judgment URL (e.g. https://...) or the full judgment text here…"></textarea>
-      <button class="btn brass sm" id="jAiBtn" style="margin-top:8px">✨ Auto-fill with AI Bhai</button>
-      <div class="aikey-row">
-        <input id="jKey" type="password" placeholder="Gemini 2.5 Flash API key (saved on this device)">
-        <span class="helptip">?
-          <span class="tipbox">
-            <b>Get a free Gemini API key</b>
-            <ol><li>Open Google AI Studio</li><li>Click <b>Create API key</b></li><li>Copy the <b>AIza…</b> key &amp; paste it here</li></ol>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Open AI Studio →</a>
-            <a href="https://www.youtube.com/results?search_query=how+to+get+gemini+api+key+google+ai+studio" target="_blank" rel="noopener">Watch a 2-min guide →</a>
-          </span>
-        </span>
-      </div>
-      <div class="hint" id="jAiHint">Your key stays in this browser only.</div>
-      <details class="help" style="margin-top:8px">
-        <summary>PDF won't let you copy? Convert it to text first</summary>
-        Some judgment PDFs are scanned or locked. Turn it into copyable text, then paste it above — or use the <b>Extract text</b> button near the attachments below.
-        <a href="https://www.ilovepdf.com/ocr-pdf" target="_blank" rel="noopener">iLovePDF — OCR PDF →</a>
-        <a href="https://tools.pdf24.org/en/ocr-pdf" target="_blank" rel="noopener">PDF24 — OCR PDF →</a>
-        <a href="https://www.onlineocr.net/" target="_blank" rel="noopener">OnlineOCR →</a>
-        <a href="https://www.youtube.com/results?search_query=how+to+convert+scanned+pdf+to+text+ocr" target="_blank" rel="noopener">▶ Watch a short how-to</a>
-      </details>
-    </div>
-    <div class="field"><label>Citation</label><input id="jCite" placeholder="e.g. PLD 2021 SC 451"></div>
-    <div class="field"><label>Case name / parties</label><input id="jName" placeholder="e.g. The State vs Imran Khan"></div>
-    <div class="grid2">
-      <div class="field"><label>Court</label><input id="jCourt" placeholder="e.g. Supreme Court"></div>
-      <div class="field"><label>Year</label><input id="jYear" type="number" placeholder="e.g. 2021"></div>
-    </div>
-    <div class="field"><label>Key holding</label><textarea id="jHold" placeholder="The ratio / principle decided…"></textarea></div>
-    <div class="field"><label>Summary</label><textarea id="jSummary" placeholder="Short summary of facts &amp; decision…"></textarea></div>
-    <div class="field"><label>Personal notes</label><textarea id="jNotes" placeholder="How this helps your matter, where to cite it…"></textarea></div>
-    <div class="field"><label>Tags <span class="hint" style="display:inline;font-weight:400">(comma separated — AI Bhai suggests these)</span></label><input id="jTags" placeholder="e.g. bail, section 497, narcotics"></div>
-    <div class="field"><label>Link to my / client cases <span class="hint" style="display:inline;font-weight:400">(tap to link — you can pick several)</span></label>
-      <div class="link-pick" id="jLinks"></div></div>
-    <div class="field"><label>Source URL</label><input id="jUrl" placeholder="https://…"></div>
-    <div class="field"><label>Full judgment text <span class="hint" style="display:inline;font-weight:400">(paste the whole text — kept &amp; searchable even if the link/PDF is lost)</span></label><textarea id="jFull" style="min-height:120px" placeholder="Paste the complete judgment text here…"></textarea></div>
-    <div class="field"><label>Attach PDF / image</label><input id="jFiles" type="file" accept="application/pdf,image/*" multiple>
-      <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
-      <div class="uploads" id="jUploads"></div>
-      <div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
-        <label style="font-weight:600;font-size:12.5px;color:var(--ink-soft)">Extract text from a file</label>
-        <input id="jExtractFile" type="file" accept="application/pdf,image/*,.docx" style="margin-top:6px">
-        <button class="btn sm" id="jExtractBtn" type="button" style="margin-top:8px">📄 Extract text → judgment box</button>
-        <div class="hint" id="jExtractHint">PDF, Word (.docx) or image. Drops into the full-text box; images use OCR (slower, needs internet).</div>
-      </div></div>
-  </div>
-  <div class="modal-foot"><button class="btn" id="judgeCancel">Cancel</button><button class="btn primary" id="judgeSave">Save judgment</button></div>
-</div></div>
-
-<!-- ============ SUBSCRIPTION MODAL ============ -->
-<div class="overlay" id="subOverlay"><div class="modal">
-  <div class="modal-head"><h3>Subscribe to save your work</h3><button class="icon-btn" id="subClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-  <div class="modal-body">
-    <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px">You can explore everything for free. To <b>save</b> cases and judgments, pick a plan, pay, then send the receipt — we unlock you the same day.</p>
-    <div class="plans" id="planPick">
-      <div class="plan on" data-plan="1m"><div class="price">₨250</div><div class="per">per month</div></div>
-      <div class="plan" data-plan="6m"><span class="badge">Best value</span><div class="price">₨1,000</div><div class="per">for 6 months</div><div class="save">Save ₨500</div></div>
-    </div>
-    <div class="pay-methods" id="payMethods"></div>
-    <div class="ref-box">Your reference code <b id="refCode">WK-000000</b><br><span>Write this in the payment note &amp; your message.</span></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn wa" style="flex:1" id="waBtn">Send proof on WhatsApp</button>
-      <button class="btn" style="flex:1" id="emailReqBtn">Request by email</button>
-    </div>
-    <div class="divider">After we confirm</div>
-    <div class="field"><label>Enter the unlock code we send you</label><input id="unlockInput" placeholder="Paste unlock code" style="font-family:'Spline Sans Mono',monospace;text-align:center"></div>
-    <button class="btn primary wide" id="unlockBtn">Unlock saving</button>
-    <div class="note">Questions? Email <b id="payEmail"></b></div>
-  </div>
-</div></div>
-
-<!-- ============ REMINDER MODAL ============ -->
-<div class="overlay" id="remOverlay"><div class="modal" style="max-width:440px">
-  <div class="modal-head"><h3 id="remTitle">Reminders</h3><button class="icon-btn" id="remClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
-  <div class="modal-body">
-    <input type="hidden" id="remDate">
-    <div id="remList" style="margin-bottom:14px"></div>
-    <div class="field"><label>Add a reminder for this day</label><input id="remText" placeholder="e.g. File written submissions"></div>
-    <button class="btn primary wide" id="remAdd">Add reminder</button>
-    <div class="note">Enable browser alerts with the 🔔 button on the Hearings tab to be notified within 2 days.</div>
-  </div>
-</div></div>
-
-<div id="toast"></div>
-
-<script>
-/* ===== CONFIG — edit before launch ===== */
-const ADMIN_EMAIL = "trendcatcher299@gmail.com";
-const ADMIN_PIN = "4841";                            // CHANGE THIS — used to open the admin console
-const ACTIVATION_SECRET = "WAKALAT-CHANGE-ME-7731";  // CHANGE THIS — keep private; validates unlock codes
-const PAY = {
-  WHATSAPP:"923323254841", EMAIL:"trendcatcher299@gmail.com",
-  METHODS:[
-    {ic:"EP",c:"#3aaa35",l:"Easypaisa",v:"0321-2736510",s:"Send to this number"},
-    {ic:"UP",c:"#e87722",l:"UPaisa",v:"0332-3254841",s:"Send to this number"},
-    {ic:"₨",c:"#0B5D3B",l:"Meezan Bank (IBAN)",v:"PK73MEZN0098590115082198",s:"Bank transfer / IBFT"}
-  ]
-};
-const PLANS={ "1m":{label:"1 month",price:"₨250",days:30}, "6m":{label:"6 months",price:"₨1,000",days:182} };
-
-/* ===== helpers ===== */
-const $=id=>document.getElementById(id);
-const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),2600);}
-function hash32(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return(h>>>0).toString(36).toUpperCase();}
-function todayISO(){return new Date().toISOString().slice(0,10);}
-function fmtDate(iso){if(!iso)return"—";const d=new Date(iso+"T00:00:00");return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
-function daysFromToday(iso){if(!iso)return null;const d=new Date(iso+"T00:00:00"),t=new Date(todayISO()+"T00:00:00");return Math.round((d-t)/86400000);}
-function readFiles(fileList,cb){
-  const out=[],arr=[...fileList];if(!arr.length){cb(out);return;}
-  let done=0;
-  arr.forEach(f=>{
-    if(f.size>3*1024*1024){toast(`"${f.name}" is over 3 MB — skipped`);if(++done===arr.length)cb(out);return;}
-    const r=new FileReader();r.onload=()=>{out.push({name:f.name,type:f.type,data:r.result});if(++done===arr.length)cb(out);};
-    r.onerror=()=>{if(++done===arr.length)cb(out);};r.readAsDataURL(f);
+  const filtered = arr.filter(c => {
+    const matchQ = !q || c.title.toLowerCase().includes(q) || (c.notes && c.notes.toLowerCase().includes(q)) || (c.court && c.court.toLowerCase().includes(q));
+    const matchFilter = filter === "ALL" || c.status === filter;
+    return matchQ && matchFilter;
   });
+
+  if(!filtered.length) {
+    list.innerHTML = `<div class="empty"><h3>No matters found</h3><p>Try changing your search or add a new case file.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(c => {
+    const statusClass = c.status.toLowerCase();
+    const dueClass = c.next && daysFromToday(c.next) <= 2 ? "due" : "";
+    return `
+      <div class="case">
+        <div class="top">
+          <div class="name">${esc(c.title)}</div>
+          <span class="st ${statusClass}">${esc(c.status)}</span>
+        </div>
+        <div class="meta">
+          <span>🏛 ${esc(c.court || "No court specified")}</span>
+          ${c.number ? `<span>🔢 No: ${esc(c.number)}</span>` : ""}
+        </div>
+        ${c.next ? `<div class="next ${dueClass}">🗓 Next Hearing: ${fmtDate(c.next)}</div>` : ""}
+        ${c.notes ? `<div class="rem">${esc(c.notes)}</div>` : ""}
+        <div class="acts">
+          <button class="btn sm" onclick="editCase('${kind}', '${c.id}')">✏️ Edit</button>
+          <button class="btn sm danger" onclick="deleteCase('${kind}', '${c.id}')">🗑 Delete</button>
+        </div>
+      </div>`;
+  }).join("");
 }
 
-/* ===== storage ===== */
-const DB={
-  users(){try{return JSON.parse(localStorage.getItem("wakalat.users")||"{}")}catch(e){return{}}},
-  saveUsers(u){localStorage.setItem("wakalat.users",JSON.stringify(u))},
-  session(){return localStorage.getItem("wakalat.session")||null},
-  setSession(e){e?localStorage.setItem("wakalat.session",e):localStorage.removeItem("wakalat.session")},
-  reqs(){try{return JSON.parse(localStorage.getItem("wakalat.requests")||"[]")}catch(e){return[]}},
-  saveReqs(r){localStorage.setItem("wakalat.requests",JSON.stringify(r))},
-  key(k){return"wakalat."+state.email+"."+k},
-  get(k,def){try{const v=localStorage.getItem(DB.key(k));return v?JSON.parse(v):def}catch(e){return def}},
-  set(k,v){try{localStorage.setItem(DB.key(k),JSON.stringify(v));return true}catch(e){toast("Storage full — remove some attachments or back up & clear");return false}}
-};
-let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],aikey:null,calMonth:new Date()};
-
-/* ===== seal ===== */
-function sealSVG(withText){
-  const base=`<circle class="disc" cx="40" cy="40" r="37"/><circle class="ring" cx="40" cy="40" r="37"/><circle class="ring2" cx="40" cy="40" r="32.5"/>`;
-  const scales=`<g class="scale"><line x1="40" y1="26" x2="40" y2="56"/><circle class="dot" cx="40" cy="24" r="2.4" stroke="none"/><line x1="24" y1="33" x2="56" y2="33"/><line x1="24" y1="33" x2="19" y2="44"/><line x1="24" y1="33" x2="29" y2="44"/><path d="M19 44a5 5 0 0 0 10 0"/><line x1="56" y1="33" x2="51" y2="44"/><line x1="56" y1="33" x2="61" y2="44"/><path d="M51 44a5 5 0 0 0 10 0"/><line x1="31" y1="56" x2="49" y2="56"/></g>`;
-  let text="";
-  if(withText)text=`<defs><path id="sp" d="M40,40 m-28,0 a28,28 0 1,1 56,0 a28,28 0 1,1 -56,0"/></defs><text class="sealtext"><textPath href="#sp" startOffset="0%">PAK LAWYER'S NOTEBOOK · PAKISTAN · LEGAL · </textPath></text>`;
-  return base+text+scales;
-}
-["sealAuth","sealAdmin","sealTop"].forEach(id=>{if($(id))$(id).innerHTML=sealSVG(id==="sealAuth");});
-
-/* ===== AUTH ===== */
-$("authTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...$("authTabs").children].forEach(x=>x.classList.toggle("on",x===b));$("loginForm").classList.toggle("hidden",b.dataset.tab!=="login");$("registerForm").classList.toggle("hidden",b.dataset.tab!=="register");});
-$("toReg").onclick=()=>$("authTabs").children[1].click();
-$("toLogin").onclick=()=>$("authTabs").children[0].click();
-function findUserByLogin(id){const users=DB.users();id=id.trim().toLowerCase();if(users[id])return users[id];return Object.values(users).find(u=>(u.phone||"").replace(/\D/g,"")===id.replace(/\D/g,"")&&id.replace(/\D/g,"").length>=7)||null;}
-$("rgBtn").onclick=()=>{
-  const name=$("rgName").value.trim(),email=$("rgEmail").value.trim().toLowerCase(),phone=$("rgPhone").value.trim(),pass=$("rgPass").value;
-  if(!name||!email||!phone||pass.length<6){toast("Fill name, email, phone and a 6+ char password");return;}
-  const users=DB.users();
-  if(users[email]){toast("That account already exists — sign in");return;}
-  users[email]={name,email,phone,pass:hash32(pass+email),createdAt:todayISO()};
-  DB.saveUsers(users);DB.setSession(email);state.email=email;
-  localStorage.setItem(DB.key("profile"),JSON.stringify({fullName:name}));
-  toast("Welcome to PAK Lawyer's Notebook");route();
-};
-$("liBtn").onclick=()=>{
-  const u=findUserByLogin($("liEmail").value),pass=$("liPass").value;
-  if(!u||u.pass!==hash32(pass+u.email)){toast("Wrong email/phone or password");return;}
-  DB.setSession(u.email);state.email=u.email;toast("Welcome back");route();
-};
-$("forgotLink").onclick=()=>{
-  const id=prompt("Enter your registered email to reset the password:");if(!id)return;
-  const u=findUserByLogin(id);if(!u){toast("No account found for that email");return;}
-  const np=prompt("Enter a new password (6+ characters):");if(!np||np.length<6){toast("Password too short");return;}
-  const users=DB.users();users[u.email].pass=hash32(np+u.email);DB.saveUsers(users);toast("Password updated — sign in now");
+window.editCase = (kind, id) => {
+  const arr = kind === "mine" ? state.mine : state.client;
+  const c = arr.find(x => x.id === id);
+  if(!c) return;
+  $("cId").value = c.id;
+  $("cKind").value = kind;
+  $("cTitle").value = c.title;
+  $("cStatus").value = c.status;
+  $("cCourt").value = c.court || "";
+  $("cCategory").value = c.category || "";
+  $("cNumber").value = c.number || "";
+  $("cParty").value = c.party || "";
+  $("cNotes").value = c.notes || "";
+  $("cOpened").value = c.opened || "";
+  $("cNext").value = c.next || "";
+  $("clientOnly").classList.toggle("hidden", kind === "mine");
+  if(kind === "client") {
+    $("cClient").value = c.client || "";
+    $("cCounsel").value = c.coCounsel || "";
+  }
+  $("caseOverlay").classList.add("on");
 };
 
-/* ===== ADMIN CONSOLE ===== */
-$("adminLink").onclick=()=>{showOnly("adminScreen");$("adminTools").classList.add("hidden");$("adminLock").classList.remove("hidden");$("adminPin").value="";};
-$("adminBack").onclick=()=>route();
-$("adminEnter").onclick=()=>{
-  if($("adminPin").value!==ADMIN_PIN){toast("Wrong PIN");return;}
-  $("adminLock").classList.add("hidden");$("adminTools").classList.remove("hidden");renderAdminReqs();
-};
-$("adminExit").onclick=()=>route();
-function refFromEmail(email){return"WK-"+hash32(email.trim().toLowerCase()).slice(0,6).padEnd(6,"0");}
-$("adGen").onclick=()=>{
-  let ref=$("adRef").value.trim().toUpperCase();
-  const email=$("adEmail").value.trim().toLowerCase();
-  if(!ref&&email)ref=refFromEmail(email);
-  if(!/^WK-[0-9A-Z]{6}$/.test(ref)){toast("Enter the lawyer's email, or a valid WK-XXXXXX reference");return;}
-  const plan=$("adPlan").value;
-  const exp=new Date();exp.setDate(exp.getDate()+PLANS[plan].days);
-  const expiresAt=exp.toISOString().slice(0,10);
-  const code=makeUnlock(ref,plan,expiresAt);
-  const out=$("adOut");out.classList.remove("hidden");
-  out.innerHTML=`<div style="margin-bottom:6px">Code for <b>${esc(ref)}</b> · ${PLANS[plan].label} · expires ${fmtDate(expiresAt)}</div>
-    <b style="font-size:12px;word-break:break-all">${esc(code)}</b>
-    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-      <button class="btn sm" id="adCopy">Copy code</button>
-      ${email?`<button class="btn sm" id="adMail">Email to ${esc(email)}</button>`:""}
-    </div>`;
-  $("adCopy").onclick=()=>navigator.clipboard?.writeText(code).then(()=>toast("Copied"),()=>toast(code));
-  if(email)$("adMail").onclick=()=>{const sub="Your PAK Lawyer's Notebook unlock code";const body=`Assalam o Alaikum,\n\nThank you for subscribing to PAK Lawyer's Notebook (${PLANS[plan].label}).\n\nYour unlock code:\n${code}\n\nOpen PAK Lawyer's Notebook → Settings → Subscribe / renew → paste this code → Unlock saving.\nIt is valid until ${fmtDate(expiresAt)}.\n\nRegards,\nPAK Lawyer's Notebook`;window.open(`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
-};
-function renderAdminReqs(){
-  const r=DB.reqs();
-  $("adReqs").innerHTML=r.length?r.slice(-8).reverse().map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--line-soft)"><b>${esc(x.name||"—")}</b> · ${esc(x.plan)}<br>${esc(x.email)} · ${esc(x.phone||"")}<br><span style="font-family:'Spline Sans Mono',monospace;color:var(--green)">${esc(x.ref)}</span> <button class="link" data-ref="${esc(x.ref)}" data-email="${esc(x.email)}">use</button></div>`).join(""):"No requests captured on this device yet. Requests also arrive in your email / WhatsApp inbox.";
-  $("adReqs").querySelectorAll("button[data-ref]").forEach(b=>b.onclick=()=>{$("adRef").value=b.dataset.ref;$("adEmail").value=b.dataset.email;toast("Filled — pick plan & generate");});
-}
-
-/* unlock token */
-function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`;return btoa(base).replace(/=/g,"")+"."+hash32(base+ACTIVATION_SECRET);}
-function verifyUnlock(token,ref){try{const[b64,sig]=token.trim().split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
-
-/* ===== ROUTING ===== */
-function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.aikey=DB.get("aikey",null);}
-function isAdmin(){return state.email===ADMIN_EMAIL;}
-function subActive(){return isAdmin()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
-function canSave(){return subActive();}
-function showOnly(id){["authScreen","adminScreen","profileScreen","appShell"].forEach(s=>$(s).classList.toggle("hidden",s!==id));}
-function route(){
-  state.email=DB.session();
-  if(!state.email){showOnly("authScreen");return;}
-  loadState();
-  if(!state.profile||!state.profile.area||!state.profile.city){openProfile();showOnly("profileScreen");return;}
-  enterApp();
-}
-
-/* ===== PROFILE ===== */
-let pendingPhoto=null;
-function openProfile(){const p=state.profile||{};$("pfName").value=p.fullName||"";$("pfArea").value=p.area||"";$("pfExp").value=p.exp||"";$("pfCity").value=p.city||"";$("pfBar").value=p.bar||"";pendingPhoto=p.photo||null;paintAvatar($("profAv"),p.fullName,p.photo);$("profTitle").textContent=(p.area&&p.city)?"Edit your chambers":"Set up your chambers";}
-function paintAvatar(el,name,photo){if(photo){el.style.backgroundImage=`url(${photo})`;el.style.backgroundSize="cover";el.textContent="";}else{el.style.backgroundImage="";el.textContent=(name||"?").trim().charAt(0).toUpperCase()||"?";}}
-$("profPhotoBtn").onclick=()=>$("profPhoto").click();
-$("profPhoto").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image must be under 2 MB");return;}const r=new FileReader();r.onload=()=>{pendingPhoto=r.result;paintAvatar($("profAv"),$("pfName").value,pendingPhoto);};r.readAsDataURL(f);};
-$("pfSave").onclick=()=>{const fullName=$("pfName").value.trim(),area=$("pfArea").value,city=$("pfCity").value.trim();if(!fullName||!area||!city){toast("Name, practice area and city are required");return;}state.profile={fullName,area,city,exp:$("pfExp").value,bar:$("pfBar").value.trim(),photo:pendingPhoto};DB.set("profile",state.profile);const users=DB.users();if(users[state.email]){users[state.email].name=fullName;DB.saveUsers(users);}toast("Profile saved");route();};
-$("pfSignout").onclick=signOut;
-
-/* ===== APP ===== */
-function enterApp(){
-  showOnly("appShell");
-  paintAvatar($("chipAv"),state.profile.fullName,state.profile.photo);
-  $("chipName").textContent=(state.profile.fullName||"You").split(" ").slice(0,2).join(" ");
-  $("aiKey").value=state.aikey||"";
-  $("payEmail").textContent=PAY.EMAIL;
-  $("trialBanner").classList.toggle("hidden",subActive());
+window.deleteCase = (kind, id) => {
+  if(!confirm("Are you sure you want to permanently delete this matter?")) return;
+  if(kind === "mine") {
+    state.mine = state.mine.filter(x => x.id !== id);
+    DB.set("mine", state.mine);
+  } else {
+    state.client = state.client.filter(x => x.id !== id);
+    DB.set("client", state.client);
+  }
+  toast("Matter deleted successfully");
   renderAll();
-}
-function renderAll(){renderAlerts();renderCases("mine");renderCases("client");renderJudge();renderCalendar();renderSettings();}
-function closeDrawer(){$("tabbar").classList.remove("open");$("scrim").classList.remove("show");}
-$("burger").onclick=()=>{const o=$("tabbar").classList.toggle("open");$("scrim").classList.toggle("show",o);};
-$("scrim").onclick=closeDrawer;
-$("tabbar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...$("tabbar").querySelectorAll("button")].forEach(x=>x.classList.toggle("on",x===b));["vAlerts","vMine","vClient","vJudge","vSearch","vNews","vLive","vLearn","vMedia","vCal","vSettings"].forEach(v=>$(v).classList.toggle("on",v===b.dataset.view));const v=b.dataset.view;if(v==="vNews")loadNews();if(v==="vLive")loadLive();if(v==="vLearn")renderLearn();if(v==="vMedia")renderMedia();window.scrollTo(0,0);closeDrawer();});
-
-/* ---------- robust RSS (CORS proxy + fallback) ---------- */
-async function fetchRSS(query){
-  const url="https://news.google.com/rss/search?q="+encodeURIComponent(query+" when:30d")+"&hl=en-PK&gl=PK&ceid=PK:en";
-  // 1) allorigins raw + XML parse
-  try{
-    const r=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url));
-    const xml=await r.text();
-    const doc=new DOMParser().parseFromString(xml,"text/xml");
-    const items=[...doc.querySelectorAll("item")].map(it=>({title:it.querySelector("title")?.textContent||"",link:it.querySelector("link")?.textContent||"",date:it.querySelector("pubDate")?.textContent||"",desc:(it.querySelector("description")?.textContent||"").replace(/<[^>]+>/g," ")}));
-    if(items.length)return items;
-  }catch(e){}
-  // 2) rss2json fallback
-  try{
-    const r=await fetch("https://api.rss2json.com/v1/api.json?count=10&rss_url="+encodeURIComponent(url));
-    const d=await r.json();
-    if(d.items&&d.items.length)return d.items.map(it=>({title:it.title,link:it.link,date:it.pubDate,desc:(it.description||"").replace(/<[^>]+>/g," ")}));
-  }catch(e){}
-  return [];
-}
-function newsItemHTML(it){
-  const src=(it.title.split(" - ").pop())||"";
-  const title=it.title.replace(/ - [^-]*$/,"");
-  const date=it.date?new Date(it.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):"";
-  return `<a class="news-item" href="${it.link}" target="_blank" rel="noopener"><div class="nt">${esc(title)}</div><div class="nm">${esc(src)} · ${esc(date)}</div><div class="nd">${esc((it.desc||"").slice(0,150))}…</div></a>`;
-}
-let newsLoaded=false;
-async function loadNews(force){
-  if(newsLoaded&&!force)return; newsLoaded=true;
-  const box=$("newsList");box.innerHTML=`<div class="hint" style="display:block">Loading headlines…</div>`;
-  const items=await fetchRSS("Pakistan (court OR judgment OR law OR \"Supreme Court\" OR \"High Court\")");
-  box.innerHTML=items.length?items.slice(0,9).map(newsItemHTML).join(""):`<div class="hint" style="display:block">Live headlines couldn't load right now (network/proxy). Open a trusted source below — they always work.</div>`;
-}
-$("newsRefresh").onclick=()=>loadNews(true);
-
-/* ---------- LIVE & COMMUNITY ---------- */
-let liveLoaded=false;
-const X_LINKS=[
-  {k:"X search",t:"Pakistan Supreme Court",d:"Live posts on apex-court hearings",u:"https://x.com/search?q=Pakistan%20Supreme%20Court&f=live",a:"var(--blue)"},
-  {k:"X search",t:"#PakistanLaw / courts",d:"Legal news & reactions in real time",u:"https://x.com/search?q=%23PakistanLaw%20OR%20Pakistan%20court&f=live",a:"var(--blue)"},
-  {k:"X spaces",t:"Live law Spaces",d:"Audio rooms on law & politics",u:"https://x.com/search?q=law%20Pakistan&f=spaces",a:"var(--teal)"},
-  {k:"X search",t:"Bar & bench talk",d:"Lawyers, bars & judges discourse",u:"https://x.com/search?q=Pakistan%20bar%20council%20OR%20lawyers&f=live",a:"var(--blue)"}
-];
-const BLOGS=[
-  {k:"Blog",t:"Courting The Law",d:"Pakistan's leading legal commentary site",u:"https://courtingthelaw.com/",a:"var(--indigo)"},
-  {k:"Reports",t:"Supreme Court — judgments",d:"Latest reported decisions",u:"https://www.supremecourt.gov.pk/latest-judgements/",a:"var(--green)"},
-  {k:"News",t:"Dawn — Law & Courts",d:"National coverage of legal affairs",u:"https://www.dawn.com/newspaper/national",a:"var(--plum)"},
-  {k:"YouTube",t:"Pakistani law lectures",d:"Search legal explainers & lectures",u:"https://www.youtube.com/results?search_query=Pakistan+law+lecture+court",a:"var(--red)"},
-  {k:"Journal",t:"PLD / PLJ online",d:"Case-law reporters",u:"https://www.google.com/search?q=PLD+OR+PLJ+Pakistan+case+law",a:"var(--amber)"},
-  {k:"Forum",t:"Reddit r/pakistan law",d:"Community questions & threads",u:"https://www.reddit.com/r/pakistan/search/?q=law%20court",a:"var(--teal)"}
-];
-function tileHTML(x){return `<a class="tile" style="--accent:${x.a}" href="${x.u}" target="_blank" rel="noopener"><div class="tk">${esc(x.k)}</div><div class="tt">${esc(x.t)}</div><div class="td">${esc(x.d)}</div><span class="tgo">Open ›</span></a>`;}
-async function loadLive(force){
-  $("liveX").innerHTML=X_LINKS.map(tileHTML).join("");
-  $("liveBlogs").innerHTML=BLOGS.map(tileHTML).join("");
-  if(liveLoaded&&!force)return; liveLoaded=true;
-  const box=$("liveList");box.innerHTML=`<div class="hint" style="display:block">Loading…</div>`;
-  const items=await fetchRSS("Pakistan (hearing OR proceedings OR \"Supreme Court\" OR \"High Court\" OR verdict)");
-  box.innerHTML=items.length?items.slice(0,8).map(newsItemHTML).join(""):`<div class="hint" style="display:block">Live feed couldn't load right now — try Refresh, or open the discussions/blogs below.</div>`;
-}
-$("liveRefresh").onclick=()=>loadLive(true);
-
-/* ---------- LEARNING HUB ---------- */
-const LEARN=[
-  {g:"Foundations",a:"var(--green)",items:[
-    {t:"Constitution of Pakistan — basics",d:"Articles, fundamental rights, structure",u:"https://www.youtube.com/results?search_query=Constitution+of+Pakistan+explained"},
-    {t:"CrPC for beginners",d:"Criminal procedure, FIR to trial",u:"https://www.youtube.com/results?search_query=CrPC+Pakistan+explained+beginners"},
-    {t:"CPC for beginners",d:"Civil procedure, suit to decree",u:"https://www.youtube.com/results?search_query=CPC+Pakistan+civil+procedure+explained"},
-    {t:"Pakistan Code (all statutes)",d:"Official full text of laws",u:"https://pakistancode.gov.pk/"}
-  ]},
-  {g:"Drafting & practice",a:"var(--brass)",items:[
-    {t:"Drafting a plaint & written statement",d:"Templates & walkthroughs",u:"https://www.youtube.com/results?search_query=how+to+draft+plaint+written+statement+Pakistan"},
-    {t:"Bail application — how to argue",d:"Section 497 CrPC in practice",u:"https://www.youtube.com/results?search_query=how+to+argue+bail+497+CrPC+Pakistan"},
-    {t:"Legal notice drafting",d:"Format & language",u:"https://www.youtube.com/results?search_query=legal+notice+drafting+Pakistan"}
-  ]},
-  {g:"Advocacy & skills",a:"var(--indigo)",items:[
-    {t:"Cross-examination skills",d:"Techniques & strategy",u:"https://www.youtube.com/results?search_query=cross+examination+techniques+lawyer"},
-    {t:"Moot court & mooting",d:"Argument structure, etiquette",u:"https://www.youtube.com/results?search_query=moot+court+how+to+argue"},
-    {t:"Legal English & writing",d:"Clear professional drafting",u:"https://www.youtube.com/results?search_query=legal+english+writing+for+lawyers"}
-  ]},
-  {g:"Exams & careers",a:"var(--plum)",items:[
-    {t:"LAW-GAT / bar exam prep",d:"Syllabus & past-paper practice",u:"https://www.youtube.com/results?search_query=LAW+GAT+Pakistan+preparation"},
-    {t:"Litigation vs corporate paths",d:"Choosing your track",u:"https://www.youtube.com/results?search_query=litigation+vs+corporate+lawyer+career"}
-  ]}
-];
-function renderLearn(){
-  $("learnWrap").innerHTML=LEARN.map(sec=>`<div class="sec-head"><span class="ic" style="background:${sec.a}">🎓</span><div><h3>${esc(sec.g)}</h3></div></div><div class="tiles">${sec.items.map(i=>`<a class="tile" style="--accent:${sec.a}" href="${i.u}" target="_blank" rel="noopener"><div class="tk">Learn</div><div class="tt">${esc(i.t)}</div><div class="td">${esc(i.d)}</div><span class="tgo">Open ›</span></a>`).join("")}</div>`).join("");
-}
-
-/* ---------- MEDIA & BOOKS ---------- */
-const MEDIA=[
-  {g:"Films every lawyer should watch",a:"var(--red)",items:[
-    {t:"To Kill a Mockingbird",d:"Justice, race & courage (1962)",u:"https://www.imdb.com/find/?q=To%20Kill%20a%20Mockingbird"},
-    {t:"12 Angry Men",d:"Reasonable doubt, deliberation (1957)",u:"https://www.imdb.com/find/?q=12%20Angry%20Men"},
-    {t:"A Few Good Men",d:"Military court-martial drama",u:"https://www.imdb.com/find/?q=A%20Few%20Good%20Men"},
-    {t:"The Trial of the Chicago 7",d:"Political trial, free speech",u:"https://www.imdb.com/find/?q=The%20Trial%20of%20the%20Chicago%207"}
-  ]},
-  {g:"Series to binge",a:"var(--indigo)",items:[
-    {t:"Suits",d:"Corporate law & sharp dialogue",u:"https://www.imdb.com/find/?q=Suits"},
-    {t:"Better Call Saul",d:"A lawyer's making & unmaking",u:"https://www.imdb.com/find/?q=Better%20Call%20Saul"},
-    {t:"The Good Wife",d:"Litigation & politics",u:"https://www.imdb.com/find/?q=The%20Good%20Wife"},
-    {t:"Boston Legal",d:"Courtroom wit",u:"https://www.imdb.com/find/?q=Boston%20Legal"}
-  ]},
-  {g:"Drama & justice (South Asia)",a:"var(--plum)",items:[
-    {t:"Pakistani social-justice dramas",d:"Search standout, issue-driven serials",u:"https://www.youtube.com/results?search_query=Pakistani+drama+justice+court+social"},
-    {t:"Indian courtroom films",d:"Pink, Jolly LLB & more",u:"https://www.imdb.com/find/?q=courtroom%20india"}
-  ]},
-  {g:"Books & literature",a:"var(--brass)",items:[
-    {t:"The Rule of Law — Tom Bingham",d:"What the rule of law means",u:"https://www.goodreads.com/search?q=The%20Rule%20of%20Law%20Bingham"},
-    {t:"Constitutional Law of Pakistan — Hamid Khan",d:"The standard reference",u:"https://www.goodreads.com/search?q=Constitutional%20Law%20of%20Pakistan%20Hamid%20Khan"},
-    {t:"Letters to a Law Student",d:"For students starting out",u:"https://www.goodreads.com/search?q=Letters%20to%20a%20Law%20Student"},
-    {t:"The Concept of Law — H.L.A. Hart",d:"Legal philosophy classic",u:"https://www.goodreads.com/search?q=The%20Concept%20of%20Law%20Hart"}
-  ]}
-];
-function renderMedia(){
-  $("mediaWrap").innerHTML=MEDIA.map(sec=>`<div class="sec-head"><span class="ic" style="background:${sec.a}">🎬</span><div><h3>${esc(sec.g)}</h3></div></div><div class="tiles">${sec.items.map(i=>`<a class="tile" style="--accent:${sec.a}" href="${i.u}" target="_blank" rel="noopener"><div class="tk">${esc(sec.g.split(" ")[0])}</div><div class="tt">${esc(i.t)}</div><div class="td">${esc(i.d)}</div><span class="tgo">Open ›</span></a>`).join("")}</div>`).join("");
-}
-$("userChip").onclick=()=>$("tabbar").querySelector('[data-view="vSettings"]').click();
-$("themeBtn").onclick=()=>{const cur=document.documentElement.getAttribute("data-theme")==="dark"?"":"dark";document.documentElement.setAttribute("data-theme",cur);localStorage.setItem("wakalat.theme",cur);};
-$("trialCta").onclick=openSub;
-
-/* ALERTS + reminders */
-$("remindBtn").onclick=()=>{
-  if(!("Notification"in window)){toast("This browser can't show reminders");return;}
-  Notification.requestPermission().then(p=>{if(p==="granted"){localStorage.setItem("wakalat.remind","1");toast("Reminders on — we'll alert you for hearings within 2 days");fireReminders();}else toast("Reminders blocked in browser settings");});
 };
-function fireReminders(){
-  if(localStorage.getItem("wakalat.remind")!=="1"||Notification.permission!=="granted")return;
-  const hearings=[...state.mine,...state.client].filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)>=0&&daysFromToday(c.next)<=2).map(c=>`${c.title} · ${fmtDate(c.next)}`);
-  const rems=state.reminders.filter(r=>{const d=daysFromToday(r.date);return d!=null&&d>=0&&d<=2;}).map(r=>`🔔 ${r.text} · ${fmtDate(r.date)}`);
-  const soon=[...hearings,...rems];
-  const key="wakalat.remind.fired."+todayISO();
-  if(soon.length&&localStorage.getItem(key)!=="1"){
-    new Notification("PAK Lawyer's Notebook — coming up",{body:soon.join("\n")});
-    localStorage.setItem(key,"1");
+
+/* ===== MODAL RIGGING ===== */
+$("addMine").onclick = () => {
+  $("cId").value = "";
+  $("cKind").value = "mine";
+  $("cTitle").value = "";
+  $("cNotes").value = "";
+  $("cNext").value = "";
+  $("clientOnly").classList.add("hidden");
+  $("caseOverlay").classList.add("on");
+};
+
+$("addClient").onclick = () => {
+  $("cId").value = "";
+  $("cKind").value = "client";
+  $("cTitle").value = "";
+  $("cNotes").value = "";
+  $("cNext").value = "";
+  $("clientOnly").classList.remove("hidden");
+  $("cClient").value = "";
+  $("cCounsel").value = "";
+  $("caseOverlay").classList.add("on");
+};
+
+$("caseClose").onclick = $("caseCancel").onclick = () => $("caseOverlay").classList.remove("on");
+
+$("caseSave").onclick = () => {
+  if(!canSave()) { openSub(); return; }
+  const kind = $("cKind").value;
+  const id = $("cId").value || "C-" + Date.now().toString(36);
+  const title = $("cTitle").value.trim();
+  if(!title) { toast("Case title is required"); return; }
+
+  const data = {
+    id,
+    title,
+    status: $("cStatus").value,
+    court: $("cCourt").value,
+    category: $("cCategory").value,
+    number: $("cNumber").value.trim(),
+    party: $("cParty").value.trim(),
+    opened: $("cOpened").value,
+    next: $("cNext").value,
+    notes: $("cNotes").value.trim()
+  };
+
+  if(kind === "client") {
+    data.client = $("cClient").value.trim();
+    data.coCounsel = $("cCounsel").value.trim();
+  }
+
+  if(kind === "mine") {
+    state.mine = state.mine.filter(x => x.id !== id);
+    state.mine.push(data);
+    DB.set("mine", state.mine);
+  } else {
+    state.client = state.client.filter(x => x.id !== id);
+    state.client.push(data);
+    DB.set("client", state.client);
+  }
+
+  toast("Matter saved contextually.");
+  $("caseOverlay").classList.remove("on");
+  renderAll();
+};
+
+/* ===== JUDGMENTS ===== */
+function renderJudge() {
+  const list = $("judgeList");
+  if(!list) return;
+  const q = ($("judgeSearch")?.value || "").toLowerCase();
+  const filtered = state.judge.filter(j => !q || j.cite.toLowerCase().includes(q) || j.name.toLowerCase().includes(q) || j.hold.toLowerCase().includes(q));
+
+  if(!filtered.length) {
+    list.innerHTML = `<div class="empty"><h3>No judgments cataloged</h3><p>Add annotations or link key precedent case-law rulings.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(j => `
+    <div class="jcard">
+      <div class="jcite">${esc(j.cite)}</div>
+      <div class="jname">${esc(j.name)}</div>
+      <div class="jmeta">${esc(j.court)} · ${esc(j.year)}</div>
+      <div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>
+      ${j.notes ? `<div class="jnotes">${esc(j.notes)}</div>` : ""}
+    </div>
+  `).join("");
+}
+
+$("addJudge").onclick = () => {
+  $("jId").value = "";
+  $("jCite").value = "";
+  $("jName").value = "";
+  $("jCourt").value = "";
+  $("jYear").value = "";
+  $("jHold").value = "";
+  $("jNotes").value = "";
+  $("judgeOverlay").classList.add("on");
+};
+$("judgeClose").onclick = $("judgeCancel").onclick = () => $("judgeOverlay").classList.remove("on");
+
+$("judgeSave").onclick = () => {
+  if(!canSave()) { openSub(); return; }
+  const id = $("jId").value || "J-" + Date.now().toString(36);
+  const cite = $("jCite").value.trim();
+  const name = $("jName").value.trim();
+  if(!cite || !name) { toast("Citation and Case Name required"); return; }
+
+  const data = {
+    id, cite, name,
+    court: $("jCourt").value.trim(),
+    year: $("jYear").value,
+    hold: $("jHold").value.trim(),
+    notes: $("jNotes").value.trim()
+  };
+
+  state.judge = state.judge.filter(x => x.id !== id);
+  state.judge.push(data);
+  DB.set("judge", state.judge);
+
+  toast("Precedent captured.");
+  $("judgeOverlay").classList.remove("on");
+  renderAll();
+};
+
+/* ===== SEARCH INDEX ===== */
+$("localQ").oninput = () => {
+  const q = $("localQ").value.toLowerCase().trim();
+  const resBox = $("localResults");
+  if(!q) { resBox.innerHTML = ""; return; }
+
+  let out = "";
+  const match = (text) => String(text || "").toLowerCase().includes(q);
+
+  state.mine.forEach(c => {
+    if(match(c.title) || match(c.notes) || match(c.number)) {
+      out += `<div class="res-item" onclick="editCase('mine', '${c.id}')"><span class="rk">My Case</span><span class="rt">${esc(c.title)}</span><div class="rm">${esc(c.court)} · Notes: ${esc(c.notes)}</div></div>`;
+    }
+  });
+
+  state.client.forEach(c => {
+    if(match(c.title) || match(c.notes) || match(c.number) || match(c.client)) {
+      out += `<div class="res-item" onclick="editCase('client', '${c.id}')"><span class="rk">Client</span><span class="rt">${esc(c.title)}</span><div class="rm">${esc(c.court)} · Client: ${esc(c.client)}</div></div>`;
+    }
+  });
+
+  resBox.innerHTML = out || `<div class="hint">No match inside local indexes.</div>`;
+};
+
+$("webGo").onclick = () => {
+  const base = $("webTarget").value;
+  const query = $("webQ").value.trim();
+  if(!query) return;
+  const dork = base ? `${base} ${query}` : query;
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(dork)}`, '_blank');
+};
+
+/* ===== CALENDAR SYSTEM ===== */
+function renderCalendar() {
+  const grid = $("calGrid");
+  if(!grid) return;
+  grid.innerHTML = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  
+  const m = state.calMonth;
+  $("calLabel").textContent = m.toLocaleDateString('en-GB', {month:'long', year:'numeric'});
+
+  const first = new Date(m.getFullYear(), m.getMonth(), 1).getDay();
+  const total = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+
+  for(let i=0; i<first; i++) {
+    grid.insertAdjacentHTML('beforeend', `<div class="cal-day out"></div>`);
+  }
+
+  for(let d=1; d<=total; d++) {
+    const dStr = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const todayClass = dStr === todayISO() ? "today" : "";
+    
+    let evs = "";
+    state.mine.forEach(c => { if(c.next === dStr && c.status === "Active") evs += `<div class="cal-ev mine">${esc(c.title)}</div>`; });
+    state.client.forEach(c => { if(c.next === dStr && c.status === "Active") evs += `<div class="cal-ev">${esc(c.title)}</div>`; });
+
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="cal-day ${todayClass}">
+        <div class="dn">${d}</div>
+        ${evs}
+      </div>
+    `);
   }
 }
-function renderAlerts(){
-  const all=[];
-  state.mine.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"mine",id:c.id});}});
-  state.client.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"client",id:c.id});}});
-  all.sort((a,b)=>a.d-b.d);
-  const allCases=[...state.mine,...state.client];
-  const active=allCases.filter(c=>c.status==="Active").length;
-  const overdue=allCases.filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)<0).length;
-  $("statRow").innerHTML=`<div class="stat"><div class="n">${allCases.length}</div><div class="l">Total cases</div></div><div class="stat"><div class="n">${active}</div><div class="l">Active</div></div><div class="stat"><div class="n">${state.judge.length}</div><div class="l">Judgments</div></div><div class="stat alert"><div class="n">${overdue}</div><div class="l">Overdue dates</div></div>`;
-  const cats={};allCases.forEach(c=>{const k=(c.category&&c.category.trim())||"Uncategorised";cats[k]=(cats[k]||0)+1;});
-  const ck=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]);
-  $("catSummary").innerHTML=ck.length?`<div style="font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Cases by category</div>`+ck.map(k=>`<span class="cat-chip" onclick="filterByCat('${esc(k).replace(/'/g,"")}')">${esc(k)} <b>${cats[k]}</b></span>`).join(""):"";
-  if(!all.length){$("alertList").innerHTML=`<div class="empty"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>No hearings in the next two weeks</h3><p>Add a next-hearing (Peshi) date to any active matter and it shows here, nearest first.</p></div>`;$("alertPill").classList.add("hidden");return;}
-  $("alertPill").textContent=all.length;$("alertPill").classList.remove("hidden");
-  $("alertList").innerHTML=all.map(a=>{const urgent=a.d<=3;return `<div class="alert ${urgent?'urgent':''}" style="cursor:pointer" onclick="gotoResult('${a.kind}','${a.id}')"><div class="when"><div class="d">${a.d===0?'•':a.d}</div><div class="m">${a.d===0?'today':a.d===1?'day':'days'}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="meta">${esc(a.court||'Court not set')} · ${fmtDate(a.iso)}</div></div><span class="tag ${a.kind}">${a.kind==='mine'?'My case':'Client'}</span></div>`;}).join("");
-}
 
-/* CASES */
-function renderCases(kind){
-  const list=kind==="mine"?state.mine:state.client;
-  const box=$(kind==="mine"?"mineList":"clientList");
-  const q=$(kind==="mine"?"mineSearch":"clientSearch").value.toLowerCase();
-  const f=$(kind==="mine"?"mineFilter":"clientFilter").value;
-  const rows=list.filter(c=>{const t=(c.title+" "+(c.court||"")+" "+(c.category||"")+" "+(c.party||"")+" "+(c.client||"")+" "+(c.counsel||"")+" "+(c.notes||"")).toLowerCase();return t.includes(q)&&(f==="ALL"||c.status===f);});
-  if(!rows.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1"><svg class="seal" width="64" height="64" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${list.length?'Nothing matches':'No cases yet'}</h3><p>${list.length?'Clear the search or filter.':'Add your first matter to start tracking hearings and notes.'}</p>${list.length?'':`<button class="btn primary" onclick="document.getElementById('${kind==='mine'?'addMine':'addClient'}').click()">＋ New ${kind==='mine'?'matter':'client case'}</button>`}</div>`;return;}
-  box.innerHTML=rows.map(c=>{
-    const d=c.next?daysFromToday(c.next):null;
-    const nextHtml=c.next&&c.status==="Active"?`<div class="next ${d<0?'due':''}">Next hearing: ${fmtDate(c.next)}${d!=null?` · ${d<0?Math.abs(d)+'d overdue':d===0?'today':d+'d away'}`:''}</div>`:"";
-    const files=(c.files||[]).map((f,i)=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${f.label?esc(f.label)+': ':''}${esc(f.name)}</a>`).join("");
-    const cf=(c.custom||[]).filter(x=>x.label||x.value).map(x=>`<span><b>${esc(x.label||'—')}:</b> ${esc(x.value)}</span>`).join("");
-    const ev=(c.evidence||[]).map(e=>`<div class="ev-line"><span class="et">${esc(e.type||'Doc')}</span><span>${esc(e.title||e.ref||'—')}${e.ref?` (${esc(e.ref)})`:''}</span><span class="es">${esc(e.status||'')}</span>${e.file?' 📎':''}</div>`).join("");
-    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st ${c.status.toLowerCase()}">${c.status}</span></div><div class="meta">${c.category?`<span>🏷 ${esc(c.category)}</span>`:""}${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:""}${c.number?`<span># ${esc(c.number)}</span>`:""}${kind==="client"&&c.client?`<span>👤 ${esc(c.client)}</span>`:""}${c.party?`<span>vs ${esc(c.party)}</span>`:""}</div>${nextHtml}${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${cf?`<div class="cflist">${cf}</div>`:""}${ev?`<div class="evlist">${ev}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="editCase('${kind}','${c.id}')">Open</button><button class="btn sm" onclick="editCase('${kind}','${c.id}')">Edit</button><button class="btn sm" onclick="delCase('${kind}','${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
-  }).join("");
-}
-["mineSearch","mineFilter"].forEach(id=>$(id).addEventListener("input",()=>renderCases("mine")));
-["clientSearch","clientFilter"].forEach(id=>$(id).addEventListener("input",()=>renderCases("client")));
+$("calPrev").onclick = () => { state.calMonth.setMonth(state.calMonth.getMonth()-1); renderCalendar(); };
+$("calNext").onclick = () => { state.calMonth.setMonth(state.calMonth.getMonth()+1); renderCalendar(); };
 
-let caseUploads=[];
-function openCase(kind,c){
-  $("cKind").value=kind;$("cId").value=c?.id||"";
-  $("caseModalTitle").textContent=c?"Edit matter":(kind==="mine"?"New matter":"New client case");
-  $("clientOnly").style.display=kind==="client"?"grid":"none";
-  $("cTitle").value=c?.title||"";$("cStatus").value=c?.status||"Active";$("cCourt").value=c?.court||"";
-  $("cNumber").value=c?.number||"";$("cParty").value=c?.party||"";$("cClient").value=c?.client||"";$("cCounsel").value=c?.counsel||"";
-  $("cCategory").value=c?.category||"";
-  $("cOpened").value=c?.opened||"";$("cNext").value=c?.next||"";$("cNotes").value=c?.notes||"";
-  caseUploads=(c?.files||[]).slice();$("cFiles").value="";renderCaseUploads();
-  caseCustom=(c?.custom||[]).slice();renderCustomRows();
-  caseEvidence=(c?.evidence||[]).map(x=>({...x}));renderEvidence();
-  $("caseOverlay").classList.add("on");
-}
-let caseCustom=[];
-function renderCustomRows(){
-  $("cCustom").innerHTML=caseCustom.map((f,i)=>`<div class="cf-row"><input list="secList" placeholder="Section name" value="${esc(f.label||'')}" data-k="label" data-i="${i}"><input placeholder="Detail" value="${esc(f.value||'')}" data-k="value" data-i="${i}"><button data-rm="${i}">✕</button></div>`).join("");
-  $("cCustom").querySelectorAll("input").forEach(inp=>inp.oninput=()=>{caseCustom[+inp.dataset.i][inp.dataset.k]=inp.value;});
-  $("cCustom").querySelectorAll("button[data-rm]").forEach(b=>b.onclick=()=>{caseCustom.splice(+b.dataset.rm,1);renderCustomRows();});
-}
-$("cAddField").onclick=()=>{caseCustom.push({label:"",value:""});renderCustomRows();};
-let caseEvidence=[];
-const EV_TYPES=["FIR","Challan / s.173 report","Court order / judgment","Bail order","Vakalatnama","Plaint / Written statement","Petition / Application","Affidavit","Medico-legal report (MLR)","Post-mortem report","Forensic / DNA / Ballistics","Sale deed / Registry","Mutation (Intiqal) / Fard","Bank statement","Cheque / Receipt / Invoice","CNIC / Passport","Nikahnama","Birth / Death certificate","Contract / Agreement","Legal notice","Photograph","CCTV / Video","Audio recording","WhatsApp / SMS screenshot","Call record (CDR)","Witness statement (161/164)","Site plan / Survey","Other"];
-const EV_STATUS=["To obtain","Original held","Certified copy","Photocopy","Filed in court","Exhibited","Returned"];
-if($("evTypeList"))$("evTypeList").innerHTML=EV_TYPES.map(t=>`<option>${t}</option>`).join("");
-if($("docTypes"))$("docTypes").innerHTML=EV_TYPES.map(t=>`<option>${t}</option>`).join("");
-function renderEvidence(){
-  $("cEvidence").innerHTML=caseEvidence.map((ev,i)=>{
-    const sts=EV_STATUS.map(t=>`<option ${ev.status===t?'selected':''}>${t}</option>`).join("");
-    const fileHtml=ev.file?`<a class="file-chip" href="${ev.file.data}" download="${esc(ev.file.name)}" target="_blank">${ev.file.type&&ev.file.type.includes('pdf')?'📄':'🖼'} ${esc(ev.file.name)}</a> <button class="ev-del" data-rmf="${i}">remove file</button>`:`<input type="file" accept="application/pdf,image/*" data-file="${i}">`;
-    return `<div class="ev-row"><div class="ev-head"><b>#${i+1}</b><button class="ev-del" data-rm="${i}">✕ remove</button></div>
-      <div class="ev-grid">
-        <input list="evTypeList" placeholder="Type (pick or write your own)" value="${esc(ev.type||'')}" data-k="type" data-i="${i}">
-        <input placeholder="Exhibit / Ref no. (e.g. Ex. P-3, FIR 123)" value="${esc(ev.ref||'')}" data-k="ref" data-i="${i}">
-      </div>
-      <input style="margin-top:8px" placeholder="Title / description (e.g. MLR of complainant)" value="${esc(ev.title||'')}" data-k="title" data-i="${i}">
-      <div class="ev-grid" style="margin-top:8px">
-        <input type="date" value="${esc(ev.date||'')}" data-k="date" data-i="${i}">
-        <select data-k="status" data-i="${i}">${sts}</select>
-      </div>
-      <textarea style="margin-top:8px" placeholder="Notes (optional)" data-k="notes" data-i="${i}">${esc(ev.notes||'')}</textarea>
-      <div class="ev-file">${fileHtml}</div></div>`;
-  }).join("");
-  $("cEvidence").querySelectorAll("[data-k]").forEach(el=>el.oninput=el.onchange=()=>{caseEvidence[+el.dataset.i][el.dataset.k]=el.value;});
-  $("cEvidence").querySelectorAll("button[data-rm]").forEach(b=>b.onclick=()=>{caseEvidence.splice(+b.dataset.rm,1);renderEvidence();});
-  $("cEvidence").querySelectorAll("button[data-rmf]").forEach(b=>b.onclick=()=>{caseEvidence[+b.dataset.rmf].file=null;renderEvidence();});
-  $("cEvidence").querySelectorAll("input[data-file]").forEach(inp=>inp.onchange=e=>{readFiles(e.target.files,fs=>{if(fs[0]){caseEvidence[+inp.dataset.file].file=fs[0];renderEvidence();}});});
-}
-$("cAddEv").onclick=()=>{caseEvidence.push({type:"FIR",ref:"",title:"",date:"",status:"To obtain",notes:"",file:null});renderEvidence();};
-function renderUploadChips(boxId,arr){$(boxId).innerHTML=arr.map((f,i)=>`<span class="file-chip">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)} <button onclick="this.parentNode.dispatchEvent(new CustomEvent('rm',{bubbles:true}))" data-i="${i}" style="border:none;background:none;color:var(--red);cursor:pointer">✕</button></span>`).join("");}
-$("cUploads").addEventListener("rm",e=>{const i=+e.target.getAttribute("data-i");caseUploads.splice(i,1);renderUploadChips("cUploads",caseUploads);});
-$("cFiles").onchange=e=>{readFiles(e.target.files,fs=>{caseUploads=caseUploads.concat(fs);renderCaseUploads();});};
-function renderCaseUploads(){
-  $("cUploads").innerHTML=caseUploads.map((f,i)=>`<div class="cf-row" style="grid-template-columns:1fr auto auto;align-items:center"><input list="docTypes" placeholder="Document type (optional)" value="${esc(f.label||'')}" data-li="${i}"><a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a><button data-rmu="${i}">✕</button></div>`).join("");
-  $("cUploads").querySelectorAll("input[data-li]").forEach(inp=>inp.oninput=()=>{caseUploads[+inp.dataset.li].label=inp.value;});
-  $("cUploads").querySelectorAll("button[data-rmu]").forEach(b=>b.onclick=()=>{caseUploads.splice(+b.dataset.rmu,1);renderCaseUploads();});
-}
-function closeCase(){$("caseOverlay").classList.remove("on");}
-$("addMine").onclick=()=>openCase("mine",null);
-$("addClient").onclick=()=>openCase("client",null);
-$("caseClose").onclick=closeCase;$("caseCancel").onclick=closeCase;
-$("caseOverlay").addEventListener("click",e=>{if(e.target===$("caseOverlay"))closeCase();});
-$("caseSave").onclick=()=>{
-  if(!canSave()){closeCase();openSub();return;}
-  const kind=$("cKind").value,title=$("cTitle").value.trim();
-  if(!title){toast("Give the matter a title");return;}
-  const obj={id:$("cId").value||("c"+Date.now()),title,status:$("cStatus").value,court:$("cCourt").value,category:$("cCategory").value.trim(),number:$("cNumber").value.trim(),party:$("cParty").value.trim(),client:$("cClient").value.trim(),counsel:$("cCounsel").value.trim(),opened:$("cOpened").value,next:$("cNext").value,notes:$("cNotes").value.trim(),custom:caseCustom.filter(x=>x.label||x.value),evidence:caseEvidence,files:caseUploads};
-  const arr=kind==="mine"?state.mine:state.client;const i=arr.findIndex(x=>x.id===obj.id);
-  if(i>=0)arr[i]=obj;else arr.unshift(obj);
-  if(DB.set(kind==="mine"?"mine":"client",arr)){closeCase();renderAll();toast("Saved");}
-};
-window.editCase=(kind,id)=>{const arr=kind==="mine"?state.mine:state.client;openCase(kind,arr.find(c=>c.id===id));};
-window.delCase=(kind,id)=>{if(!confirm("Delete this case? This cannot be undone."))return;if(kind==="mine"){state.mine=state.mine.filter(c=>c.id!==id);DB.set("mine",state.mine);}else{state.client=state.client.filter(c=>c.id!==id);DB.set("client",state.client);}renderAll();toast("Deleted");};
-$("fab").onclick=()=>{const v=$("tabbar").querySelector("button.on").dataset.view;if(v==="vJudge")openJudge(null);else openCase(v==="vClient"?"client":"mine",null);};
-
-/* JUDGMENTS */
-function renderJudge(){
-  const q=$("judgeSearch").value.toLowerCase();
-  const rows=state.judge.filter(j=>(j.cite+" "+j.name+" "+j.court+" "+(j.hold||"")+" "+(j.notes||"")).toLowerCase().includes(q));
-  if(!rows.length){$("judgeList").innerHTML=`<div class="empty"><svg class="seal" width="64" height="64" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${state.judge.length?'Nothing matches':'No judgments saved'}</h3><p>${state.judge.length?'Clear the search.':'Paste a judgment URL or text and let AI fill the details.'}</p>${state.judge.length?'':`<button class="btn primary" onclick="document.getElementById('addJudge').click()">＋ New judgment</button>`}</div>`;return;}
-  $("judgeList").innerHTML=rows.map(j=>{
-    const files=(j.files||[]).map(f=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a>`).join("");
-    const tags=(j.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
-    const links=(j.links||[]).map(ref=>{const nm=caseNameByRef(ref);return nm?`<span class="file-chip">🔗 ${esc(nm)}</span>`:"";}).join("");
-    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files" style="margin-top:8px">${links}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px"><button class="btn sm primary" onclick="editJudge('${j.id}')">Open</button><button class="btn sm" onclick="editJudge('${j.id}')">Edit</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
-  }).join("");
-}
-function caseNameByRef(ref){const[kind,id]=ref.split(":");const arr=kind==="mine"?state.mine:state.client;const c=arr.find(x=>x.id===id);return c?c.title:null;}
-$("judgeSearch").addEventListener("input",renderJudge);
-let judgeUploads=[];
-function openJudge(j){
-  $("jId").value=j?.id||"";$("judgeModalTitle").textContent=j?"Edit judgment":"New judgment";
-  $("jSource").value="";$("jCite").value=j?.cite||"";$("jName").value=j?.name||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";$("jHold").value=j?.hold||"";$("jSummary").value=j?.summary||"";$("jNotes").value=j?.notes||"";$("jUrl").value=j?.url||"";$("jFull").value=j?.full||"";
-  $("jTags").value=(j?.tags||[]).join(", ");
-  $("jKey").value=state.aikey||"";
-  judgeLinks=(j?.links||[]).slice();renderLinkPick();
-  judgeUploads=(j?.files||[]).slice();$("jFiles").value="";renderUploadChips("jUploads",judgeUploads);
-  $("jAiHint").textContent=state.aikey?"Key saved — paste a judgment above and tap Auto-fill.":"Add your Gemini key in the box below to enable Auto-fill.";
-  $("judgeOverlay").classList.add("on");
-}
-let judgeLinks=[];
-function renderLinkPick(){
-  const opts=[...state.mine.map(c=>({ref:"mine:"+c.id,name:c.title,tag:"My"})),...state.client.map(c=>({ref:"client:"+c.id,name:c.title,tag:"Client"}))];
-  if(!opts.length){$("jLinks").innerHTML=`<span class="hint" style="display:inline">No cases yet — add a case first to link it here.</span>`;return;}
-  $("jLinks").innerHTML=opts.map(o=>`<span class="link-opt ${judgeLinks.includes(o.ref)?'on':''}" data-ref="${o.ref}">${judgeLinks.includes(o.ref)?'✓ ':''}${esc(o.name)} <span style="opacity:.6">· ${o.tag}</span></span>`).join("");
-  $("jLinks").querySelectorAll(".link-opt").forEach(el=>el.onclick=()=>{const r=el.dataset.ref;const i=judgeLinks.indexOf(r);if(i>=0)judgeLinks.splice(i,1);else judgeLinks.push(r);renderLinkPick();});
-}
-$("jKey").addEventListener("change",()=>{state.aikey=$("jKey").value.trim()||null;DB.set("aikey",state.aikey);if(state.aikey)toast("Gemini key saved");});
-$("jUploads").addEventListener("rm",e=>{const i=+e.target.getAttribute("data-i");judgeUploads.splice(i,1);renderUploadChips("jUploads",judgeUploads);});
-$("jFiles").onchange=e=>{readFiles(e.target.files,fs=>{judgeUploads=judgeUploads.concat(fs);renderUploadChips("jUploads",judgeUploads);});};
-$("jExtractBtn").onclick=async()=>{
-  const f=$("jExtractFile").files[0];if(!f){toast("Choose a file to extract from");return;}
-  const btn=$("jExtractBtn"),old=btn.textContent;btn.disabled=true;btn.textContent="Extracting…";
-  try{
-    let text="";
-    if(f.type==="application/pdf"&&window.pdfjsLib){
-      const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;
-      for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p);const c=await pg.getTextContent();text+=c.items.map(it=>it.str).join(" ")+"\n";}
-      if(text.trim().length<20&&window.Tesseract){toast("Scanned PDF — running OCR…");const o=await Tesseract.recognize(f,"eng");text=o.data.text;}
-    }else if(/\.docx$/i.test(f.name)&&window.mammoth){const buf=await f.arrayBuffer();text=(await mammoth.extractRawText({arrayBuffer:buf})).value;}
-    else if(f.type.startsWith("image/")&&window.Tesseract){btn.textContent="Reading image (OCR)…";text=(await Tesseract.recognize(f,"eng")).data.text;}
-    else{toast("Reader not loaded — check your internet, then retry");btn.disabled=false;btn.textContent=old;return;}
-    text=text.replace(/\s+\n/g,"\n").trim();
-    if(!text){toast("No text found in that file");}
-    else{const cur=$("jFull").value.trim();$("jFull").value=cur?cur+"\n\n"+text:text;$("jSource").value=text.slice(0,4000);toast("Text extracted — review, or tap Auto-fill with AI Bhai");}
-  }catch(e){toast("Extract failed: "+(e.message||"try another file"));}
-  btn.disabled=false;btn.textContent=old;
-};
-$("addJudge").onclick=()=>openJudge(null);
-$("judgeClose").onclick=()=>$("judgeOverlay").classList.remove("on");
-$("judgeCancel").onclick=()=>$("judgeOverlay").classList.remove("on");
-$("judgeOverlay").addEventListener("click",e=>{if(e.target===$("judgeOverlay"))$("judgeOverlay").classList.remove("on");});
-$("judgeSave").onclick=()=>{
-  if(!canSave()){$("judgeOverlay").classList.remove("on");openSub();return;}
-  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:judgeLinks.slice(),url:$("jUrl").value.trim(),full:$("jFull").value.trim(),files:judgeUploads};
-  if(!obj.name&&!obj.cite){toast("Add at least a citation or case name");return;}
-  const i=state.judge.findIndex(x=>x.id===obj.id);if(i>=0)state.judge[i]=obj;else state.judge.unshift(obj);
-  if(DB.set("judge",state.judge)){$("judgeOverlay").classList.remove("on");renderJudge();renderAlerts();toast("Judgment saved");}
-};
-window.editJudge=id=>openJudge(state.judge.find(j=>j.id===id));
-window.delJudge=id=>{if(!confirm("Delete this judgment?"))return;state.judge=state.judge.filter(j=>j.id!==id);DB.set("judge",state.judge);renderJudge();renderAlerts();toast("Deleted");};
-
-/* AI auto-fill (Gemini 2.5 Flash) */
-$("jAiBtn").onclick=async()=>{
-  const key=$("jKey").value.trim()||state.aikey;
-  if(!key){toast("Add your Gemini API key in the box below");$("jKey").focus();return;}
-  state.aikey=key;DB.set("aikey",key);
-  let src=$("jSource").value.trim();if(!src){toast("Paste a judgment URL or text first");return;}
-  const btn=$("jAiBtn");btn.disabled=true;const old=btn.textContent;btn.textContent="AI Bhai reading…";
-  try{
-    if(/^https?:\/\/\S+$/i.test(src)){
-      $("jUrl").value=src;
-      try{const r=await fetch(src);const t=await r.text();src=t.replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,12000);}
-      catch(e){toast("Couldn't fetch that URL (site blocked it) — paste the text instead");btn.disabled=false;btn.textContent=old;return;}
-    }
-    const prompt=`You are a Pakistani legal research assistant. From the judgment text below, extract structured data. Return ONLY valid JSON (no markdown) with keys: citation, caseName, court, year, keyHolding, summary, notes, tags. "notes" = a one-line practical note on how a lawyer might use this precedent. "tags" = an array of 3-6 short lowercase keywords (topics, sections, principles). If a field is unknown use "" (or [] for tags).\n\nTEXT:\n${src}`;
-    const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,responseMimeType:"application/json"}})});
-    if(!resp.ok){const er=await resp.text();throw new Error(resp.status+" "+er.slice(0,120));}
-    const data=await resp.json();
-    let txt=data?.candidates?.[0]?.content?.parts?.[0]?.text||"";
-    txt=txt.replace(/```json|```/g,"").trim();
-    const j=JSON.parse(txt);
-    const norm={};Object.keys(j).forEach(k=>norm[k.toLowerCase().replace(/[^a-z0-9]/g,"")]=j[k]);
-    const pick=(...names)=>{for(const n of names){const v=norm[n];if(v!=null&&String(v).trim()!==""){return Array.isArray(v)?v.join(", "):String(v);}}return "";};
-    const setVal=(id,val)=>{if(val)$(id).value=val;};
-    setVal("jCite",pick("citation","cite","reportedas","reference"));
-    setVal("jName",pick("casename","title","parties","casetitle"));
-    setVal("jCourt",pick("court","forum","bench"));
-    setVal("jYear",pick("year","dateofdecision","decisiondate"));
-    setVal("jHold",pick("keyholding","keyholdings","holding","ratio","ratiodecidendi","principle","heldthat"));
-    setVal("jSummary",pick("summary","summaryoffacts","facts","gist","brief","overview"));
-    setVal("jNotes",pick("notes","note","practicalnote","usage"));
-    const _tg=norm.tags||norm.keywords||norm.tag;
-    if(Array.isArray(_tg)&&_tg.length)$("jTags").value=_tg.join(", ");else if(typeof _tg==="string"&&_tg.trim())$("jTags").value=_tg;
-    toast("AI Bhai filled it — review, link cases & save");
-  }catch(e){toast("AI error: "+(e.message||"try again"));}
-  btn.disabled=false;btn.textContent=old;
-};
-
-/* SEARCH */
-const FIELD_LABEL={title:"Title",court:"Court",number:"Case/FIR no.",party:"Opposing party",client:"Client",counsel:"Co-counsel",opened:"Opened",next:"Next hearing",notes:"Notes",status:"Status",cite:"Citation",name:"Case name",year:"Year",hold:"Holding",summary:"Summary",url:"Source",tags:"Tags"};
-function hilite(text,q){text=String(text==null?"":text);if(!q)return esc(text);const ql=q.toLowerCase(),tl=text.toLowerCase();let out="",i=0,k;while((k=tl.indexOf(ql,i))>=0){out+=esc(text.slice(i,k))+"<mark>"+esc(text.slice(k,k+q.length))+"</mark>";i=k+q.length;}return out+esc(text.slice(i));}
-function snippet(text,q){text=String(text==null?"":text);const i=text.toLowerCase().indexOf(q.toLowerCase());const s=Math.max(0,i-30);const part=i<0?text.slice(0,120):text.slice(s,s+150);return (s>0?"…":"")+hilite(part,q)+(text.length>s+150?"…":"");}
-$("localQ").addEventListener("input",e=>{
-  const q=e.target.value.trim();const box=$("localResults");
-  if(!q){box.innerHTML="";return;}
-  const ql=q.toLowerCase();const hits=[];
-  const scan=(arr,kind,label)=>arr.forEach(c=>{
-    const fields=[];
-    Object.entries(c).forEach(([k,v])=>{
-      if(k==="id"||k==="files")return;
-      if(typeof v==="string"&&v.toLowerCase().includes(ql))fields.push({f:FIELD_LABEL[k]||k,v});
-      else if(Array.isArray(v)){ // tags or custom
-        v.forEach(item=>{
-          if(typeof item==="string"&&item.toLowerCase().includes(ql))fields.push({f:FIELD_LABEL[k]||k,v:item});
-          else if(item&&typeof item==="object"){["label","value"].forEach(kk=>{if(item[kk]&&String(item[kk]).toLowerCase().includes(ql))fields.push({f:item.label||"Section",v:item.value||item.label});});}
-        });
-      }
-    });
-    if(fields.length){const title=c.title||c.name||c.cite||"Untitled";hits.push({kind,label,title,id:c.id,fields});}
-  });
-  scan(state.mine,"mine","My case");scan(state.client,"client","Client case");scan(state.judge,"judge","Judgment");
-  if(!hits.length){box.innerHTML=`<div class="empty" style="padding:24px"><p>No matches for “${esc(q)}” across your saved records.</p></div>`;return;}
-  box.innerHTML=hits.map((h,idx)=>{
-    const where=h.fields.map(f=>`<span class="res-f">${esc(f.f)}</span>`).join("");
-    const first=h.fields[0];
-    return `<div class="res-item" onclick="gotoResult('${h.kind}','${h.id}')"><div class="rt">${hilite(h.title,q)}<span class="rk">${h.label}</span><button class="btn sm primary" style="float:right;padding:4px 12px" onclick="event.stopPropagation();gotoResult('${h.kind}','${h.id}')">Open</button></div><div class="rm">${snippet(first.v,q)}</div><div class="res-fields">${where}</div></div>`;
-  }).join("");
-});
-window.gotoResult=(kind,id)=>{
-  if(kind==="judge"){$("tabbar").querySelector('[data-view="vJudge"]').click();openJudge(state.judge.find(j=>j.id===id));}
-  else{$("tabbar").querySelector(`[data-view="${kind==="mine"?"vMine":"vClient"}"]`).click();const arr=kind==="mine"?state.mine:state.client;openCase(kind,arr.find(c=>c.id===id));}
-};
-window.filterByCat=(cat)=>{$("tabbar").querySelector('[data-view="vMine"]').click();$("mineSearch").value=cat==="Uncategorised"?"":cat;renderCases("mine");$("tabbar").querySelector('[data-view="vClient"]')&&($("clientSearch").value=cat==="Uncategorised"?"":cat);renderCases("client");toast("Filtered by "+cat+" — see My &amp; Client cases");};
-$("webGo").onclick=()=>{const t=$("webTarget").value,q=$("webQ").value.trim();if(!q){toast("Type what to search");return;}const query=(t?t+" ":"")+q;window.open("https://www.google.com/search?q="+encodeURIComponent(query),"_blank","noopener");};
-$("webQ").addEventListener("keydown",e=>{if(e.key==="Enter")$("webGo").click();});
-
-/* CALENDAR */
-$("calPrev").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()-1);renderCalendar();};
-$("calNext").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()+1);renderCalendar();};
-function renderCalendar(){
-  const y=state.calMonth.getFullYear(),m=state.calMonth.getMonth();
-  $("calLabel").textContent=new Date(y,m,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),events={};
-  const add=(c,mine)=>{if(c.next)(events[c.next]=events[c.next]||[]).push({t:c.title,kind:mine?'mine':'client'});};
-  state.mine.forEach(c=>add(c,true));state.client.forEach(c=>add(c,false));
-  state.reminders.forEach(r=>{(events[r.date]=events[r.date]||[]).push({t:r.text,kind:'rem'});});
-  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dow">${d}</div>`).join("");
-  for(let i=0;i<first;i++)html+=`<div class="cal-day out"></div>`;
-  for(let day=1;day<=dim;day++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;const evs=(events[iso]||[]).map(e=>`<div class="cal-ev ${e.kind}" title="${esc(e.t)}">${e.kind==='rem'?'🔔 ':''}${esc(e.t)}</div>`).join("");html+=`<div class="cal-day ${iso===todayISO()?'today':''}" onclick="openReminders('${iso}')"><div class="dn">${day}</div>${evs}</div>`;}
-  $("calGrid").innerHTML=html;
-}
-window.openReminders=(iso)=>{
-  $("remDate").value=iso;
-  $("remTitle").textContent="Reminders · "+fmtDate(iso);
-  renderRemList();$("remText").value="";
-  $("remOverlay").classList.add("on");
-};
-function renderRemList(){
-  const iso=$("remDate").value;
-  const list=state.reminders.filter(r=>r.date===iso);
-  $("remList").innerHTML=list.length?list.map(r=>`<div class="kv"><span class="v" style="text-align:left;font-weight:500">🔔 ${esc(r.text)}</span><button class="link danger" onclick="delReminder('${r.id}')">remove</button></div>`).join(""):`<div class="hint" style="display:block">No reminders on this day yet.</div>`;
-}
-$("remAdd").onclick=()=>{
-  const txt=$("remText").value.trim();if(!txt){toast("Type the reminder");return;}
-  state.reminders.push({id:"r"+Date.now(),date:$("remDate").value,text:txt});
-  DB.set("reminders",state.reminders);$("remText").value="";renderRemList();renderCalendar();toast("Reminder added");
-};
-window.delReminder=id=>{state.reminders=state.reminders.filter(r=>r.id!==id);DB.set("reminders",state.reminders);renderRemList();renderCalendar();};
-$("remClose").onclick=()=>$("remOverlay").classList.remove("on");
-$("remOverlay").addEventListener("click",e=>{if(e.target===$("remOverlay"))$("remOverlay").classList.remove("on");});
-
-/* SETTINGS */
-function renderSettings(){
-  const p=state.profile||{};
-  $("setName").textContent=p.fullName||"—";$("setArea").textContent=p.area||"—";$("setCity").textContent=p.city||"—";
-  const admin=isAdmin(),ok=admin||subActive();
-  $("setSubStatus").innerHTML=ok?`<span class="sub-status ok">● ${admin?'Owner · full access':'Active'}</span>`:`<span class="sub-status exp">● Free (saving locked)</span>`;
-  $("setSubPlan").textContent=admin?"Owner":(state.sub?(PLANS[state.sub.plan]?.label||state.sub.plan):"—");
-  $("setSubExp").textContent=admin?"—":(state.sub?fmtDate(state.sub.expiresAt):"—");
-  $("setSubRef").textContent=refCode();
-}
-$("aiSave").onclick=()=>{const k=$("aiKey").value.trim();state.aikey=k||null;DB.set("aikey",state.aikey);toast(k?"Gemini key saved":"Key cleared");};
-$("aiClear").onclick=()=>{$("aiKey").value="";state.aikey=null;DB.set("aikey",null);toast("Key removed");};
-$("editProfile").onclick=()=>{openProfile();showOnly("profileScreen");};
-$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
-$("importBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
-$("signoutBtn").onclick=signOut;
-$("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","reminders","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
-$("subscribeBtn").onclick=openSub;
-
-/* SUBSCRIPTION */
-let chosenPlan="1m";
-function refCode(){return"WK-"+hash32(state.email).slice(0,6).padEnd(6,"0");}
-function openSub(){
-  $("refCode").textContent=refCode();
-  $("payMethods").innerHTML="";
-  PAY.METHODS.forEach(m=>{const row=document.createElement("div");row.className="pm";row.innerHTML=`<span class="ic" style="background:${m.c}">${esc(m.ic)}</span><span class="info"><span class="l">${esc(m.l)}</span><span class="v">${esc(m.v)}</span><span class="s">${esc(m.s)}</span></span><button class="copy">Copy</button>`;row.querySelector(".copy").onclick=()=>navigator.clipboard?.writeText(m.v).then(()=>toast("Copied"),()=>toast(m.v));$("payMethods").appendChild(row);});
+/* ===== SUBSCRIPTION SYSTEM ===== */
+function openSub() {
+  $("refCode").textContent = refFromEmail(state.email);
+  $("payMethods").innerHTML = PAY.METHODS.map(m => `
+    <div class="pm">
+      <div class="ic" style="background:${m.c}">${m.ic}</div>
+      <div class="info"><div class="l">${esc(m.l)}</div><div class="v">${esc(m.v)}</div><div class="s">${esc(m.s)}</div></div>
+      <button class="copy" onclick="navigator.clipboard.writeText('${m.v}');toast('Copied to clipboard');">Copy</button>
+    </div>
+  `).join("");
   $("subOverlay").classList.add("on");
 }
-$("subClose").onclick=()=>$("subOverlay").classList.remove("on");
-$("subOverlay").addEventListener("click",e=>{if(e.target===$("subOverlay"))$("subOverlay").classList.remove("on");});
-$("planPick").addEventListener("click",e=>{const p=e.target.closest(".plan");if(!p)return;chosenPlan=p.dataset.plan;[...$("planPick").children].forEach(x=>x.classList.toggle("on",x===p));});
-function logRequest(){const u=DB.users()[state.email]||{};const reqs=DB.reqs();reqs.push({name:state.profile?.fullName||u.name||"",email:state.email,phone:u.phone||"",ref:refCode(),plan:PLANS[chosenPlan].label,at:new Date().toISOString()});DB.saveReqs(reqs);}
-$("waBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const msg=`Assalam o Alaikum, I want the PAK Lawyer's Notebook ${pl.label} plan (${pl.price}).\nName: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nI will send the payment receipt.`;window.open(`https://wa.me/${PAY.WHATSAPP}?text=${encodeURIComponent(msg)}`,"_blank","noopener");};
-$("emailReqBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const sub="PAK Lawyer's Notebook subscription request";const body=`Name: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nPlan: ${pl.label} (${pl.price})\n\nI have paid / will pay and attach the receipt.`;window.open(`mailto:${PAY.EMAIL}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
-$("unlockBtn").onclick=()=>{const res=verifyUnlock($("unlockInput").value,refCode());if(!res.ok){toast(res.msg);return;}state.sub={plan:res.plan,activatedAt:todayISO(),expiresAt:res.expiresAt};DB.set("sub",state.sub);$("subOverlay").classList.remove("on");$("trialBanner").classList.add("hidden");renderSettings();toast("Unlocked — you can save now");};
+$("subClose").onclick = () => $("subOverlay").classList.remove("on");
 
-function signOut(){DB.setSession(null);state.email=null;["liEmail","liPass","rgName","rgEmail","rgPhone","rgPass"].forEach(i=>{if($(i))$(i).value="";});route();toast("Signed out");}
+$("unlockBtn").onclick = () => {
+  const ref = refFromEmail(state.email);
+  const token = $("unlockInput").value.trim();
+  const res = verifyUnlock(token, ref);
+  if(res.ok) {
+    state.sub = { plan: res.plan, expiresAt: res.expiresAt };
+    DB.set("sub", state.sub);
+    toast("Chambers premium account verified!");
+    $("subOverlay").classList.remove("on");
+    route();
+  } else {
+    toast(res.msg || "Token activation validation failed.");
+  }
+};
 
-/* boot */
-(function init(){const t=localStorage.getItem("wakalat.theme");if(t)document.documentElement.setAttribute("data-theme",t);route();setTimeout(fireReminders,1500);})();
+$("waBtn").onclick = () => {
+  const ref = refFromEmail(state.email);
+  const txt = encodeURIComponent(`Assalam o Alaikum, I have sent payment verification details for reference ${ref}. Please provide the operational access code.`);
+  window.open(`https://wa.me/${PAY.WHATSAPP}?text=${txt}`, '_blank');
+};
+
+/* ===== SETTINGS & BACKUP ===== */
+function renderSettings() {
+  $("setSubStatus").textContent = subActive() ? "Active Premium" : "Free Trial Mode";
+  $("setSubPlan").textContent = state.sub ? PLANS[state.sub.plan]?.label || "Custom Access" : "None";
+  $("setSubExp").textContent = state.sub ? fmtDate(state.sub.expiresAt) : "N/A";
+  $("setSubRef").textContent = refFromEmail(state.email);
+  $("setName").textContent = state.profile?.fullName || "—";
+  $("setArea").textContent = state.profile?.area || "—";
+  $("setCity").textContent = state.profile?.city || "—";
+}
+
+$("editProfile").onclick = () => { openProfile(); showOnly("profileScreen"); };
+$("exportData").onclick = () => {
+  const exportBlob = new Blob([JSON.stringify(localStorage)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(exportBlob);
+  a.download = `pak_lawyers_notebook_backup_${todayISO()}.json`;
+  a.click();
+};
+
+$("importBtn").onclick = () => $("importFile").click();
+$("importFile").onchange = e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      Object.keys(data).forEach(k => { if(k.startsWith("wakalat.")) localStorage.setItem(k, data[k]); });
+      toast("Data state restored effectively.");
+      route();
+    } catch(err) { toast("Invalid file signature format."); }
+  };
+  reader.readAsText(file);
+};
+
+$("aiSave").onclick = () => {
+  const val = $("aiKey").value.trim();
+  if(!val) return;
+  state.aikey = val;
+  DB.set("aikey", val);
+  toast("API credentials cached locally.");
+};
+$("aiClear").onclick = () => { $("aiKey").value = ""; state.aikey = null; DB.set("aikey", null); toast("Key cleared."); };
+
+function signOut() { DB.setSession(null); route(); }
+$("signoutBtn").onclick = signOut;
+$("deleteAcct").onclick = () => { if(confirm("This clears your client logs in this profile slice. Proceed?")) { localStorage.clear(); location.reload(); } };
+
+$("mineSearch").oninput = () => renderCases("mine");
+$("mineFilter").onchange = () => renderCases("mine");
+$("clientSearch").oninput = () => renderCases("client");
+$("clientFilter").onchange = () => renderCases("client");
+$("judgeSearch").oninput = renderJudge;
+$("fab").onclick = () => { if($("vMine").classList.contains("on")) $("addMine").click(); else $("addClient").click(); };
+
+/* Initialization Engine */
+window.onload = () => {
+  const savedTheme = localStorage.getItem("wakalat.theme");
+  if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  route();
+  fireReminders();
+};
 </script>
 </body>
 </html>
