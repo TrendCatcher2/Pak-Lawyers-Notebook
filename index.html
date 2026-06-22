@@ -13,53 +13,67 @@
 </header>
 
 <style>
-    /* Header Container styling */
+    /* Your application global CSS variables */
+    :root {
+        --ink:#15241C; --ink-soft:#445349; --ink-faint:#79877D;
+        --green:#0C6E48; --green-deep:#064A2E; --green-tint:#E2F0E8;
+        --brass:#B07D1C; --brass-soft:#D6A646;
+        --red:#A52A20;
+        --blue:#1E5FA8; --indigo:#5A4BB3; --plum:#8C3A6A; --teal:#0E7C76; --amber:#C8851A;
+        --paper:#F3F0E6; --card:#FFFFFB; --sand:#EBE5D4; --line:#D9D0BC; --line-soft:#E7E0CE;
+        --shadow:0 1px 2px rgba(20,32,24,.05),0 8px 24px rgba(20,32,24,.06);
+        --r:14px; --r-sm:9px; --r-lg:22px; --maxw:1400px;
+    }
+
+    /* Force the header container to completely drop existing alignments */
     .app-header {
-        display: flex;
-        flex-direction: column; /* Stacks items vertically */
-        align-items: center;    /* Centers every item horizontally */
-        text-align: center;     /* Centers text alignments */
-        padding: 40px 20px 20px 20px; /* Generous breathing room */
-        width: 100%;
-        box-sizing: border-box;
+        display: flex !important;
+        flex-direction: column !important; 
+        align-items: center !important;    
+        justify-content: center !important;
+        text-align: center !important;     
+        padding: 40px 20px 20px 20px !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
     }
 
     /* Logo Size Adjustment */
     .app-logo {
-        width: 120px;          /* Scaled down slightly from 192px for better visual balance near text */
-        height: auto;
-        margin-bottom: 16px;   /* Space between logo and app title */
+        width: 120px !important;          
+        height: auto !important;
+        margin-bottom: 16px !important;   
     }
 
-    /* App Title Sizing using imported Marcellus font */
+    /* App Title Sizing using imported Marcellus font and your theme color variable */
     .app-title {
-        font-family: 'Marcellus', serif;
-        font-size: 2.25rem;    /* Clean, commanding size (~36px) */
-        color: #0B5D3B;        /* Matches your designated theme color */
-        margin: 0 0 8px 0;     /* Tight bottom margin to keep slogan close */
-        font-weight: 700;
-        letter-spacing: -0.5px;
+        font-family: 'Marcellus', serif !important;
+        font-size: 2.25rem !important;    
+        color: var(--green) !important;   /* Linked directly to your global color variables */
+        margin: 0 0 8px 0 !important;     
+        font-weight: 700 !important;
+        letter-spacing: -0.5px !important;
     }
 
     /* Slogan Sizing using imported Inter font */
     .app-slogan {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;     /* Readable subtext size (~18px) */
-        color: #555555;        /* Neutral dark gray for good contrast and legibility */
-        margin: 0;
-        font-weight: 500;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 1.1rem !important;     
+        color: var(--ink-soft) !important; /* Linked directly to your global ink-soft variable */
+        margin: 0 !important;
+        font-weight: 500 !important;
     }
 
-    /* Responsive adjustments for smaller screens (Mobile) */
+    /* Responsive adjustments for smaller mobile screens */
     @media (max-width: 480px) {
         .app-logo {
-            width: 100px;
+            width: 100px !important;
         }
         .app-title {
-            font-size: 1.75rem;
+            font-size: 1.75rem !important;
         }
         .app-slogan {
-            font-size: 0.95rem;
+            font-size: 0.95rem !important;
         }
     }
 </style>
