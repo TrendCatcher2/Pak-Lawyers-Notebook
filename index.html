@@ -67,7 +67,8 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:6px}
 .wordmark{display:flex;align-items:baseline;gap:10px}
 .wordmark .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:30px;color:var(--green-deep);line-height:1.6}
-.wordmark .en{font-family:'Sora',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.5px;text-align:center;line-height:1.15;background:linear-gradient(95deg,var(--green) 0%,var(--teal) 45%,var(--brass) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wordmark .en{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.6px;text-align:center;line-height:1.12;background:linear-gradient(95deg,#9A3412 0%,#C2410C 45%,#EA580C 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+[data-theme="dark"] .wordmark .en{background:linear-gradient(95deg,#F59E0B 0%,#FB923C 50%,#FDBA74 100%);-webkit-background-clip:text;background-clip:text}
 [data-theme="dark"] .wordmark .ur{color:var(--brass)}
 .slogan{font-size:12.5px;color:var(--ink-faint);max-width:320px}
 .gate-h{font-family:'Marcellus',serif;font-size:21px;margin:20px 0 4px;text-align:center}
@@ -119,7 +120,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--green),var(--green-deep));color:#F2EEE3;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 14px rgba(6,58,38,.25)}
 .tb-brand{display:flex;align-items:center;gap:10px}
 .tb-brand .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:22px;color:#F4D58D;line-height:1}
-.tb-brand .en{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.3px;color:#FBF6E9}
+.tb-brand .en{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.3px;color:#FFB454}
 .tb-brand .tag{display:block;font-size:9.5px;font-weight:500;letter-spacing:.4px;color:#CFE6D8;text-transform:none;margin-top:1px}
 .tb-right{display:flex;align-items:center;gap:8px}
 .icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#F2EEE3;display:grid;place-items:center;font-size:15px}
@@ -486,9 +487,11 @@ details.help a{color:var(--brass)}
   <div class="trial-banner hidden" id="trialBanner">You're exploring free — saving is locked. <button id="trialCta">Subscribe to save</button></div>
 
   <nav class="primnav" id="topNav">
-    <button class="on" data-view="vAlerts">⚖︎ Hearings <span class="pill hidden" id="alertPill">0</span></button>
+    <button class="on" data-view="vHome">🏠 Home</button>
+    <button data-view="vAlerts">⚖︎ Hearings <span class="pill hidden" id="alertPill">0</span></button>
     <button data-view="vMine">📁 My cases</button>
     <button data-view="vClient">👤 Client cases</button>
+    <button data-view="vClients">🧑‍💼 Clients</button>
     <button data-view="vJudge">📜 Judgments</button>
     <button data-view="vSearch">🔍 Search</button>
   </nav>
@@ -515,8 +518,24 @@ details.help a{color:var(--brass)}
     </nav>
 
     <main>
+    <!-- HOME -->
+    <section class="view on" id="vHome">
+      <div class="page-head"><div><h2 id="homeHi">Welcome</h2><div class="sub">Your whole practice at a glance. Tap any tile to jump in.</div></div></div>
+      <div class="stats" id="homeStats"></div>
+      <div class="sec-head"><span class="ic" style="background:var(--green)">⤓</span><div><h3>Backup, transfer &amp; share</h3><div class="sline">Move your data to another device, or send a record to anyone.</div></div></div>
+      <div class="panel" style="max-width:none">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" id="homeBackup">⤓ Download all data (.json)</button>
+          <button class="btn" id="homeRestore">⤴ Upload / restore (.json)</button>
+          <input type="file" id="homeRestoreFile" accept="application/json" class="hidden">
+        </div>
+        <div class="info-card" style="margin-top:12px">The <b>.json</b> file is your complete backup (cases, judgments, clients, records, attachments). To use it on another phone or laptop: open this app there → <b>Home → Upload / restore</b> → pick the file. For automatic access on every device, connect <b>Cloud sync</b> in Settings.</div>
+      </div>
+      <div id="homeLists"></div>
+    </section>
+
     <!-- ALERTS -->
-    <section class="view on" id="vAlerts">
+    <section class="view" id="vAlerts">
       <div class="page-head"><div><h2>Hearings &amp; alerts</h2><div class="sub">Upcoming court dates (Peshi) across all your matters, nearest first.</div></div>
         <button class="btn sm" id="remindBtn">🔔 Enable reminders</button></div>
       <div class="stats" id="statRow"></div>
@@ -538,6 +557,13 @@ details.help a{color:var(--brass)}
       <div class="info-card"><b>Client cases</b> are matters you handle <b>for clients</b> — where you appear as their advocate. Track the client, co-counsel, hearing and outcome here. (Keeping them separate from <b>My cases</b> means your own affairs never mix with your clients'.)</div>
       <div class="bar"><input id="clientSearch" placeholder="Search these cases…"><select id="clientFilter"><option value="ALL">All statuses</option><option>Active</option><option>Hold</option><option>Complete</option></select></div>
       <div class="cases" id="clientList"></div>
+    </section>
+
+    <!-- CLIENTS (contacts) -->
+    <section class="view" id="vClients">
+      <div class="page-head"><div><h2>Clients</h2><div class="sub">Full client directory — contact, address, their ideas, and linked cases. Message or share in one tap.</div></div><button class="btn primary" id="addClientC">＋ New client</button></div>
+      <div class="bar"><input id="clientsSearch" placeholder="Search clients…"></div>
+      <div class="cases" id="clientsList"></div>
     </section>
 
     <!-- JUDGMENTS -->
@@ -799,7 +825,7 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
       <div class="hint">Stored in this browser — keep each file under 3 MB.</div>
       <div class="uploads" id="cUploads"></div></div>
   </div>
-  <div class="modal-foot"><button class="btn" id="caseCancel">Cancel</button><button class="btn primary" id="caseSave">Save matter</button></div>
+  <div class="modal-foot"><button class="btn sm" onclick="if($('cId').value)exportPdf($('cKind').value,$('cId').value);else toast('Save first')">PDF</button><button class="btn sm" onclick="if($('cId').value)exportDoc($('cKind').value,$('cId').value);else toast('Save first')">Word</button><button class="btn" id="caseCancel">Cancel</button><button class="btn primary" id="caseSave">Save matter</button></div>
 </div></div>
 
 <!-- ============ JUDGMENT MODAL ============ -->
@@ -856,7 +882,7 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
         <div class="hint" id="jExtractHint">PDF, Word (.docx) or image. Drops into the full-text box; images use OCR (slower, needs internet).</div>
       </div></div>
   </div>
-  <div class="modal-foot"><button class="btn" id="judgeCancel">Cancel</button><button class="btn primary" id="judgeSave">Save judgment</button></div>
+  <div class="modal-foot"><button class="btn sm" onclick="if($('jId').value)exportPdf('judge',$('jId').value);else toast('Save first')">PDF</button><button class="btn sm" onclick="if($('jId').value)exportDoc('judge',$('jId').value);else toast('Save first')">Word</button><button class="btn" id="judgeCancel">Cancel</button><button class="btn primary" id="judgeSave">Save judgment</button></div>
 </div></div>
 
 <!-- ============ SUBSCRIPTION MODAL ============ -->
@@ -923,6 +949,33 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
   <div class="modal-foot"><button class="btn" id="pCancel">Cancel</button><button class="btn primary" id="pSave">Save record</button></div>
 </div></div>
 
+<!-- ============ CLIENT (contact) MODAL ============ -->
+<div class="overlay" id="ccOverlay"><div class="modal">
+  <div class="modal-head"><h3 id="ccModalTitle">New client</h3><button class="icon-btn" id="ccClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="ccId">
+    <div class="field"><label>Full name <span class="req">*</span></label><input id="ccName" placeholder="Client's name"></div>
+    <div class="grid2">
+      <div class="field"><label>Mobile</label><input id="ccMobile" placeholder="03xx-xxxxxxx"></div>
+      <div class="field"><label>WhatsApp</label><input id="ccWa" placeholder="03xx / 92xx"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Email</label><input id="ccEmail" type="email" placeholder="optional"></div>
+      <div class="field"><label>CNIC</label><input id="ccCnic" placeholder="optional"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>City / location</label><input id="ccLoc" placeholder="e.g. Turbat"></div>
+      <div class="field"><label>Occupation</label><input id="ccJob" placeholder="optional"></div>
+    </div>
+    <div class="field"><label>Address</label><textarea id="ccAddr" placeholder="Full address"></textarea></div>
+    <div class="field"><label>Client's ideas / what they told you</label><textarea id="ccIdeas" placeholder="Their version, instructions, expectations, key points to remember…"></textarea></div>
+    <div class="field"><label>Notes</label><textarea id="ccNotes" placeholder="Anything else"></textarea></div>
+    <div class="field"><label>Tags</label><input id="ccTags" placeholder="comma separated"></div>
+    <div class="field"><label>Link to cases / judgments <span class="hint" style="display:inline;font-weight:400">(tap to link)</span></label><div class="link-pick" id="ccLinks"></div></div>
+  </div>
+  <div class="modal-foot"><button class="btn" id="ccCancel">Cancel</button><button class="btn primary" id="ccSave">Save client</button></div>
+</div></div>
+
 <div id="toast"></div>
 
 <script>
@@ -971,13 +1024,13 @@ const DB={
   get(k,def){try{const v=localStorage.getItem(DB.key(k));return v?JSON.parse(v):def}catch(e){return def}},
   set(k,v){try{localStorage.setItem(DB.key(k),JSON.stringify(v));schedulePush();return true}catch(e){toast("Storage full — remove some attachments or back up & clear");return false}}
 };
-let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],aikey:null,calMonth:new Date()};
+let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],clients:[],aikey:null,calMonth:new Date()};
 
 /* ===== cloud sync (optional Supabase) ===== */
 function supaCfg(){try{const c=JSON.parse(localStorage.getItem("wakalat.supa")||"null");if(c&&c.url&&c.key)return c;}catch(e){}return (SUPA.url&&SUPA.key)?SUPA:null;}
 function supaHeaders(c){return{apikey:c.key,Authorization:"Bearer "+c.key,"Content-Type":"application/json"};}
 function setSyncStatus(t){const e=$("supaStatus");if(e)e.textContent=t;}
-function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal};}
+function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients};}
 let _pushT;
 function schedulePush(){const c=supaCfg();if(!c||!state.email)return;clearTimeout(_pushT);_pushT=setTimeout(cloudPush,1500);}
 async function cloudPush(){const c=supaCfg();if(!c||!state.email)return false;try{
@@ -990,7 +1043,7 @@ async function cloudFetch(email){const c=supaCfg();if(!c||!email)return null;try
   const r=await fetch(`${c.url}/rest/v1/vault?email=eq.${encodeURIComponent(email)}&select=account,data`,{headers:supaHeaders(c)});
   if(!r.ok)return null;const rows=await r.json();return rows[0]||null;
 }catch(e){return null;}}
-function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
+function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal","clients"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
 async function cloudPullApply(){const row=await cloudFetch(state.email);if(row&&row.data){applyData(row.data);if($("appShell")&&!$("appShell").classList.contains("hidden"))renderAll();return true;}return false;}
 
 /* ===== seal ===== */
@@ -1078,7 +1131,7 @@ function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`
 function verifyUnlock(token,ref){try{const[b64,sig]=token.trim().split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
 
 /* ===== ROUTING ===== */
-function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.aikey=DB.get("aikey",null);}
+function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.clients=DB.get("clients",[]);state.aikey=DB.get("aikey",null);}
 function isAdmin(){return state.email===ADMIN_EMAIL;}
 function subActive(){return isAdmin()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
 function canSave(){return subActive();}
@@ -1114,15 +1167,16 @@ function enterApp(){
   const sc=(()=>{try{return JSON.parse(localStorage.getItem("wakalat.supa")||"null")}catch(e){return null}})();
   if($("supaUrl")){$("supaUrl").value=sc?.url||"";$("supaKey").value=sc?.key||"";}
   setSyncStatus(supaCfg()?"Cloud sync ON":"Cloud sync off (local only)");
+  $("homeHi").textContent="Welcome, "+((state.profile.fullName||"").split(" ")[0]||"Counsel");
   renderAll();
   if(supaCfg()&&!sessionStorage.getItem("pulled")){sessionStorage.setItem("pulled","1");cloudPullApply().then(ok=>{if(ok)toast("Loaded your latest data from cloud");});}
 }
-function renderAll(){renderAlerts();renderCases("mine");renderCases("client");renderJudge();renderCalendar();renderSettings();}
-const VIEWS=["vAlerts","vMine","vClient","vJudge","vPersonal","vAI","vSearch","vCal","vNews","vLive","vLearn","vMedia","vHelp","vPolicy","vSettings"];
+function renderAll(){renderAlerts();renderCases("mine");renderCases("client");renderJudge();renderCalendar();renderSettings();renderHome();}
+const VIEWS=["vHome","vAlerts","vMine","vClient","vClients","vJudge","vPersonal","vAI","vSearch","vCal","vNews","vLive","vLearn","vMedia","vHelp","vPolicy","vSettings"];
 function setView(v){
   document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("on",x.dataset.view===v));
   VIEWS.forEach(id=>$(id).classList.toggle("on",id===v));
-  if(v==="vNews")loadNews();if(v==="vLive")loadLive();if(v==="vLearn")renderLearn();if(v==="vMedia")renderMedia();if(v==="vPersonal")renderPersonal();if(v==="vHelp")renderHelp();if(v==="vPolicy")renderPolicy();
+  if(v==="vHome")renderHome();if(v==="vClients")renderClients();if(v==="vNews")loadNews();if(v==="vLive")loadLive();if(v==="vLearn")renderLearn();if(v==="vMedia")renderMedia();if(v==="vPersonal")renderPersonal();if(v==="vHelp")renderHelp();if(v==="vPolicy")renderPolicy();
   window.scrollTo(0,0);closeSide();
 }
 window.go=setView;
@@ -1281,19 +1335,19 @@ function fireReminders(){
 }
 function renderAlerts(){
   const all=[];
-  state.mine.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"mine",id:c.id});}});
-  state.client.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"client",id:c.id});}});
+  state.mine.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"mine",id:c.id,cat:c.category,num:c.number,client:c.client});}});
+  state.client.forEach(c=>{if(c.status==="Active"&&c.next){const d=daysFromToday(c.next);if(d!=null&&d>=0&&d<=14)all.push({d,title:c.title,court:c.court,iso:c.next,kind:"client",id:c.id,cat:c.category,num:c.number,client:c.client});}});
   all.sort((a,b)=>a.d-b.d);
   const allCases=[...state.mine,...state.client];
   const active=allCases.filter(c=>c.status==="Active").length;
   const overdue=allCases.filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)<0).length;
-  $("statRow").innerHTML=`<div class="stat"><div class="n">${allCases.length}</div><div class="l">Total cases</div></div><div class="stat"><div class="n">${active}</div><div class="l">Active</div></div><div class="stat"><div class="n">${state.judge.length}</div><div class="l">Judgments</div></div><div class="stat alert"><div class="n">${overdue}</div><div class="l">Overdue dates</div></div>`;
+  $("statRow").innerHTML=`<div class="stat" style="cursor:pointer" onclick="go('vMine')"><div class="n">${allCases.length}</div><div class="l">Total cases ›</div></div><div class="stat" style="cursor:pointer" onclick="filterActive()"><div class="n">${active}</div><div class="l">Active ›</div></div><div class="stat" style="cursor:pointer" onclick="go('vJudge')"><div class="n">${state.judge.length}</div><div class="l">Judgments ›</div></div><div class="stat alert" style="cursor:pointer" onclick="go('vCal')"><div class="n">${overdue}</div><div class="l">Overdue dates ›</div></div>`;
   const cats={};allCases.forEach(c=>{const k=(c.category&&c.category.trim())||"Uncategorised";cats[k]=(cats[k]||0)+1;});
   const ck=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]);
   $("catSummary").innerHTML=ck.length?`<div style="font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Cases by category</div>`+ck.map(k=>`<span class="cat-chip" onclick="filterByCat('${esc(k).replace(/'/g,"")}')">${esc(k)} <b>${cats[k]}</b></span>`).join(""):"";
   if(!all.length){$("alertList").innerHTML=`<div class="empty"><svg class="seal" width="70" height="70" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>No hearings in the next two weeks</h3><p>Add a next-hearing (Peshi) date to any active matter and it shows here, nearest first.</p></div>`;$("alertPill").classList.add("hidden");return;}
   $("alertPill").textContent=all.length;$("alertPill").classList.remove("hidden");
-  $("alertList").innerHTML=all.map(a=>{const urgent=a.d<=3;return `<div class="alert ${urgent?'urgent':''}" style="cursor:pointer" onclick="gotoResult('${a.kind}','${a.id}')"><div class="when"><div class="d">${a.d===0?'•':a.d}</div><div class="m">${a.d===0?'today':a.d===1?'day':'days'}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="meta">${esc(a.court||'Court not set')} · ${fmtDate(a.iso)}</div></div><span class="tag ${a.kind}">${a.kind==='mine'?'My case':'Client'}</span></div>`;}).join("");
+  $("alertList").innerHTML=all.map(a=>{const urgent=a.d<=3;return `<div class="alert ${urgent?'urgent':''}" style="cursor:pointer" onclick="gotoResult('${a.kind}','${a.id}')"><div class="when"><div class="d">${a.d===0?'•':a.d}</div><div class="m">${a.d===0?'today':a.d===1?'day':'days'}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="meta">${esc(a.court||'Court not set')}${a.cat?' · 🏷 '+esc(a.cat):''}${a.num?' · #'+esc(a.num):''}${a.client?' · 👤 '+esc(a.client):''} · ${fmtDate(a.iso)}</div></div><span class="tag ${a.kind}">${a.kind==='mine'?'My case':'Client'}</span></div>`;}).join("");
 }
 
 /* CASES */
@@ -1311,7 +1365,7 @@ function renderCases(kind){
     const cf=(c.custom||[]).filter(x=>x.label||x.value).map(x=>`<span><b>${esc(x.label||'—')}:</b> ${esc(x.value)}</span>`).join("");
     const hc=(c.hearings||[]).length;const hLine=hc?`<div class="rem">⚖︎ ${hc} hearing${hc>1?'s':''} logged${c.hearings[hc-1].plan?` · next plan: ${esc(c.hearings[hc-1].plan.slice(0,60))}`:''}</div>`:'';
     const ev=(c.evidence||[]).map(e=>`<div class="ev-line"><span class="et">${esc(e.type||'Doc')}</span><span>${esc(e.title||e.ref||'—')}${e.ref?` (${esc(e.ref)})`:''}</span><span class="es">${esc(e.status||'')}</span>${e.file?' 📎':''}</div>`).join("");
-    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st ${c.status.toLowerCase()}">${c.status}</span></div><div class="meta">${c.category?`<span>🏷 ${esc(c.category)}</span>`:""}${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:""}${c.number?`<span># ${esc(c.number)}</span>`:""}${kind==="client"&&c.client?`<span>👤 ${esc(c.client)}</span>`:""}${c.party?`<span>vs ${esc(c.party)}</span>`:""}</div>${nextHtml}${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${cf?`<div class="cflist">${cf}</div>`:""}${hLine}${ev?`<div class="evlist">${ev}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="editCase('${kind}','${c.id}')">Open</button><button class="btn sm" onclick="dlOne('${kind}','${c.id}')" title="Download for transfer">⤓</button><button class="btn sm" onclick="delCase('${kind}','${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st ${c.status.toLowerCase()}">${c.status}</span></div><div class="meta">${c.category?`<span>🏷 ${esc(c.category)}</span>`:""}${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:""}${c.number?`<span># ${esc(c.number)}</span>`:""}${kind==="client"&&c.client?`<span>👤 ${esc(c.client)}</span>`:""}${c.party?`<span>vs ${esc(c.party)}</span>`:""}</div>${nextHtml}${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${cf?`<div class="cflist">${cf}</div>`:""}${hLine}${ev?`<div class="evlist">${ev}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="editCase('${kind}','${c.id}')">Open</button><button class="btn sm" onclick="shareWA('${kind}','${c.id}')" title="WhatsApp">📲</button><button class="btn sm" onclick="shareEmail('${kind}','${c.id}')" title="Email">✉</button><button class="btn sm" onclick="dlMenu('${kind}','${c.id}')" title="Download">⤓</button><button class="btn sm" onclick="delCase('${kind}','${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
   }).join("");
 }
 ["mineSearch","mineFilter"].forEach(id=>$(id).addEventListener("input",()=>renderCases("mine")));
@@ -1403,7 +1457,7 @@ function renderJudge(){
     const files=(j.files||[]).map(f=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a>`).join("");
     const tags=(j.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
     const links=(j.links||[]).map(ref=>{const nm=caseNameByRef(ref);return nm?`<span class="file-chip">🔗 ${esc(nm)}</span>`:"";}).join("");
-    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files" style="margin-top:8px">${links}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px"><button class="btn sm primary" onclick="editJudge('${j.id}')">Open</button><button class="btn sm" onclick="dlOne('judge','${j.id}')" title="Download">⤓</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files" style="margin-top:8px">${links}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap"><button class="btn sm primary" onclick="editJudge('${j.id}')">Open</button><button class="btn sm" onclick="shareWA('judge','${j.id}')" title="WhatsApp">📲</button><button class="btn sm" onclick="shareEmail('judge','${j.id}')" title="Email">✉</button><button class="btn sm" onclick="dlMenu('judge','${j.id}')" title="Download">⤓</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
   }).join("");
 }
 function caseNameByRef(ref){const[kind,id]=ref.split(":");const arr=kind==="mine"?state.mine:state.client;const c=arr.find(x=>x.id===id);return c?c.title:null;}
@@ -1519,7 +1573,7 @@ $("localQ").addEventListener("input",e=>{
     });
     if(fields.length){const title=c.title||c.name||c.cite||"Untitled";hits.push({kind,label,title,id:c.id,fields});}
   });
-  scan(state.mine,"mine","My case");scan(state.client,"client","Client case");scan(state.judge,"judge","Judgment");scan(state.personal,"personal","My life");
+  scan(state.mine,"mine","My case");scan(state.client,"client","Client case");scan(state.judge,"judge","Judgment");scan(state.personal,"personal","My life");scan(state.clients,"clientc","Client");
   if(!hits.length){box.innerHTML=`<div class="empty" style="padding:24px"><p>No matches for “${esc(q)}” across your saved records.</p></div>`;return;}
   box.innerHTML=hits.map((h,idx)=>{
     const where=h.fields.slice(0,6).map(f=>`<span class="res-f">${esc(f.f)}</span>`).join("");
@@ -1530,6 +1584,7 @@ $("localQ").addEventListener("input",e=>{
 window.gotoResult=(kind,id)=>{
   if(kind==="judge"){go("vJudge");openJudge(state.judge.find(j=>j.id===id));}
   else if(kind==="personal"){go("vPersonal");openPersonal(state.personal.find(c=>c.id===id));}
+  else if(kind==="clientc"){go("vClients");openClientC(state.clients.find(c=>c.id===id));}
   else{go(kind==="mine"?"vMine":"vClient");const arr=kind==="mine"?state.mine:state.client;openCase(kind,arr.find(c=>c.id===id));}
 };
 window.filterByCat=(cat)=>{go("vMine");$("mineSearch").value=cat==="Uncategorised"?"":cat;renderCases("mine");$("clientSearch").value=cat==="Uncategorised"?"":cat;renderCases("client");toast("Filtered by "+cat);};
@@ -1584,11 +1639,11 @@ function renderSettings(){
 $("aiSave").onclick=()=>{const k=$("aiKey").value.trim();state.aikey=k||null;DB.set("aikey",state.aikey);toast(k?"Gemini key saved":"Key cleared");};
 $("aiClear").onclick=()=>{$("aiKey").value="";state.aikey=null;DB.set("aikey",null);toast("Key removed");};
 $("editProfile").onclick=()=>{openProfile();showOnly("profileScreen");};
-$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
+$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
 $("importBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 $("signoutBtn").onclick=signOut;
-$("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","reminders","personal","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
+$("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","reminders","personal","clients","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
 $("subscribeBtn").onclick=openSub;
 
 /* SUBSCRIPTION */
@@ -1738,7 +1793,7 @@ function renderPersonal(){
   $("personalList").innerHTML=rows.map(c=>{
     const files=(c.files||[]).map(f=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':f.type&&f.type.startsWith('video')?'🎬':f.type&&f.type.startsWith('audio')?'🎧':'🖼'} ${esc(f.name)}</a>`).join("");
     const tags=(c.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
-    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st active">${esc(c.cat)}</span></div><div class="meta">${c.date?`<span>🗓 ${fmtDate(c.date)}</span>`:""}</div>${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${c.remember?`<div class="next">💡 ${esc(c.remember)}</div>`:""}${c.plan?`<div class="meta"><span>🎯 ${esc(c.plan)}</span></div>`:""}${c.health?`<div class="info-card" style="margin:8px 0 0">🩺 ${esc(c.health)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="editPersonal('${c.id}')">Open</button><button class="btn sm" onclick="dlOne('personal','${c.id}')" title="Download">⤓</button><button class="btn sm" onclick="delPersonal('${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    return `<div class="case"><div class="top"><div class="name">${esc(c.title)}</div><span class="st active">${esc(c.cat)}</span></div><div class="meta">${c.date?`<span>🗓 ${fmtDate(c.date)}</span>`:""}</div>${c.notes?`<div class="rem">${esc(c.notes)}</div>`:""}${c.remember?`<div class="next">💡 ${esc(c.remember)}</div>`:""}${c.plan?`<div class="meta"><span>🎯 ${esc(c.plan)}</span></div>`:""}${c.health?`<div class="info-card" style="margin:8px 0 0">🩺 ${esc(c.health)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${files?`<div class="files">${files}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="editPersonal('${c.id}')">Open</button><button class="btn sm" onclick="dlMenu('personal','${c.id}')" title="Download">⤓</button><button class="btn sm" onclick="delPersonal('${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
   }).join("");
 }
 $("personalSearch").addEventListener("input",renderPersonal);
@@ -1779,6 +1834,114 @@ $("supaUp").onclick=()=>{if(!supaCfg()){toast("Connect first");return;}setSyncSt
 $("supaDown").onclick=async()=>{if(!supaCfg()){toast("Connect first");return;}setSyncStatus("Syncing down…");const ok=await cloudPullApply();toast(ok?"Latest data loaded":"Nothing found in cloud yet");};
 $("supaOff").onclick=()=>{localStorage.removeItem("wakalat.supa");$("supaUrl").value="";$("supaKey").value="";setSyncStatus(supaCfg()?"Using built-in cloud":"Cloud sync off (local only)");toast("Disconnected");};
 $("signoutBtn")&&null;
+
+/* ===== HOME DASHBOARD ===== */
+function homeStat(n,label,view,extra){return `<div class="stat" style="cursor:pointer" onclick="go('${view}')"${extra?'':''}><div class="n">${n}</div><div class="l">${esc(label)} ›</div></div>`;}
+function renderHome(){
+  if(!$("homeStats"))return;
+  const allC=[...state.mine,...state.client];
+  const upcoming=allC.filter(c=>c.status==="Active"&&c.next&&daysFromToday(c.next)>=0).length;
+  $("homeStats").innerHTML=[
+    homeStat(state.mine.length,"My cases","vMine"),
+    homeStat(state.client.length,"Client cases","vClient"),
+    homeStat(state.clients.length,"Clients","vClients"),
+    homeStat(state.judge.length,"Judgments","vJudge"),
+    homeStat(upcoming,"Upcoming hearings","vAlerts"),
+    homeStat(state.personal.length,"Life records","vPersonal")
+  ].join("");
+  const recent=(arr,kind,label,nameKey)=>{
+    const items=arr.slice(0,4);
+    if(!items.length)return "";
+    return `<div class="sec-head"><span class="ic" style="background:var(--green)">•</span><div><h3>${label}</h3></div><button class="btn sm" style="margin-left:auto" onclick="go('${kind==='mine'?'vMine':kind==='client'?'vClient':kind==='judge'?'vJudge':kind==='clientc'?'vClients':'vPersonal'}')">See all</button></div>`+
+      `<div class="cases">${items.map(c=>`<div class="case" style="cursor:pointer" onclick="gotoResult('${kind}','${c.id}')"><div class="top"><div class="name">${esc(c[nameKey]||c.title||c.name||c.cite||'Untitled')}</div></div><div class="meta">${c.status?`<span class="st ${String(c.status).toLowerCase()}">${esc(c.status)}</span>`:''}${c.court?`<span>⚖︎ ${esc(c.court)}</span>`:''}${c.next?`<span>🗓 ${fmtDate(c.next)}</span>`:''}${c.mobile?`<span>📞 ${esc(c.mobile)}</span>`:''}${c.cat?`<span>🏷 ${esc(c.cat)}</span>`:''}</div></div>`).join("")}</div>`;
+  };
+  $("homeLists").innerHTML=recent(state.mine,"mine","Recent my cases","title")+recent(state.client,"client","Recent client cases","title")+recent(state.clients,"clientc","Clients","name")+recent(state.judge,"judge","Recent judgments","name")+recent(state.personal,"personal","Recent life records","title");
+}
+function filterActive(){go("vMine");$("mineFilter").value="Active";renderCases("mine");$("clientFilter").value="Active";renderCases("client");toast("Showing active cases");}
+window.filterActive=filterActive;
+$("homeBackup").onclick=()=>$("exportData").click();
+$("homeRestore").onclick=()=>$("homeRestoreFile").click();
+$("homeRestoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});enterApp();toast("Data restored on this device");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+
+/* ===== SHARE & EXPORT ===== */
+function findRec(kind,id){
+  if(kind==="judge")return state.judge.find(j=>j.id===id);
+  if(kind==="personal")return state.personal.find(c=>c.id===id);
+  if(kind==="clientc")return state.clients.find(c=>c.id===id);
+  return (kind==="mine"?state.mine:state.client).find(c=>c.id===id);
+}
+function recToText(kind,r){
+  if(!r)return"";
+  if(kind==="judge")return `JUDGMENT\nCase: ${r.name||''}\nCitation: ${r.cite||''}\nCourt: ${r.court||''} ${r.year||''}\nHolding: ${r.hold||''}\nSummary: ${r.summary||''}\nNotes: ${r.notes||''}\nSource: ${r.url||''}`;
+  if(kind==="clientc")return `CLIENT\nName: ${r.name||''}\nMobile: ${r.mobile||''}\nWhatsApp: ${r.whatsapp||''}\nEmail: ${r.email||''}\nCNIC: ${r.cnic||''}\nLocation: ${r.loc||''}\nAddress: ${r.addr||''}\nNotes: ${r.notes||''}\nClient's ideas: ${r.ideas||''}`;
+  if(kind==="personal")return `RECORD\n${r.cat||''}: ${r.title||''}\nDate: ${r.date||''}\nNotes: ${r.notes||''}\nRemember: ${r.remember||''}\nPlan: ${r.plan||''}`;
+  const ev=(r.evidence||[]).map(x=>`  • ${x.type||''} ${x.ref||''} ${x.title||''} [${x.status||''}]`).join("\n");
+  const he=(r.hearings||[]).map(x=>`  • ${x.date||''} ${x.judge?'('+x.judge+') ':''}${x.what||''}`).join("\n");
+  return `CASE: ${r.title||''}\nStatus: ${r.status||''} | Court: ${r.court||''} | Category: ${r.category||''}\nCase/FIR no: ${r.number||''}\nParty: ${r.party||''}\nClient: ${r.client||''}\nNext hearing: ${r.next||''}\nNotes: ${r.notes||''}\nEvidence:\n${ev}\nHearings:\n${he}`;
+}
+function recToHTML(kind,r){return `<h2 style="font-family:Georgia,serif">${esc((r.title||r.name||r.cite||'Record'))}</h2><pre style="font-family:Georgia,serif;font-size:13px;white-space:pre-wrap;line-height:1.5">${esc(recToText(kind,r))}</pre>`;}
+function recName(r){return String(r.title||r.name||r.cite||"record").replace(/[^a-z0-9]+/gi,"-").slice(0,40);}
+window.shareWA=(kind,id)=>{const r=findRec(kind,id);if(!r)return;let n="";if(kind==="clientc"&&(r.whatsapp||r.mobile)){n=(r.whatsapp||r.mobile).replace(/\D/g,"");if(n.startsWith("0"))n="92"+n.slice(1);}window.open("https://wa.me/"+n+"?text="+encodeURIComponent(recToText(kind,r)),"_blank","noopener");};
+window.shareEmail=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const to=(kind==="clientc"&&r.email)?r.email:"";window.open(`mailto:${to}?subject=${encodeURIComponent(r.title||r.name||"Record")}&body=${encodeURIComponent(recToText(kind,r))}`);};
+function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+window.exportDoc=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const html=`<html><head><meta charset="utf-8"></head><body>${recToHTML(kind,r)}</body></html>`;dl(new Blob([html],{type:"application/msword"}),recName(r)+".doc");toast("Word file downloaded");};
+window.exportPdf=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const w=window.open("","_blank");if(!w){toast("Allow pop-ups to export PDF");return;}w.document.write(`<html><head><meta charset="utf-8"><title>${esc(recName(r))}</title></head><body>${recToHTML(kind,r)}<script>window.onload=function(){window.print();}<\/script></body></html>`);w.document.close();};
+window.dlMenu=(kind,id)=>{const c=prompt("Type a number to download:\n1 = JSON (for transfer/restore)\n2 = PDF\n3 = Word (.doc)","1");if(c==="1")dlOne(kind,id);else if(c==="2")exportPdf(kind,id);else if(c==="3")exportDoc(kind,id);};
+
+/* ===== CLIENTS (contacts) ===== */
+let ccLinks=[];
+function renderCcLinks(){
+  const opts=[...state.mine.map(c=>({ref:"mine:"+c.id,name:c.title,t:"My"})),...state.client.map(c=>({ref:"client:"+c.id,name:c.title,t:"Client"})),...state.judge.map(j=>({ref:"judge:"+j.id,name:j.name||j.cite,t:"Judgment"}))];
+  if(!opts.length){$("ccLinks").innerHTML=`<span class="hint" style="display:inline">No cases/judgments yet to link.</span>`;return;}
+  $("ccLinks").innerHTML=opts.map(o=>`<span class="link-opt ${ccLinks.includes(o.ref)?'on':''}" data-ref="${o.ref}">${ccLinks.includes(o.ref)?'✓ ':''}${esc(o.name||'Untitled')} <span style="opacity:.6">· ${o.t}</span></span>`).join("");
+  $("ccLinks").querySelectorAll(".link-opt").forEach(el=>el.onclick=()=>{const r=el.dataset.ref;const i=ccLinks.indexOf(r);if(i>=0)ccLinks.splice(i,1);else ccLinks.push(r);renderCcLinks();});
+}
+function openClientC(c){
+  $("ccId").value=c?.id||"";$("ccModalTitle").textContent=c?"Edit client":"New client";
+  ["ccName","name"],["ccMobile","mobile"],["ccWa","whatsapp"],["ccEmail","email"],["ccCnic","cnic"],["ccLoc","loc"],["ccJob","job"],["ccAddr","addr"],["ccIdeas","ideas"],["ccNotes","notes"];
+  $("ccName").value=c?.name||"";$("ccMobile").value=c?.mobile||"";$("ccWa").value=c?.whatsapp||"";$("ccEmail").value=c?.email||"";$("ccCnic").value=c?.cnic||"";$("ccLoc").value=c?.loc||"";$("ccJob").value=c?.job||"";$("ccAddr").value=c?.addr||"";$("ccIdeas").value=c?.ideas||"";$("ccNotes").value=c?.notes||"";$("ccTags").value=(c?.tags||[]).join(", ");
+  ccLinks=(c?.links||[]).slice();renderCcLinks();
+  $("ccOverlay").classList.add("on");
+}
+window.openClientC=openClientC;
+$("addClientC").onclick=()=>openClientC(null);
+$("ccClose").onclick=()=>$("ccOverlay").classList.remove("on");
+$("ccCancel").onclick=()=>$("ccOverlay").classList.remove("on");
+$("ccOverlay").addEventListener("click",e=>{if(e.target===$("ccOverlay"))$("ccOverlay").classList.remove("on");});
+$("ccSave").onclick=()=>{
+  if(!canSave()){$("ccOverlay").classList.remove("on");openSub();return;}
+  const name=$("ccName").value.trim();if(!name){toast("Client name is required");return;}
+  const obj={id:$("ccId").value||("cc"+Date.now()),name,mobile:$("ccMobile").value.trim(),whatsapp:$("ccWa").value.trim(),email:$("ccEmail").value.trim(),cnic:$("ccCnic").value.trim(),loc:$("ccLoc").value.trim(),job:$("ccJob").value.trim(),addr:$("ccAddr").value.trim(),ideas:$("ccIdeas").value.trim(),notes:$("ccNotes").value.trim(),tags:$("ccTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:ccLinks.slice()};
+  const i=state.clients.findIndex(x=>x.id===obj.id);if(i>=0)state.clients[i]=obj;else state.clients.unshift(obj);
+  if(DB.set("clients",state.clients)){$("ccOverlay").classList.remove("on");renderClients();renderHome();toast("Client saved");}
+};
+window.editClientC=id=>openClientC(state.clients.find(c=>c.id===id));
+window.delClientC=id=>{if(!confirm("Delete this client?"))return;state.clients=state.clients.filter(c=>c.id!==id);DB.set("clients",state.clients);renderClients();renderHome();toast("Deleted");};
+function caseNameByRefAny(ref){const[k,id]=ref.split(":");const arr=k==="judge"?state.judge:k==="mine"?state.mine:state.client;const r=(arr||[]).find(x=>x.id===id);return r?(r.title||r.name||r.cite):null;}
+function renderClients(){
+  const q=($("clientsSearch").value||"").toLowerCase();
+  const rows=state.clients.filter(c=>(c.name+" "+(c.mobile||"")+" "+(c.loc||"")+" "+(c.addr||"")+" "+(c.notes||"")+" "+(c.ideas||"")+" "+(c.tags||[]).join(" ")).toLowerCase().includes(q));
+  if(!rows.length){$("clientsList").innerHTML=`<div class="empty" style="grid-column:1/-1"><svg class="seal" width="64" height="64" viewBox="0 0 80 80">${sealSVG(false)}</svg><h3>${state.clients.length?'Nothing matches':'No clients yet'}</h3><p>${state.clients.length?'Clear the search.':'Add your clients with full contact details and link their cases.'}</p>${state.clients.length?'':'<button class="btn primary" onclick="openClientC(null)">＋ New client</button>'}</div>`;return;}
+  $("clientsList").innerHTML=rows.map(c=>{
+    const links=(c.links||[]).map(ref=>{const nm=caseNameByRefAny(ref);return nm?`<span class="file-chip">🔗 ${esc(nm)}</span>`:"";}).join("");
+    const tags=(c.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
+    return `<div class="case"><div class="top"><div class="name">${esc(c.name)}</div></div>
+      <div class="meta">${c.mobile?`<span>📞 ${esc(c.mobile)}</span>`:""}${c.whatsapp?`<span>🟢 ${esc(c.whatsapp)}</span>`:""}${c.email?`<span>✉ ${esc(c.email)}</span>`:""}${c.loc?`<span>📍 ${esc(c.loc)}</span>`:""}</div>
+      ${c.addr?`<div class="rem">${esc(c.addr)}</div>`:""}
+      ${c.ideas?`<div class="next">💬 ${esc(c.ideas)}</div>`:""}
+      ${tags?`<div class="tagrow">${tags}</div>`:""}
+      ${links?`<div class="files">${links}</div>`:""}
+      <div class="acts" style="flex-wrap:wrap">
+        <button class="btn sm primary" onclick="editClientC('${c.id}')">Open</button>
+        ${(c.whatsapp||c.mobile)?`<button class="btn sm" onclick="shareWA('clientc','${c.id}')" title="WhatsApp">📲</button>`:""}
+        ${c.mobile?`<a class="btn sm" href="tel:${esc(c.mobile)}" title="Call">📞</a>`:""}
+        ${c.email?`<button class="btn sm" onclick="shareEmail('clientc','${c.id}')" title="Email">✉</button>`:""}
+        <button class="btn sm" onclick="dlMenu('clientc','${c.id}')" title="Download">⤓</button>
+        <button class="btn sm" onclick="delClientC('${c.id}')" style="color:var(--red)">Delete</button>
+      </div></div>`;
+  }).join("");
+}
+$("clientsSearch").addEventListener("input",renderClients);
 
 /* boot */
 (function init(){const t=localStorage.getItem("wakalat.theme");if(t)document.documentElement.setAttribute("data-theme",t);route();setTimeout(fireReminders,1500);})();
