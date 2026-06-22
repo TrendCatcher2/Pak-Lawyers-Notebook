@@ -1,0 +1,20 @@
+{
+  "name": "PAK Lawyer's Notebook",
+  "short_name": "PAK Notebook",
+  "description": "Cases, clients, judgments, hearings and personal records for Pakistani lawyers — with AI help. By TrendCatcher.",
+  "id": "/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F3F0E6",
+  "theme_color": "#0C6E48",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "business"],
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
