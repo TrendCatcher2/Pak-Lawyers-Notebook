@@ -1,4 +1,4 @@
-# Make PAK Lawyer's Notebook a Play-Store-ready PWA
+# Make Pak Lawyer's Notebook a Play-Store-ready PWA
 
 ## What's in this folder
 - `manifest.json` — app identity (name, icons, colors)
