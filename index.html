@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PAK Lawyer's Notebook — Every hearing, every file, in one place</title>
@@ -866,16 +865,6 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
       <div class="field"><label>Year</label><input id="jYear" type="number" placeholder="e.g. 2021"></div>
     </div>
     <div class="field"><label>Key holding</label><textarea id="jHold" placeholder="The ratio / principle decided…"></textarea></div>
-<div class="grid2">
-      <div class="field"><label>Judge(s) / bench</label><input id="jBench" placeholder="e.g. Qazi Faez Isa, CJ"></div>
-      <div class="field"><label>Date of decision</label><input id="jDate" type="date"></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Case / appeal no.</label><input id="jNum" placeholder="e.g. Crl. Appeal 123/2021"></div>
-      <div class="field"><label>Result / disposition</label><input id="jResult" list="jResultList" placeholder="e.g. Appeal allowed"><datalist id="jResultList"><option>Appeal allowed</option><option>Appeal dismissed</option><option>Partly allowed</option><option>Petition allowed</option><option>Petition dismissed</option><option>Bail granted</option><option>Bail refused</option><option>Remanded</option><option>Acquitted</option><option>Convicted</option><option>Set aside</option></datalist></div>
-    </div>
-    <div class="field"><label>Statutes / sections involved</label><input id="jLaws" placeholder="e.g. s.497 CrPC; Art.199 Constitution"></div>
-    <div class="field"><label>Precedent status</label><input id="jPrecStatus" list="jPrecList" placeholder="e.g. Good law"><datalist id="jPrecList"><option>Good law</option><option>Overruled</option><option>Distinguished</option><option>Doubted</option><option>Reversed on appeal</option><option>Per incuriam</option></datalist></div>
     <div class="field"><label>Summary</label><textarea id="jSummary" placeholder="Short summary of facts &amp; decision…"></textarea></div>
     <div class="field"><label>Personal notes</label><textarea id="jNotes" placeholder="How this helps your matter, where to cite it…"></textarea></div>
     <div class="field"><label>Tags <span class="hint" style="display:inline;font-weight:400">(comma separated — AI Bhai suggests these)</span></label><input id="jTags" placeholder="e.g. bail, section 497, narcotics"></div>
@@ -1468,7 +1457,7 @@ function renderJudge(){
     const files=(j.files||[]).map(f=>`<a class="file-chip" href="${f.data}" download="${esc(f.name)}" target="_blank">${f.type&&f.type.includes('pdf')?'📄':'🖼'} ${esc(f.name)}</a>`).join("");
     const tags=(j.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
     const links=(j.links||[]).map(ref=>{const nm=caseNameByRef(ref);return nm?`<span class="file-chip">🔗 ${esc(nm)}</span>`:"";}).join("");
-    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div <div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.bench?` · 👨‍⚖️ ${esc(j.bench)}`:""}${j.date?` · ${fmtDate(j.date)}`:""}${j.result?` · <b>${esc(j.result)}</b>`:""}${j.precStatus?` · <span style="color:var(--brass)">${esc(j.precStatus)}</span>`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.laws?`<div class="jmeta">📚 ${esc(j.laws)}</div>`:""}${j.num?`<div class="jmeta">📋 ${esc(j.num)}</div>`:""}${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files" style="margin-top:8px">${links}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap"><button class="btn sm primary" onclick="editJudge('${j.id}')">Open</button><button class="btn sm" onclick="shareWA('judge','${j.id}')" title="WhatsApp">📲</button><button class="btn sm" onclick="shareEmail('judge','${j.id}')" title="Email">✉</button><button class="btn sm" onclick="dlMenu('judge','${j.id}')" title="Download">⤓</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    return `<div class="jcard">${j.cite?`<div class="jcite">${esc(j.cite)}</div>`:""}<div class="jname">${esc(j.name||"Untitled")}</div><div class="jmeta">${esc(j.court||"")}${j.year?` · ${esc(j.year)}`:""}${j.url?` · <a href="${esc(j.url)}" target="_blank" rel="noopener" style="color:var(--brass)">source</a>`:""}</div>${j.hold?`<div class="jhold"><b>Holding:</b> ${esc(j.hold)}</div>`:""}${j.notes?`<div class="jnotes">${esc(j.notes)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files" style="margin-top:8px">${links}</div>`:""}${files?`<div class="files" style="margin-top:8px">${files}</div>`:""}<div class="acts" style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap"><button class="btn sm primary" onclick="editJudge('${j.id}')">Open</button><button class="btn sm" onclick="shareWA('judge','${j.id}')" title="WhatsApp">📲</button><button class="btn sm" onclick="shareEmail('judge','${j.id}')" title="Email">✉</button><button class="btn sm" onclick="dlMenu('judge','${j.id}')" title="Download">⤓</button><button class="btn sm" onclick="delJudge('${j.id}')" style="color:var(--red)">Delete</button></div></div>`;
   }).join("");
 }
 function caseNameByRef(ref){const[kind,id]=ref.split(":");const arr=kind==="mine"?state.mine:state.client;const c=arr.find(x=>x.id===id);return c?c.title:null;}
@@ -1477,7 +1466,6 @@ let judgeUploads=[];
 function openJudge(j){
   $("jId").value=j?.id||"";$("judgeModalTitle").textContent=j?"Edit judgment":"New judgment";
   $("jSource").value="";$("jCite").value=j?.cite||"";$("jName").value=j?.name||"";$("jCourt").value=j?.court||"";$("jYear").value=j?.year||"";$("jHold").value=j?.hold||"";$("jSummary").value=j?.summary||"";$("jNotes").value=j?.notes||"";$("jUrl").value=j?.url||"";$("jFull").value=j?.full||"";
-  $("jBench").value=j?.bench||"";$("jDate").value=j?.date||"";$("jNum").value=j?.num||"";$("jResult").value=j?.result||"";$("jLaws").value=j?.laws||"";$("jPrecStatus").value=j?.precStatus||"";
   $("jTags").value=(j?.tags||[]).join(", ");
   $("jKey").value=state.aikey||"";
   judgeLinks=(j?.links||[]).slice();renderLinkPick();
@@ -1509,9 +1497,7 @@ $("jExtractBtn").onclick=async()=>{
     else{toast("Reader not loaded — check your internet, then retry");btn.disabled=false;btn.textContent=old;return;}
     text=text.replace(/\s+\n/g,"\n").trim();
     if(!text){toast("No text found in that file");}
-    else{const cur=$("jFull").value.trim();$("jFull").value=cur?cur+"\n\n"+text:text;$("jSource").value=text.slice(0,4000);
-      if(state.aikey){toast("Text extracted — AI Bhai is filling the fields…");$("jAiBtn").click();}
-      else{toast("Text extracted — add your AI key (🔑) to auto-fill, or fill manually");}}
+    else{const cur=$("jFull").value.trim();$("jFull").value=cur?cur+"\n\n"+text:text;$("jSource").value=text.slice(0,4000);toast("Text extracted — review, or tap Auto-fill with AI Bhai");}
   }catch(e){toast("Extract failed: "+(e.message||"try another file"));}
   btn.disabled=false;btn.textContent=old;
 };
@@ -1521,7 +1507,7 @@ $("judgeCancel").onclick=()=>$("judgeOverlay").classList.remove("on");
 $("judgeOverlay").addEventListener("click",e=>{if(e.target===$("judgeOverlay"))$("judgeOverlay").classList.remove("on");});
 $("judgeSave").onclick=()=>{
   if(!canSave()){$("judgeOverlay").classList.remove("on");openSub();return;}
-  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:judgeLinks.slice(),bench:$("jBench").value.trim(),date:$("jDate").value,num:$("jNum").value.trim(),result:$("jResult").value.trim(),laws:$("jLaws").value.trim(),precStatus:$("jPrecStatus").value.trim(),url:$("jUrl").value.trim(),full:$("jFull").value.trim(),files:judgeUploads};
+  const obj={id:$("jId").value||("j"+Date.now()),cite:$("jCite").value.trim(),name:$("jName").value.trim(),court:$("jCourt").value.trim(),year:$("jYear").value.trim(),hold:$("jHold").value.trim(),summary:$("jSummary").value.trim(),notes:$("jNotes").value.trim(),tags:$("jTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:judgeLinks.slice(),url:$("jUrl").value.trim(),full:$("jFull").value.trim(),files:judgeUploads};
   if(!obj.name&&!obj.cite){toast("Add at least a citation or case name");return;}
   const i=state.judge.findIndex(x=>x.id===obj.id);if(i>=0)state.judge[i]=obj;else state.judge.unshift(obj);
   if(DB.set("judge",state.judge)){$("judgeOverlay").classList.remove("on");renderJudge();renderAlerts();toast("Judgment saved");}
@@ -1542,7 +1528,7 @@ $("jAiBtn").onclick=async()=>{
       try{const r=await fetch(src);const t=await r.text();src=t.replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,12000);}
       catch(e){toast("Couldn't fetch that URL (site blocked it) — paste the text instead");btn.disabled=false;btn.textContent=old;return;}
     }
-    const prompt=`You are a Pakistani legal research assistant. From the judgment text below, extract structured data. Return ONLY valid JSON (no markdown) with keys: citation, caseName, court, year, judges, dateOfDecision (YYYY-MM-DD), caseNo, result (disposition), statutes (sections/laws involved), precedentStatus, keyHolding, summary, notes, tags. "notes" = a one-line practical note on how a lawyer might use this precedent. "tags" = an array of 3-6 short lowercase keywords (topics, sections, principles). If a field is unknown use "" (or [] for tags).\n\nTEXT:\n${src}`;
+    const prompt=`You are a Pakistani legal research assistant. From the judgment text below, extract structured data. Return ONLY valid JSON (no markdown) with keys: citation, caseName, court, year, keyHolding, summary, notes, tags. "notes" = a one-line practical note on how a lawyer might use this precedent. "tags" = an array of 3-6 short lowercase keywords (topics, sections, principles). If a field is unknown use "" (or [] for tags).\n\nTEXT:\n${src}`;
     const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,responseMimeType:"application/json"}})});
     if(!resp.ok){const er=await resp.text();throw new Error(resp.status+" "+er.slice(0,120));}
     const data=await resp.json();
@@ -1552,12 +1538,6 @@ $("jAiBtn").onclick=async()=>{
     const norm={};Object.keys(j).forEach(k=>norm[k.toLowerCase().replace(/[^a-z0-9]/g,"")]=j[k]);
     const pick=(...names)=>{for(const n of names){const v=norm[n];if(v!=null&&String(v).trim()!==""){return Array.isArray(v)?v.join(", "):String(v);}}return "";};
     const setVal=(id,val)=>{if(val)$(id).value=val;};
-setVal("jBench",pick("judges","judge","bench","coram","author"));
-    setVal("jDate",pick("dateofdecision","decisiondate","date"));
-    setVal("jNum",pick("caseno","casenumber","appealno","appealnumber","number"));
-    setVal("jResult",pick("result","disposition","outcome","order"));
-    setVal("jLaws",pick("statutes","sections","lawsinvolved","provisions","actsandsections"));
-    setVal("jPrecStatus",pick("precedentstatus","status"));
     setVal("jCite",pick("citation","cite","reportedas","reference"));
     setVal("jName",pick("casename","title","parties","casetitle"));
     setVal("jCourt",pick("court","forum","bench"));
@@ -1695,6 +1675,7 @@ async function geminiCall(prompt,jsonMode){
   const d=await r.json();return (d?.candidates?.[0]?.content?.parts?.[0]?.text)||"";
 }
 function parseJSON(t){return JSON.parse(String(t).replace(/```json|```/g,"").trim());}
+function aiPick(obj){const norm={};Object.keys(obj||{}).forEach(k=>{norm[k.toLowerCase().replace(/[^a-z0-9]/g,"")]=obj[k];});return(...al)=>{for(const a of al){const v=norm[a.toLowerCase().replace(/[^a-z0-9]/g,"")];if(v!=null&&String(v).trim()!=="")return Array.isArray(v)?v.join(", "):String(v);}return"";};}
 function mdLite(t){t=esc(t);t=t.replace(/^\s*[\*\-]\s+(.*)$/gm,"• $1");t=t.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");t=t.replace(/^#{1,6}\s*(.*)$/gm,"<b>$1</b>");return t.replace(/\n/g,"<br>");}
 
 /* hearings / Peshi log */
@@ -1717,11 +1698,22 @@ $("cAiBtn").onclick=async()=>{
   const src=$("cAiSrc").value.trim();if(!src){toast("Paste some case details first");return;}
   const btn=$("cAiBtn"),old=btn.textContent;btn.disabled=true;btn.textContent="Reading…";
   try{
-    const prompt=`You are a Pakistani legal assistant. From the text, return JSON only with keys: title, court, party (opposing party), client, status (one of Active/Hold/Complete), category (e.g. Bail, Appeal, Civil Suit, Criminal Trial, Family, Writ), opened (YYYY-MM-DD or ""), next (next hearing date YYYY-MM-DD or ""), notes. Unknown => "".\n\nTEXT:\n${src}`;
-    const j=parseJSON(await geminiCall(prompt,true));
-    const set=(id,v)=>{if(v)$(id).value=v;};
-    set("cTitle",j.title);set("cCourt",j.court);set("cParty",j.party);set("cClient",j.client);set("cCategory",j.category);set("cOpened",j.opened);set("cNext",j.next);set("cNotes",j.notes);
-    if(j.status&&["Active","Hold","Complete"].includes(j.status))$("cStatus").value=j.status;
+    const prompt=`You are a Pakistani legal assistant. Read the text and return JSON ONLY (no prose), leaving "" when unknown, with keys:
+title (short case title e.g. "Khan vs State"), court, number (case / FIR / citation / diary / appeal number), party (opposing party), client (client's name), counsel (advocate on record), status (exactly Active, Hold, or Complete), category (e.g. Bail, Appeal, Civil Suit, Criminal Trial, Family, Writ, Narcotics, Cheque Dishonour), opened (YYYY-MM-DD), next (next hearing YYYY-MM-DD), notes (concise summary of facts & current position).
+TEXT:\n${src}`;
+    const j=parseJSON(await geminiCall(prompt,true));const pick=aiPick(j);
+    const set=(id,...al)=>{const v=pick(...al);if(v)$(id).value=v;};
+    set("cTitle","title","casetitle","caption","name");
+    set("cCourt","court","forum","tribunal","bench");
+    set("cNumber","number","caseno","casenumber","firno","fir","citation","diaryno","appealno","petitionno");
+    set("cParty","party","opposingparty","respondent","versus","againstparty","oppositeparty");
+    set("cClient","client","clientname","petitioner","applicant","accused","complainant");
+    set("cCounsel","counsel","advocate","lawyer","counselonrecord");
+    set("cCategory","category","casetype","type","nature");
+    set("cOpened","opened","dateopened","filingdate","institutiondate","registeredon");
+    set("cNext","next","nexthearing","nextdate","peshi","adjournedto","nextdateofhearing");
+    set("cNotes","notes","summary","facts","details","brief","background");
+    const st=pick("status");if(st){const m={active:"Active",pending:"Active",ongoing:"Active",hold:"Hold",onhold:"Hold",stayed:"Hold",adjourned:"Hold",complete:"Complete",completed:"Complete",closed:"Complete",disposed:"Complete",decided:"Complete"}[st.toLowerCase().replace(/[^a-z]/g,"")];if(m)$("cStatus").value=m;}
     toast("AI filled the fields — review & save");
   }catch(e){toast("AI error: "+(e.message=="no-key"?"add your key":e.message));}
   btn.disabled=false;btn.textContent=old;
@@ -1785,13 +1777,19 @@ $("pAiBtn").onclick=async()=>{
   const src=$("pAiSrc").value.trim();if(!src){toast("Describe it first");return;}
   const btn=$("pAiBtn"),old=btn.textContent;btn.disabled=true;btn.textContent="Reading…";
   try{
-    const prompt=`From the text, return JSON only with keys: category (one of: ${PERSONAL_CATS.join("; ")}), title, date (YYYY-MM-DD or ""), notes, remember (key things to remember or ideas), plan (future plan/target or ""), tags (array of short keywords), healthTip (only if health/fitness related: a brief practical tip on what to do, prevent, or eat; else ""). TEXT:\n${src}`;
-    const j=parseJSON(await geminiCall(prompt,true));
-    if(j.category)$("pCat").value=j.category;
-    const set=(id,v)=>{if(v)$(id).value=v;};
-    set("pTitle",j.title);set("pDate",j.date);set("pNotes",j.notes);set("pRemember",j.remember);set("pPlan",j.plan);
-    if(Array.isArray(j.tags))$("pTags").value=j.tags.join(", ");
-    if(j.healthTip){$("pHealthBox").style.display="";$("pHealthTip").textContent=j.healthTip;}
+    const prompt=`From the text, return JSON ONLY, "" when unknown, with keys:
+category (closest of: ${PERSONAL_CATS.join("; ")}), title, date (YYYY-MM-DD), notes (what happened / key details), remember (key things to remember or ideas), plan (future plan / target), tags (array of short keywords), healthTip (ONLY if health/fitness/diet related: a brief practical tip on what to do, prevent, or eat; else "").
+TEXT:\n${src}`;
+    const j=parseJSON(await geminiCall(prompt,true));const pick=aiPick(j);
+    const cat=pick("category","cat","type");if(cat)$("pCat").value=cat;
+    const set=(id,...al)=>{const v=pick(...al);if(v)$(id).value=v;};
+    set("pTitle","title","name","heading","subject");
+    set("pDate","date","when","day","on");
+    set("pNotes","notes","details","summary","description","what");
+    set("pRemember","remember","keypoints","takeaways","ideas","important","tonote");
+    set("pPlan","plan","futureplan","target","goal","nextstep","action");
+    const tags=pick("tags","keywords","labels");if(tags)$("pTags").value=tags;
+    const tip=pick("healthtip","tip","advice","recommendation");if(tip){$("pHealthBox").style.display="";$("pHealthTip").textContent=tip;}
     toast("AI filled it — review & save");
   }catch(e){toast("AI error: "+(e.message=="no-key"?"add key":e.message));}
   btn.disabled=false;btn.textContent=old;
@@ -1965,15 +1963,6 @@ $("clientsSearch").addEventListener("input",renderClients);
 
 /* boot */
 (function init(){const t=localStorage.getItem("wakalat.theme");if(t)document.documentElement.setAttribute("data-theme",t);route();setTimeout(fireReminders,1500);})();
-</script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/Pak-Lawyers-Notebook/service-worker.js', { scope: '/Pak-Lawyers-Notebook/' })
-        .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
-        .catch((err) => console.error('Service Worker registration failed:', err));
-    });
-  }
 </script>
 </body>
 </html>
