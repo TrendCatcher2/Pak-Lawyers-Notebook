@@ -2125,6 +2125,8 @@ $("clientsSearch").addEventListener("input",renderClients);
 </script>
   <script>
 /* ===== FIR / Pre-Hearing Analyzer (drop-in module) ===== */
+    (function(){
+  if(typeof $!=="function"||typeof state==="undefined"){console.error("Module skipped: main script not ready yet");return;}
 (function(){
   if(!window.$||!window.state) { /* globals come from main script */ }
   let firSrc="";
@@ -2261,6 +2263,8 @@ ${txt.slice(0,15000)}`;
 </script>
   <script>
 /* clear leftover file inputs whenever a modal opens */
+    (function(){
+  if(typeof $!=="function"||typeof state==="undefined"){console.error("Module skipped: main script not ready yet");return;}
 (function(){
   const ids=["cExtractFile","cFiles","jExtractFile","jFiles","pExtractFile","pFiles","firFile","ccLinks","profPhoto","homeRestoreFile","importFile"];
   function clearFiles(root){
@@ -2280,6 +2284,8 @@ ${txt.slice(0,15000)}`;
 </script>
   <script>
 /* ===== FIR Analyzer v2 — classify, generate fields, charts, create+link ===== */
+    (function(){
+  if(typeof $!=="function"||typeof state==="undefined"){console.error("Module skipped: main script not ready yet");return;}
 (function(){
   const sec=document.getElementById("vFir"); if(!sec) return;
   let lastSrc="", lastResult=null;
