@@ -441,9 +441,9 @@ const ICONS = {
 };
 
 const PROVIDERS = [
-  {id:"gemini",   name:"Gemini",   model:"gemini-2.0-flash", vendor:"Google",   ph:"AIza…", note:"Most reliable for static hosting (CORS)."},
-  {id:"deepseek", name:"DeepSeek", model:"deepseek-chat",    vendor:"DeepSeek", ph:"sk-…",  note:"OpenAI-compatible chat endpoint."},
-  {id:"grok",     name:"Grok",     model:"grok-2-latest",    vendor:"xAI",      ph:"xai-…", note:"xAI chat completions."}
+  {id:"gemini",   name:"Gemini",   model:"gemini-1.5-flash", vendor:"Google",   ph:"AIza…", note:"If you see “free tier limit 0”, pick a model your plan allows or enable billing."},
+  {id:"deepseek", name:"DeepSeek", model:"deepseek-chat",    vendor:"DeepSeek", ph:"sk-…",  note:"“Insufficient Balance” means the DeepSeek account needs credit."},
+  {id:"grok",     name:"Grok",     model:"grok-3",           vendor:"xAI",      ph:"xai-…", note:"“Model not found”? Set the exact model your xAI account lists (console.x.ai)."}
 ];
 
 /* Pakistani-university syllabus starter library: courses -> chapters */
@@ -1061,20 +1061,28 @@ function setActive(id){ activeId=id; renderPanel(); refreshNavStates();
 /* ============ AI PROVIDERS ============ */
 function activeProvider(){ const id=LS.get("lf.ai.active")||"gemini"; return PROVIDERS.find(p=>p.id===id)||PROVIDERS[0]; }
 function providerKey(id){ return LS.get("lf.ai.key."+id)||""; }
+function providerModel(id){ return LS.get("lf.ai.model."+id) || (PROVIDERS.find(p=>p.id===id)||{}).model || ""; }
+function providerHint(m){ m=(m||"").toLowerCase();
+  if(/model/.test(m)&&/(not found|unknown|does not exist|invalid|unsupported)/.test(m)) return " — open AI Providers (gear) and set a model name your account offers.";
+  if(/(insufficient|balance|billing|quota|exceeded|\blimit\b|\brate\b)/.test(m)) return " — this is an account credit/quota limit on the provider's side; add credit, enable billing, or switch provider/model.";
+  if(/(api key|unauthor|permission|invalid key|401|403)/.test(m)) return " — check the API key in AI Providers.";
+  return "";
+}
 function buildContext(secId){
   const sec=SECTIONS.find(s=>s.id===secId);
   return "Card: "+sec.name+"\n\n"+sec.fields.map(f=> f.l+": "+(f.t==="upload"?(fileMeta(secId,f.l)?"[file attached]":"[none]"):getVal(f,secId))).join("\n");
 }
 async function runProvider(prov,key,system,user){
+  const model=providerModel(prov.id);
   if(prov.id==="gemini"){
-    const url="https://generativelanguage.googleapis.com/v1beta/models/"+prov.model+":generateContent?key="+encodeURIComponent(key);
+    const url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(key);
     const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:system+"\n\n"+user}]}]})});
-    const d=await r.json(); if(!r.ok) throw new Error(d?.error?.message||("HTTP "+r.status));
+    const d=await r.json(); if(!r.ok){ const m=d?.error?.message||("HTTP "+r.status); throw new Error(m+providerHint(m)); }
     return d?.candidates?.[0]?.content?.parts?.map(p=>p.text).join("")||"No response.";
   }
   const ep=prov.id==="deepseek"?"https://api.deepseek.com/chat/completions":"https://api.x.ai/v1/chat/completions";
-  const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:prov.model,messages:[{role:"system",content:system},{role:"user",content:user}],stream:false})});
-  const d=await r.json(); if(!r.ok) throw new Error(d?.error?.message||d?.error||("HTTP "+r.status));
+  const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:model,messages:[{role:"system",content:system},{role:"user",content:user}],stream:false})});
+  const d=await r.json(); if(!r.ok){ const m=d?.error?.message||d?.error||("HTTP "+r.status); throw new Error(m+providerHint(m)); }
   return d?.choices?.[0]?.message?.content||"No response.";
 }
 const SYS = "You are the AI Professor: an academic mentor for a law lecturer at the University of Turbat, Faculty of Law (Pakistan). Be concise, specific and practical. Use plain text with short lines and clear structure.";
@@ -1202,11 +1210,11 @@ function openAI(secId){
   aiSecId=secId; aiMode="logical";
   const sec=SECTIONS.find(s=>s.id===secId), prov=activeProvider();
   document.getElementById("aiTitle").textContent="AI Assist · "+sec.name;
-  document.getElementById("aiSub").textContent="via "+prov.name+" ("+prov.model+")";
+  document.getElementById("aiSub").textContent="via "+prov.name+" ("+providerModel(prov.id)+")";
   document.getElementById("aiRun").style.display=""; document.getElementById("aiClear").style.display="";
   document.getElementById("aiBody").innerHTML=`
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">
-      <span class="badge g">${prov.name}</span><span class="mono" style="font-size:11px;color:var(--muted)">${prov.model}</span>
+      <span class="badge g">${prov.name}</span><span class="mono" style="font-size:11px;color:var(--muted)">${providerModel(prov.id)}</span>
       <button class="btn btn-ghost" id="aiToSettings" style="margin-left:auto;padding:6px 10px;font-size:11px">Change</button></div>
     <span class="flbl">How should the AI Professor treat this card?</span>
     <div class="seg" id="aiSeg">
@@ -1311,8 +1319,9 @@ function openSettings(){
       <span>Keys are stored in this browser's localStorage and are readable by any script on this page's origin. Use only on your own device, with keys scoped to the minimum needed.</span></div>
     <span class="flbl">Active provider for AI Assist & AI Professor</span>
     <div class="prov-row" id="provRow">${PROVIDERS.map(p=>`<button class="prov ${p.id===act?"sel":""}" data-id="${p.id}"><div class="pn">${p.name}</div><div class="pm">${p.vendor}</div></button>`).join("")}</div>
-    ${PROVIDERS.map(p=>`<span class="flbl">${p.name} API key <span style="color:var(--muted-2);text-transform:none;letter-spacing:0">· ${p.model}</span></span>
+    ${PROVIDERS.map(p=>`<span class="flbl">${p.name} — key &amp; model</span>
       <div class="key-row"><input class="in" type="password" id="key-${p.id}" placeholder="${p.ph}" value="${esc(providerKey(p.id))}"><button data-tog="${p.id}">Show</button></div>
+      <div class="key-row"><input class="in mono" id="model-${p.id}" value="${esc(providerModel(p.id))}" placeholder="model name" style="font-size:12px"></div>
       <div class="hint">${p.note}</div>`).join("")}`;
   const row=document.getElementById("provRow");
   row.querySelectorAll(".prov").forEach(b=> b.addEventListener("click",()=>{ row.querySelectorAll(".prov").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); }));
@@ -1320,9 +1329,10 @@ function openSettings(){
   openDrawer("set");
 }
 function saveSettings(){ const sel=document.querySelector("#provRow .prov.sel"); if(sel) LS.set("lf.ai.active",sel.dataset.id);
-  PROVIDERS.forEach(p=>{ const i=document.getElementById("key-"+p.id); if(i) LS.set("lf.ai.key."+p.id,i.value.trim()); });
+  PROVIDERS.forEach(p=>{ const i=document.getElementById("key-"+p.id); if(i) LS.set("lf.ai.key."+p.id,i.value.trim());
+    const mi=document.getElementById("model-"+p.id); if(mi){ const mv=mi.value.trim(); if(mv) LS.set("lf.ai.model."+p.id,mv); else LS.del("lf.ai.model."+p.id); } });
   closeDrawer("set"); toast("Providers saved");
-  if(document.getElementById("aiDrawer").classList.contains("open")&&document.getElementById("aiSub")) document.getElementById("aiSub").textContent="via "+activeProvider().name+" ("+activeProvider().model+")";
+  if(document.getElementById("aiDrawer").classList.contains("open")&&document.getElementById("aiSub")) document.getElementById("aiSub").textContent="via "+activeProvider().name+" ("+providerModel(activeProvider().id)+")";
 }
 
 /* ============ SEARCH ============ */
