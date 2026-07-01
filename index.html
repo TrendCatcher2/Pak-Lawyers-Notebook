@@ -226,7 +226,7 @@ mark{background:var(--brass-2);color:#3a2e08;padding:0 2px;border-radius:3px;fon
 .seg{display:flex;gap:6px;margin-bottom:16px;background:var(--parchment);padding:4px;border-radius:var(--r-sm);border:1px solid var(--line)}
 .seg button{flex:1;padding:8px;border-radius:var(--r-xs);font-size:12px;font-weight:600;color:var(--muted);transition:.15s}
 .seg button.on{background:var(--garnet);color:#fff}
-.prov-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.prov-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px}
 .prov{padding:12px 8px;border:1.5px solid var(--line);border-radius:var(--r-sm);text-align:center;transition:.15s;background:var(--parchment)}
 .prov:hover{border-color:var(--muted-2)}
 .prov.sel{border-color:var(--garnet);background:var(--garnet-soft)}
@@ -441,9 +441,18 @@ const ICONS = {
 };
 
 const PROVIDERS = [
-  {id:"gemini",   name:"Gemini",   model:"gemini-1.5-flash", vendor:"Google",   ph:"AIza…", note:"If you see “free tier limit 0”, pick a model your plan allows or enable billing."},
-  {id:"deepseek", name:"DeepSeek", model:"deepseek-chat",    vendor:"DeepSeek", ph:"sk-…",  note:"“Insufficient Balance” means the DeepSeek account needs credit."},
-  {id:"grok",     name:"Grok",     model:"grok-3",           vendor:"xAI",      ph:"xai-…", note:"“Model not found”? Set the exact model your xAI account lists (console.x.ai)."}
+  {id:"gemini", name:"Gemini", vendor:"Google", ph:"AIza…", model:"gemini-2.5-flash",
+    models:["gemini-2.5-flash","gemini-2.5-flash-lite","gemini-2.0-flash-lite"],
+    note:"Free tier · key at aistudio.google.com. Tries 2.5-flash then lite automatically."},
+  {id:"groq", name:"Groq", vendor:"Groq", ph:"gsk_…", model:"llama-3.3-70b-versatile",
+    models:["llama-3.3-70b-versatile","llama-3.1-8b-instant","meta-llama/llama-4-scout-17b-16e-instruct"],
+    note:"Free & fast · key at console.groq.com. Tries Llama models automatically."},
+  {id:"openrouter", name:"OpenRouter", vendor:"OpenRouter", ph:"sk-or-…", model:"openrouter/free",
+    models:["openrouter/free","meta-llama/llama-3.3-70b-instruct:free","deepseek/deepseek-r1:free","mistralai/mistral-7b-instruct:free"],
+    note:"20+ free models · key at openrouter.ai. Auto-picks a working free model."},
+  {id:"xai", name:"xAI · Grok", vendor:"xAI", ph:"xai-…", model:"grok-3",
+    models:["grok-3","grok-4","grok-2-1212","grok-beta"],
+    note:"Key at console.x.ai. Tries newer models first; pin your exact model above if needed."}
 ];
 
 /* Pakistani-university syllabus starter library: courses -> chapters */
@@ -1073,17 +1082,35 @@ function buildContext(secId){
   return "Card: "+sec.name+"\n\n"+sec.fields.map(f=> f.l+": "+(f.t==="upload"?(fileMeta(secId,f.l)?"[file attached]":"[none]"):getVal(f,secId))).join("\n");
 }
 async function runProvider(prov,key,system,user){
-  const model=providerModel(prov.id);
-  if(prov.id==="gemini"){
-    const url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(key);
-    const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:system+"\n\n"+user}]}]})});
-    const d=await r.json(); if(!r.ok){ const m=d?.error?.message||("HTTP "+r.status); throw new Error(m+providerHint(m)); }
-    return d?.candidates?.[0]?.content?.parts?.map(p=>p.text).join("")||"No response.";
+  const override=(LS.get("lf.ai.model."+prov.id)||"").trim();
+  const models=[...new Set([override, ...(prov.models||[prov.model])].filter(Boolean))];
+  let lastErr;
+  for(const model of models){
+    try{
+      if(prov.id==="gemini"){
+        const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(key),
+          {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},
+           body:JSON.stringify({contents:[{parts:[{text:system+"\n\n"+user}]}]})});
+        if(r.status===429||r.status===404){ lastErr=new Error("Gemini "+model+" "+r.status); continue; }
+        if(!r.ok){ const t=await r.text(); throw new Error("Gemini "+r.status+": "+t.slice(0,180)+providerHint(t)); }
+        const d=await r.json();
+        return (d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts||[]).map(p=>p.text||"").join("")||"No response.";
+      } else {
+        const ep = prov.id==="groq" ? "https://api.groq.com/openai/v1/chat/completions"
+                 : prov.id==="openrouter" ? "https://openrouter.ai/api/v1/chat/completions"
+                 : "https://api.x.ai/v1/chat/completions";
+        const headers={"Content-Type":"application/json","Authorization":"Bearer "+key};
+        if(prov.id==="openrouter"){ headers["HTTP-Referer"]="https://lawfaculty.uot.edu.pk"; headers["X-Title"]="Law Faculty Workspace"; }
+        const r=await fetch(ep,{method:"POST",headers,body:JSON.stringify({model,messages:[{role:"system",content:system},{role:"user",content:user}],max_tokens:1600})});
+        if(r.status===429||r.status===404||r.status===402){ lastErr=new Error(prov.name+" "+model+" "+r.status); continue; }
+        if(!r.ok){ const t=await r.text(); throw new Error(prov.name+" "+r.status+": "+t.slice(0,180)+providerHint(t)); }
+        const d=await r.json();
+        return (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||"No response.";
+      }
+    }catch(e){ lastErr=e; const m=(e.message||"").toLowerCase();
+      if(m.includes("429")||m.includes("404")||m.includes("402")) continue; throw e; }
   }
-  const ep=prov.id==="deepseek"?"https://api.deepseek.com/chat/completions":"https://api.x.ai/v1/chat/completions";
-  const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:model,messages:[{role:"system",content:system},{role:"user",content:user}],stream:false})});
-  const d=await r.json(); if(!r.ok){ const m=d?.error?.message||d?.error||("HTTP "+r.status); throw new Error(m+providerHint(m)); }
-  return d?.choices?.[0]?.message?.content||"No response.";
+  throw lastErr||new Error(prov.name+": all models failed — check your API key in AI Providers.");
 }
 const SYS = "You are the AI Professor: an academic mentor for a law lecturer at the University of Turbat, Faculty of Law (Pakistan). Be concise, specific and practical. Use plain text with short lines and clear structure.";
 
@@ -1321,7 +1348,7 @@ function openSettings(){
     <div class="prov-row" id="provRow">${PROVIDERS.map(p=>`<button class="prov ${p.id===act?"sel":""}" data-id="${p.id}"><div class="pn">${p.name}</div><div class="pm">${p.vendor}</div></button>`).join("")}</div>
     ${PROVIDERS.map(p=>`<span class="flbl">${p.name} — key &amp; model</span>
       <div class="key-row"><input class="in" type="password" id="key-${p.id}" placeholder="${p.ph}" value="${esc(providerKey(p.id))}"><button data-tog="${p.id}">Show</button></div>
-      <div class="key-row"><input class="in mono" id="model-${p.id}" value="${esc(providerModel(p.id))}" placeholder="model name" style="font-size:12px"></div>
+      <div class="key-row"><input class="in mono" id="model-${p.id}" value="${esc(LS.get("lf.ai.model."+p.id)||"")}" placeholder="model — leave blank to auto-select" style="font-size:12px"></div>
       <div class="hint">${p.note}</div>`).join("")}`;
   const row=document.getElementById("provRow");
   row.querySelectorAll(".prov").forEach(b=> b.addEventListener("click",()=>{ row.querySelectorAll(".prov").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); }));
